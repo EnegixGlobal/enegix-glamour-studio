@@ -2,6 +2,9 @@
 # Exit on error
 set -o errexit
 
+# Check Python version (for debugging)
+python --version
+
 # Upgrade pip and setuptools
 pip install --upgrade pip setuptools wheel
 
