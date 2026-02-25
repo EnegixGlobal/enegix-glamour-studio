@@ -1,0 +1,439 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block content %}
+
+<div class="ribbon-header d-flex justify-content-between align-items-center px-4 pb-5 mb-3" style="color: black">
+  <div class="d-flex align-items-center">
+    <i class="fas fa-shopping-cart me-3 fs-2" style="color: #ff4f6e;"></i>
+    <div class="fw-bold fs-3">Add Purchase Entry</div>
+  </div>
+  <div class="breadcrumb-text text-end">
+    <span class="text-black"><i class="fas fa-home me-1"></i>HOME</span>
+    <span class="mx-2 text-black">/</span>
+    <a href="{% url 'purchase_history' %}" class="text-black">Purchase History</a>
+    <span class="mx-2 text-black">/</span>
+    <span class="text-black-50">Add Purchase</span>
+  </div>
+</div>
+
+<div class="container-fluid mt-2">
+  <form method="POST" enctype="multipart/form-data" id="purchaseForm">
+    {% csrf_token %}
+    
+    <!-- ✅ INFO ALERT: Stock Management -->
+    <div class="alert alert-info border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-left: 4px solid #2196f3 !important; border-radius: 12px;">
+      <div class="d-flex align-items-start">
+        <i class="fas fa-info-circle fs-4 me-3 text-primary" style="color: #2196f3 !important;"></i>
+        <div>
+          <strong style="color: #1976d2;">Stock Management System:</strong>
+          <p class="mb-0 mt-1 text-dark">
+            This is where you add stock to the system. When you create a purchase entry, 
+            the product's stock will be <strong>automatically increased</strong> by the quantity you enter.
+            Current stock is calculated from all purchase entries.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vendor & Product Selection -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header table-title-bar fw-bold text-white">
+        <i class="fas fa-box-open me-2"></i>Vendor & Product Selection
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label"><i class="fas fa-truck me-2 text-primary"></i>Vendor <span class="text-danger">*</span></label>
+            <select name="vendor" id="vendorSelect" class="form-select modern-input" required>
+              <option value="">-- Select Vendor --</option>
+              {% for vendor in vendors %}
+              <option value="{{ vendor.id }}">
+                {{ vendor.vendor_id }} - {{ vendor.company_name }}
+              </option>
+              {% endfor %}
+            </select>
+            <small class="text-muted">
+              <i class="fas fa-info-circle me-1"></i>Select the vendor from whom you're purchasing
+            </small>
+          </div>
+          
+          <div class="col-md-6 mb-3">
+            <label class="form-label"><i class="fas fa-tags me-2 text-primary"></i>Category <span class="text-danger">*</span></label>
+            <select name="category" id="categorySelect" class="form-select modern-input" required>
+              <option value="">-- Select Category --</option>
+              <option value="hair_care">Hair Care Products</option>
+              <option value="skin_care">Skin Care Products</option>
+              <option value="makeup">Makeup Products</option>
+              <option value="tools">Salon Tools & Equipment</option>
+              <option value="consumables">Consumables</option>
+              <option value="other">Other</option>
+            </select>
+            <small class="text-muted">
+              <i class="fas fa-filter me-1"></i>Filter products by category
+            </small>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <label class="form-label"><i class="fas fa-cube me-2 text-primary"></i>Product <span class="text-danger">*</span></label>
+            <select name="product" id="productSelect" class="form-select modern-input" required disabled>
+              <option value="">-- First Select Category --</option>
+            </select>
+            
+            <!-- ✅ CURRENT STOCK DISPLAY -->
+            <div class="mt-3 p-3 rounded" style="background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%); border: 2px solid #ffd4dc;">
+              <div class="row">
+                <div class="col-md-4">
+                  <small class="text-muted d-block mb-1">
+                    <i class="fas fa-warehouse me-1"></i>Current Stock:
+                  </small>
+                  <h5 class="mb-0" id="currentStock" style="color: #ff4f6e;">
+                    <strong>-</strong>
+                  </h5>
+                </div>
+                <div class="col-md-4">
+                  <small class="text-muted d-block mb-1">
+                    <i class="fas fa-exclamation-triangle me-1"></i>Reorder Level:
+                  </small>
+                  <h5 class="mb-0" id="reorderLevel" style="color: #ffa726;">
+                    <strong>-</strong>
+                  </h5>
+                </div>
+                <div class="col-md-4">
+                  <small class="text-muted d-block mb-1">
+                    <i class="fas fa-info-circle me-1"></i>Status:
+                  </small>
+                  <h5 class="mb-0" id="stockStatus">
+                    <span class="badge bg-secondary">-</span>
+                  </h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Purchase Details -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header table-title-bar fw-bold text-white">
+        <i class="fas fa-shopping-bag me-2"></i>Purchase Details
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="form-label">
+              <i class="fas fa-boxes me-2 text-primary"></i>Quantity Purchased 
+              <span class="text-danger">*</span>
+            </label>
+            <input type="number" name="quantity_purchased" id="quantity" 
+                   class="form-control modern-input" min="1" required 
+                   placeholder="Enter quantity to purchase">
+            <small class="text-success">
+              <i class="fas fa-plus-circle me-1"></i>This will be added to current stock
+            </small>
+          </div>
+          
+          <div class="col-md-4 mb-3">
+            <label class="form-label">
+              <i class="fas fa-rupee-sign me-2 text-primary"></i>Purchase Price (per unit) 
+              <span class="text-danger">*</span>
+            </label>
+            <input type="number" name="purchase_price" id="purchasePrice" 
+                   class="form-control modern-input" min="0" step="0.01" required 
+                   placeholder="0.00">
+            <small class="text-muted">
+              <i class="fas fa-info-circle me-1"></i>Price you're paying to vendor
+            </small>
+          </div>
+          
+          <div class="col-md-4 mb-3">
+            <label class="form-label">
+              <i class="fas fa-calculator me-2 text-success"></i>Total Amount
+            </label>
+            <input type="text" id="totalAmount" class="form-control modern-input bg-light" 
+                   readonly placeholder="Auto calculated" style="font-weight: 700; font-size: 18px; color: #ff4f6e;">
+            <small class="text-muted">
+              <i class="fas fa-equals me-1"></i>Quantity × Purchase Price
+            </small>
+          </div>
+        </div>
+        
+        <!-- ✅ NEW STOCK PREVIEW -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="alert alert-success border-0" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left: 4px solid #4caf50 !important; border-radius: 10px;">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-chart-line fs-4 me-3" style="color: #4caf50;"></i>
+                <div class="flex-grow-1">
+                  <strong style="color: #2e7d32;">Stock After Purchase:</strong>
+                  <div class="mt-2" style="font-size: 16px; color: #1b5e20;">
+                    Current Stock: <strong id="previewCurrentStock">-</strong> units
+                    <i class="fas fa-plus mx-2" style="color: #4caf50;"></i>
+                    Purchasing: <strong id="previewPurchasing">0</strong> units
+                    <i class="fas fa-equals mx-2" style="color: #4caf50;"></i>
+                    New Stock: <strong id="previewNewStock" style="color: #4caf50; font-size: 20px;">-</strong> units
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label"><i class="fas fa-calendar-alt me-2 text-primary"></i>Purchase Date <span class="text-danger">*</span></label>
+            <input type="date" name="purchase_date" class="form-control modern-input" 
+                   value="{% now 'Y-m-d' %}" required>
+          </div>
+          
+          <div class="col-md-6 mb-3">
+            <label class="form-label"><i class="fas fa-file-invoice me-2 text-primary"></i>Invoice Number</label>
+            <input type="text" name="invoice_number" class="form-control modern-input" 
+                   placeholder="Enter invoice number (optional)">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header table-title-bar fw-bold text-white">
+        <i class="fas fa-file-alt me-2"></i>Additional Information
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <label class="form-label"><i class="fas fa-paperclip me-2 text-primary"></i>Invoice File</label>
+            <input type="file" name="invoice_file" class="form-control modern-input" 
+                   accept=".pdf,.jpg,.jpeg,.png">
+            <small class="text-muted">Upload invoice copy (PDF, JPG, PNG)</small>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <label class="form-label"><i class="fas fa-sticky-note me-2 text-primary"></i>Remarks / Notes</label>
+            <textarea name="remarks" class="form-control modern-input" rows="3" 
+                      placeholder="Any additional notes..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between">
+          <a href="{% url 'purchase_history' %}" class="btn btn-secondary btn-action-lg">
+            <i class="fas fa-arrow-left me-2"></i>Back to History
+          </a>
+          <button type="submit" class="btn btn-primary btn-action-lg">
+            <i class="fas fa-check-circle me-2"></i>Add Purchase Entry
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+// ✅ Category change pe products load karo (UPDATED for current_stock)
+document.getElementById('categorySelect').addEventListener('change', function() {
+    const category = this.value;
+    const productSelect = document.getElementById('productSelect');
+    const currentStock = document.getElementById('currentStock');
+    const reorderLevel = document.getElementById('reorderLevel');
+    const stockStatus = document.getElementById('stockStatus');
+    
+    productSelect.innerHTML = '<option value="">-- Loading... --</option>';
+    productSelect.disabled = true;
+    currentStock.innerHTML = '<strong>-</strong>';
+    reorderLevel.innerHTML = '<strong>-</strong>';
+    stockStatus.innerHTML = '<span class="badge bg-secondary">-</span>';
+    
+    if (category) {
+        fetch("{% url 'get_products_by_category' %}?category=" + category)
+            .then(response => response.json())
+            .then(data => {
+                productSelect.innerHTML = '<option value="">-- Select Product --</option>';
+                
+                if (data.products && data.products.length > 0) {
+                    data.products.forEach(product => {
+                        const option = document.createElement('option');
+                        option.value = product.id;
+                        option.textContent = `${product.product_id} - ${product.product_name}`;
+                        
+                        // ✅ Store current_stock and other data
+                        option.dataset.currentStock = product.current_stock;
+                        option.dataset.reorderLevel = product.reorder_level;
+                        option.dataset.isLowStock = product.is_low_stock;
+                        
+                        if (product.brand) {
+                            option.textContent += ` (${product.brand})`;
+                        }
+                        productSelect.appendChild(option);
+                    });
+                    productSelect.disabled = false;
+                } else {
+                    productSelect.innerHTML = '<option value="">No products in this category</option>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                productSelect.innerHTML = '<option value="">Error loading products</option>';
+            });
+    } else {
+        productSelect.innerHTML = '<option value="">-- First Select Category --</option>';
+    }
+});
+
+// ✅ Product select pe current stock dikhao (UPDATED)
+document.getElementById('productSelect').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const currentStock = document.getElementById('currentStock');
+    const reorderLevel = document.getElementById('reorderLevel');
+    const stockStatus = document.getElementById('stockStatus');
+    const previewCurrentStock = document.getElementById('previewCurrentStock');
+    
+    if (selectedOption.dataset.currentStock !== undefined) {
+        const stock = parseInt(selectedOption.dataset.currentStock);
+        const reorder = parseInt(selectedOption.dataset.reorderLevel);
+        const isLowStock = selectedOption.dataset.isLowStock === 'True';
+        
+        currentStock.innerHTML = `<strong>${stock} units</strong>`;
+        reorderLevel.innerHTML = `<strong>${reorder} units</strong>`;
+        previewCurrentStock.textContent = stock;
+        
+        // Stock status badge
+        if (stock === 0) {
+            stockStatus.innerHTML = '<span class="badge bg-dark"><i class="fas fa-times-circle me-1"></i>Out of Stock</span>';
+            currentStock.style.color = '#dc3545';
+        } else if (isLowStock) {
+            stockStatus.innerHTML = '<span class="badge bg-danger"><i class="fas fa-exclamation-triangle me-1"></i>Low Stock</span>';
+            currentStock.style.color = '#dc3545';
+        } else {
+            stockStatus.innerHTML = '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>In Stock</span>';
+            currentStock.style.color = '#4caf50';
+        }
+        
+        // Update preview
+        updateStockPreview();
+    } else {
+        currentStock.innerHTML = '<strong>-</strong>';
+        reorderLevel.innerHTML = '<strong>-</strong>';
+        stockStatus.innerHTML = '<span class="badge bg-secondary">-</span>';
+        previewCurrentStock.textContent = '-';
+    }
+});
+
+// ✅ Auto calculate total amount
+function calculateTotal() {
+    const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+    const price = parseFloat(document.getElementById('purchasePrice').value) || 0;
+    const total = quantity * price;
+    
+    document.getElementById('totalAmount').value = '₹ ' + total.toFixed(2);
+    
+    // Update preview
+    updateStockPreview();
+}
+
+// ✅ Update stock preview
+function updateStockPreview() {
+    const currentStock = document.getElementById('previewCurrentStock').textContent;
+    const quantity = parseInt(document.getElementById('quantity').value) || 0;
+    
+    document.getElementById('previewPurchasing').textContent = quantity;
+    
+    if (currentStock !== '-' && !isNaN(parseInt(currentStock))) {
+        const newStock = parseInt(currentStock) + quantity;
+        document.getElementById('previewNewStock').textContent = newStock;
+    } else {
+        document.getElementById('previewNewStock').textContent = '-';
+    }
+}
+
+document.getElementById('quantity').addEventListener('input', calculateTotal);
+document.getElementById('purchasePrice').addEventListener('input', calculateTotal);
+</script>
+
+<style>
+.modern-card {
+  border-radius: 15px;
+  border: none;
+  overflow: hidden;
+}
+
+.modern-input {
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 10px;
+  padding: 12px 15px;
+  transition: all 0.3s ease;
+  color: #000;
+}
+
+.modern-input:focus {
+  border-color: #ff4f6e !important;
+  background-color: #fff5f7 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 79, 110, 0.15);
+  transform: translateY(-2px);
+}
+
+.modern-input.bg-light {
+  background-color: #f8f9fa !important;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.card-header.table-title-bar {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  padding: 20px;
+  font-size: 18px;
+  border-bottom: 3px solid rgba(255,255,255,0.2);
+}
+
+.btn-action-lg {
+  padding: 12px 30px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-action-lg:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #e63956 0%, #ff6b9d 100%);
+}
+
+.ribbon-header {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+}
+
+.text-primary {
+  color: #ff4f6e !important;
+}
+
+label .text-danger {
+  font-weight: normal;
+}
+</style>
+
+{% endblock %}

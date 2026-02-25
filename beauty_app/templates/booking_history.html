@@ -1,0 +1,321 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Bookings — Glamour Studio{% endblock %}
+
+{% block extra_css %}
+<style>
+.history-hero {
+    height: 52vh; min-height: 360px;
+    background: url('https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=80') center/cover no-repeat;
+    position: relative;
+    display: flex; align-items: flex-end;
+    padding-bottom: 60px; padding-top: 120px;
+}
+.history-hero-content { position: relative; z-index: 2; }
+.history-hero-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    color: var(--champagne);
+    font-weight: 300; line-height: 1.1;
+}
+.breadcrumb-glamour a { color: var(--rose-gold); font-size:0.78rem; letter-spacing:1px; }
+.breadcrumb-glamour span { color: rgba(247,231,206,0.5); font-size:0.78rem; margin:0 8px; }
+.breadcrumb-glamour .current { color: rgba(247,231,206,0.75); font-size:0.78rem; }
+
+.customer-welcome-card {
+    background: var(--plum);
+    padding: 28px 32px;
+    display: flex; align-items: center; gap: 22px;
+    margin-bottom: 40px;
+}
+.customer-avatar-circle {
+    width: 64px; height: 64px;
+    background: rgba(196,139,159,0.2);
+    border: 2px solid var(--rose-gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    color: var(--champagne);
+    flex-shrink: 0;
+}
+.customer-welcome-name { font-family: var(--font-serif); font-size: 1.4rem; color: var(--champagne); line-height: 1.2; }
+.customer-welcome-sub { font-size: 0.75rem; color: var(--rose-gold); letter-spacing: 2px; text-transform: uppercase; margin-top: 3px; }
+.customer-welcome-stats { margin-left: auto; display: flex; gap: 28px; text-align: center; }
+.stat-num { font-family: var(--font-serif); font-size: 1.8rem; color: var(--champagne); line-height: 1; }
+.stat-label { font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(196,139,159,0.8); margin-top: 4px; }
+
+.history-section-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(59,15,43,0.12); margin-bottom: 28px; }
+.history-tab {
+    font-family: var(--font-sans); font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase;
+    padding: 14px 26px; background: none; border: none; color: var(--text-mid);
+    cursor: pointer; position: relative; transition: color 0.3s;
+}
+.history-tab::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--plum); transform: scaleX(0); transition: transform 0.3s; }
+.history-tab.active { color: var(--plum); font-weight: 600; }
+.history-tab.active::after { transform: scaleX(1); }
+
+.apt-card { background: var(--white); box-shadow: var(--shadow-card); margin-bottom: 18px; overflow: hidden; transition: var(--transition); }
+.apt-card:hover { box-shadow: 0 8px 32px rgba(59,15,43,0.15); transform: translateY(-2px); }
+.apt-card-header { display: flex; align-items: center; padding: 16px 22px; background: var(--bg-warm); border-bottom: 1px solid rgba(59,15,43,0.07); gap: 14px; flex-wrap: wrap; }
+.apt-id-badge { font-family: var(--font-deco); font-size: 0.7rem; letter-spacing: 2px; background: var(--plum); color: var(--champagne); padding: 3px 10px; }
+.apt-date-info { font-size: 0.82rem; color: var(--text-mid); display: flex; align-items: center; gap: 6px; }
+.apt-date-info i { color: var(--rose-gold); }
+.apt-status-badge { margin-left: auto; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; padding: 4px 12px; font-weight: 600; }
+.status-pending     { background: #fff8e1; color: #f59e0b; }
+.status-confirmed   { background: #e8f5e9; color: #2e7d32; }
+.status-in_progress { background: #e3f2fd; color: #1565c0; }
+.status-completed   { background: #f3e5f5; color: #6a1b9a; }
+.status-cancelled   { background: #fce4ec; color: #b71c1c; }
+.apt-card-body { padding: 18px 22px; }
+.apt-service-row { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid rgba(59,15,43,0.06); }
+.apt-service-row:last-child { border-bottom: none; }
+.apt-service-icon { width: 36px; height: 36px; background: rgba(196,139,159,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.apt-service-icon i { color: var(--rose-gold); font-size: 0.9rem; }
+.apt-service-name { font-family: var(--font-serif); font-size: 1rem; color: var(--plum); }
+.apt-service-by { font-size: 0.78rem; color: var(--text-mid); margin-top: 2px; }
+.apt-service-price { margin-left: auto; font-family: var(--font-serif); font-size: 1.05rem; color: var(--plum); }
+.apt-card-footer { display: flex; align-items: center; padding: 12px 22px; background: var(--bg-warm); border-top: 1px solid rgba(59,15,43,0.07); gap: 14px; }
+.apt-total { font-family: var(--font-serif); font-size: 1.2rem; color: var(--plum); }
+.apt-total small { font-family: var(--font-sans); font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-mid); display: block; }
+
+.bill-card { background: var(--white); box-shadow: var(--shadow-card); margin-bottom: 18px; display: flex; align-items: center; padding: 18px 24px; gap: 18px; transition: var(--transition); flex-wrap: wrap; }
+.bill-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(59,15,43,0.15); }
+.bill-icon-box { width: 48px; height: 48px; background: var(--plum); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.bill-icon-box i { color: var(--rose-gold); font-size: 1.1rem; }
+.bill-id   { font-family: var(--font-deco); font-size: 0.85rem; letter-spacing: 2px; color: var(--plum); }
+.bill-date { font-size: 0.78rem; color: var(--text-mid); margin-top: 2px; }
+.bill-amount { margin-left: auto; text-align: right; }
+.bill-amount-num { font-family: var(--font-serif); font-size: 1.5rem; color: var(--plum); }
+.bill-payment-badge { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; padding: 3px 10px; margin-top: 4px; display: inline-block; }
+.bill-paid    { background: #e8f5e9; color: #2e7d32; }
+.bill-partial { background: #fff8e1; color: #f59e0b; }
+.bill-pending { background: #fce4ec; color: #b71c1c; }
+
+.empty-history { text-align: center; padding: 60px 20px; }
+.empty-history-icon { font-size: 3.5rem; color: rgba(196,139,159,0.4); margin-bottom: 16px; }
+.empty-history h3 { font-family: var(--font-serif); font-size: 1.5rem; color: var(--plum); margin-bottom: 8px; }
+.empty-history p { color: var(--text-mid); font-size: 0.88rem; }
+
+.history-panel { display: none; }
+.history-panel.active { display: block; }
+
+@media (max-width: 768px) {
+    .history-hero { height: auto; min-height: 320px; padding-bottom: 40px; padding-top: 100px; }
+    .history-hero-title { font-size: clamp(1.8rem, 7vw, 2.5rem) !important; }
+    .customer-welcome-card { flex-wrap: wrap; gap: 16px; padding: 20px 18px; }
+    .customer-welcome-stats { margin-left: 0; width: 100%; justify-content: space-around; gap: 0; }
+    .apt-card-header { padding: 12px 14px; }
+    .apt-card-body  { padding: 14px; }
+    .apt-card-footer { padding: 10px 14px; }
+    .bill-card { padding: 14px 16px; }
+    .history-tab { padding: 12px 16px; font-size: 0.68rem; letter-spacing: 2px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<div class="history-hero">
+    <div class="overlay overlay-plum"></div>
+    <div class="container history-hero-content">
+        <div class="breadcrumb-glamour mb-12" style="margin-bottom:12px;">
+            <a href="{% url 'home' %}">Home</a>
+            <span>›</span>
+            <span class="current">My Bookings</span>
+        </div>
+        <span class="section-label">Your Journey</span>
+        <h1 class="history-hero-title">My Glamour<br>Booking History</h1>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<section style="padding: 60px 0 100px;">
+    <div class="container">
+
+        <!-- Welcome Card -->
+        <div class="customer-welcome-card" data-aos="fade-up">
+            <div class="customer-avatar-circle">{{ customer.full_name|first|upper }}</div>
+            <div>
+                <div class="customer-welcome-name">{{ customer.full_name }}</div>
+                <div class="customer-welcome-sub">Glamour Member · {{ customer.mobile }}</div>
+            </div>
+            <div class="customer-welcome-stats">
+                <div>
+                    <div class="stat-num">{{ appointments.count }}</div>
+                    <div class="stat-label">Appointments</div>
+                </div>
+                <div>
+                    <div class="stat-num">{{ bills.count }}</div>
+                    <div class="stat-label">Bills</div>
+                </div>
+                <div>
+                    <div class="stat-num">✦</div>
+                    <div class="stat-label">Member</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Book New Button -->
+        <div class="d-flex justify-content-between align-items-center mb-3" data-aos="fade-up">
+            <div>
+                <span class="section-label" style="margin-bottom:4px;">Your Records</span>
+            </div>
+            <a href="{% url 'booking' %}" class="btn-glamour-primary" style="font-size:0.68rem; padding:10px 22px;">
+                <span>+ Book New Appointment</span>
+            </a>
+        </div>
+
+        <!-- Section Tabs -->
+        <div class="history-section-tabs" data-aos="fade-up">
+            <button class="history-tab active" id="aptTabBtn" onclick="switchHistoryTab('appointments')">
+                Appointments
+                <span style="background:var(--plum);color:var(--champagne);font-size:0.6rem;padding:1px 6px;margin-left:6px;border-radius:20px;">{{ appointments.count }}</span>
+            </button>
+            <button class="history-tab" id="billTabBtn" onclick="switchHistoryTab('bills')">
+                Bills & Payments
+                <span style="background:var(--rose-gold);color:var(--plum);font-size:0.6rem;padding:1px 6px;margin-left:6px;border-radius:20px;">{{ bills.count }}</span>
+            </button>
+        </div>
+
+        <!-- APPOINTMENTS PANEL -->
+        <div class="history-panel active" id="appointmentsPanel">
+            {% if appointments %}
+                {% for apt in appointments %}
+                <div class="apt-card" data-aos="fade-up">
+                    <div class="apt-card-header">
+                        <span class="apt-id-badge">{{ apt.appointment_id }}</span>
+                        <span class="apt-date-info">
+                            <i class="bi bi-calendar3"></i>
+                            {{ apt.appointment_date|date:"D, d M Y" }}
+                        </span>
+                        <span class="apt-date-info">
+                            <i class="bi bi-clock"></i>
+                            {{ apt.appointment_time|time:"h:i A" }}
+                        </span>
+                        <span class="apt-date-info">
+                            <i class="bi bi-bookmark"></i>
+                            {{ apt.get_booking_type_display }}
+                        </span>
+                        <span class="apt-status-badge status-{{ apt.status }}">
+                            {{ apt.get_status_display }}
+                        </span>
+                    </div>
+
+                    <div class="apt-card-body">
+                        {% for svc in apt.appointment_services.all %}
+                        <div class="apt-service-row">
+                            <div class="apt-service-icon"><i class="bi bi-scissors"></i></div>
+                            <div>
+                                <div class="apt-service-name">{{ svc.service.service_name }}</div>
+                                <div class="apt-service-by">by {{ svc.employee.full_name }}</div>
+                            </div>
+                            <div class="apt-service-price">₹{{ svc.service_price }}</div>
+                        </div>
+                        {% empty %}
+                        <p style="font-size:0.85rem; color:var(--text-mid); padding:8px 0;">No services recorded.</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="apt-card-footer">
+                        <div class="apt-total">
+                            <small>Total Amount</small>
+                            ₹{{ apt.total_amount }}
+                        </div>
+                        {% if apt.advance_paid > 0 %}
+                        <div style="font-size:0.8rem; color:var(--text-mid);">
+                            <i class="bi bi-check-circle" style="color:#4caf50;"></i>
+                            Advance: ₹{{ apt.advance_paid }}
+                        </div>
+                        {% endif %}
+                        {% if apt.special_notes %}
+                        <div style="font-size:0.78rem; color:var(--text-mid); margin-left:auto; max-width:240px; text-align:right;">
+                            <i class="bi bi-chat-text" style="color:var(--rose-gold);"></i>
+                            {{ apt.special_notes|truncatewords:8 }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="empty-history">
+                <div class="empty-history-icon"><i class="bi bi-calendar-x"></i></div>
+                <h3>No Appointments Yet</h3>
+                <p>You haven't booked any appointments. Start your glamour journey today!</p>
+                <a href="{% url 'booking' %}" class="btn-glamour-primary mt-4" style="font-size:0.7rem; padding:12px 28px;">
+                    <span>Book Your First Appointment</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- BILLS PANEL -->
+        <div class="history-panel" id="billsPanel">
+            {% if bills %}
+                {% for bill in bills %}
+                <div class="bill-card" data-aos="fade-up">
+                    <div class="bill-icon-box"><i class="bi bi-receipt"></i></div>
+                    <div>
+                        <div class="bill-id">{{ bill.bill_id }}</div>
+                        <div class="bill-date">{{ bill.bill_date|date:"d M Y, h:i A" }}</div>
+                        <div style="font-size:0.78rem; color:var(--text-mid); margin-top:4px;">
+                            {{ bill.bill_items.count }} service{{ bill.bill_items.count|pluralize }}
+                            · Apt: {{ bill.appointment.appointment_id }}
+                        </div>
+                    </div>
+                    <div style="margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                        <div style="font-size:0.72rem; color:var(--text-mid);">
+                            via {{ bill.get_payment_method_display }}
+                        </div>
+                        {% if bill.discount > 0 %}
+                        <div style="font-size:0.78rem; color:#2e7d32;">
+                            <i class="bi bi-tag-fill"></i> Discount: ₹{{ bill.discount }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="bill-amount">
+                        <div class="bill-amount-num">₹{{ bill.total_amount }}</div>
+                        <div>
+                            <span class="bill-payment-badge bill-{{ bill.payment_status }}">
+                                {{ bill.get_payment_status_display }}
+                            </span>
+                        </div>
+                        {% if bill.balance_amount > 0 %}
+                        <div style="font-size:0.72rem; color:#b00020; margin-top:3px;">
+                            Balance: ₹{{ bill.balance_amount }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="empty-history">
+                <div class="empty-history-icon"><i class="bi bi-receipt"></i></div>
+                <h3>No Bills Yet</h3>
+                <p>Your billing history will appear here after your first visit.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function switchHistoryTab(tab) {
+    document.querySelectorAll('.history-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.history-panel').forEach(p => p.classList.remove('active'));
+    if (tab === 'appointments') {
+        document.getElementById('aptTabBtn').classList.add('active');
+        document.getElementById('appointmentsPanel').classList.add('active');
+    } else {
+        document.getElementById('billTabBtn').classList.add('active');
+        document.getElementById('billsPanel').classList.add('active');
+    }
+}
+</script>
+{% endblock %}

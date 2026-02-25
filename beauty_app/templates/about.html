@@ -1,0 +1,526 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us — Glamour Studio{% endblock %}
+{% block nav_about %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-hero {
+    height: 55vh; min-height: 380px;
+    background: url('https://images.unsplash.com/photo-1600948836101-f9ffda59d250?w=1920&q=80') center/cover no-repeat;
+    position: relative;
+    display: flex; align-items: flex-end;
+    padding-bottom: 70px; padding-top: 100px;
+}
+.page-hero-content { position: relative; z-index: 2; }
+.page-hero-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    color: var(--champagne);
+    font-weight: 300; line-height: 1.1;
+}
+.breadcrumb-glamour a { color: var(--rose-gold); font-size:0.78rem; letter-spacing:1px; }
+.breadcrumb-glamour span { color: rgba(247,231,206,0.5); font-size:0.78rem; margin:0 8px; }
+.breadcrumb-glamour .current { color: rgba(247,231,206,0.75); font-size:0.78rem; }
+
+/* STORY SECTION */
+.story-section { padding: 100px 0; background: var(--champagne); }
+.story-img {
+    width: 100%; height: 520px;
+    object-fit: cover; display: block;
+}
+.about-deco-line {
+    width: 1px; height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--rose-gold), transparent);
+    margin: 20px 0;
+}
+
+/* TIMELINE */
+.timeline-section { padding: 100px 0; background: var(--bg-warm); }
+.timeline {
+    position: relative;
+    max-width: 800px; margin: 0 auto;
+}
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--rose-gold) 20%, var(--rose-gold) 80%, transparent);
+    transform: translateX(-50%);
+}
+.timeline-item {
+    display: flex; gap: 0;
+    margin-bottom: 60px;
+    position: relative;
+}
+.timeline-item:nth-child(odd) {
+    flex-direction: row;
+    text-align: right;
+}
+.timeline-item:nth-child(even) {
+    flex-direction: row-reverse;
+    text-align: left;
+}
+.timeline-content {
+    width: calc(50% - 40px);
+    padding: 24px 28px;
+    background: var(--white);
+    box-shadow: var(--shadow-card);
+    position: relative;
+}
+.timeline-item:nth-child(odd) .timeline-content { margin-right: 40px; }
+.timeline-item:nth-child(even) .timeline-content { margin-left: 40px; }
+
+.timeline-dot {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px; height: 14px;
+    background: var(--rose-gold);
+    border-radius: 50%;
+    border: 3px solid var(--bg-warm);
+    z-index: 2;
+}
+.timeline-year {
+    font-family: var(--font-serif);
+    font-size: 2rem; color: var(--rose-gold);
+    font-weight: 300; line-height: 1;
+    margin-bottom: 6px;
+}
+.timeline-title {
+    font-family: var(--font-serif);
+    font-size: 1.05rem; color: var(--plum);
+    margin-bottom: 8px;
+}
+.timeline-desc { font-size: 0.85rem; color: var(--text-mid); line-height: 1.8; }
+
+/* MISSION VISION */
+.mv-section {
+    padding: 100px 0;
+    background: url('https://images.unsplash.com/photo-1545173168-9f1947eebb7f?w=1920&q=80') center/cover no-repeat;
+    position: relative;
+}
+.glass-card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(247,231,206,0.15);
+    padding: 40px;
+    height: 100%;
+    transition: var(--transition);
+}
+.glass-card:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(196,139,159,0.4);
+    transform: translateY(-4px);
+}
+.glass-card-icon {
+    width: 60px; height: 60px;
+    border: 1px solid rgba(196,139,159,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; color: var(--rose-gold);
+    margin-bottom: 20px;
+}
+.glass-card-title {
+    font-family: var(--font-serif);
+    font-size: 1.4rem; color: var(--champagne);
+    margin-bottom: 14px;
+}
+.glass-card-text { font-size: 0.88rem; color: rgba(247,231,206,0.7); line-height: 1.9; }
+
+/* GALLERY CAROUSEL */
+.gallery-section { padding: 100px 0; background: var(--champagne); }
+.infra-carousel .carousel-item img {
+    width: 100%; height: 480px;
+    object-fit: cover; display: block;
+}
+.infra-carousel .carousel-caption {
+    background: rgba(59,15,43,0.7);
+    left: 0; right: 0; bottom: 0;
+    padding: 20px 30px;
+    text-align: left;
+}
+.infra-carousel .carousel-caption h5 {
+    font-family: var(--font-serif);
+    color: var(--champagne); font-size: 1.2rem;
+    margin-bottom: 4px;
+}
+.infra-carousel .carousel-caption p {
+    color: rgba(247,231,206,0.65);
+    font-size: 0.82rem; margin: 0;
+}
+
+/* CERTIFICATIONS */
+.certs-section { padding: 80px 0; background: var(--bg-warm); }
+.cert-card {
+    text-align: center;
+    padding: 30px;
+    border: 1px solid rgba(59,15,43,0.08);
+    background: var(--white);
+    transition: var(--transition);
+}
+.cert-card:hover {
+    border-color: var(--rose-gold);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card);
+}
+.cert-icon {
+    font-size: 2.2rem;
+    color: var(--rose-gold);
+    margin-bottom: 16px;
+    display: block;
+}
+.cert-name {
+    font-family: var(--font-serif);
+    font-size: 1.05rem; color: var(--plum);
+    margin-bottom: 8px;
+}
+.cert-body { font-size: 0.82rem; color: var(--text-mid); line-height: 1.7; }
+
+@media (max-width: 768px) {
+    .page-hero {
+        height: auto;
+        min-height: 280px;
+        padding-bottom: 40px;
+        padding-top: 100px;
+    }
+    .page-hero-title { font-size: clamp(2rem, 8vw, 3rem) !important; }
+
+    /* Story section */
+    .story-section { padding: 60px 0 !important; }
+    .story-img { height: 280px; }
+
+    /* Floating badge on image - make it static on mobile */
+    .story-section [style*="position:absolute; bottom:-20px"] {
+        position: static !important;
+        margin-top: 16px;
+        display: inline-block;
+    }
+
+    /* Stats row in story */
+    .story-section [style*="display:flex; gap:40px"] {
+        flex-wrap: wrap;
+        gap: 24px !important;
+    }
+
+    /* Timeline */
+    .timeline-section { padding: 60px 0 !important; }
+    .timeline::before { left: 20px; }
+    .timeline-item { flex-direction: column !important; }
+    .timeline-item:nth-child(odd) .timeline-content,
+    .timeline-item:nth-child(even) .timeline-content {
+        margin: 0 0 0 50px;
+        width: auto; text-align: left;
+    }
+    .timeline-dot { left: 20px; }
+
+    /* Mission/Vision cards */
+    .glass-card { padding: 28px 24px; }
+    .mv-section { padding: 60px 0 !important; }
+
+    /* Gallery carousel */
+    .gallery-section { padding: 60px 0 !important; }
+    .infra-carousel .carousel-item img { height: 260px; }
+    .infra-carousel .carousel-caption { padding: 14px 18px; }
+    .infra-carousel .carousel-caption h5 { font-size: 1rem; }
+
+    /* Certs grid */
+    .certs-section { padding: 60px 0 !important; }
+    .cert-card { padding: 22px 16px; }
+
+    /* CTA section */
+    .story-section + section,
+    section[style*="padding:90px"] { padding: 60px 0 !important; }
+}
+
+@media (max-width: 480px) {
+    .story-img { height: 220px; }
+    .infra-carousel .carousel-item img { height: 200px; }
+    .glass-card { padding: 24px 18px; }
+    .glass-card-title { font-size: 1.15rem; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+    <div class="overlay overlay-plum"></div>
+    <div class="container page-hero-content">
+        <div class="breadcrumb-glamour mb-12" style="margin-bottom:12px;">
+            <a href="{% url 'home' %}">Home</a>
+            <span>›</span>
+            <span class="current">About Us</span>
+        </div>
+        <span class="section-label">Our Legacy</span>
+        <h1 class="page-hero-title">The Story of<br>Glamour Studio</h1>
+    </div>
+</div>
+
+
+<!-- OUR STORY -->
+<section class="story-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-5" data-aos="fade-right">
+                <div style="position:relative;">
+                    <img src="https://images.unsplash.com/photo-1470259078422-826894b933aa?w=700&q=80"
+                         alt="Our Story" class="story-img">
+                    <div style="position:absolute; bottom:-20px; right:-20px;
+                                background:var(--plum); color:var(--champagne);
+                                padding:28px 32px; font-family:var(--font-serif); text-align:center;">
+                        <div style="font-size:2.5rem; font-weight:300;">10+</div>
+                        <div style="font-size:0.7rem; letter-spacing:3px; text-transform:uppercase; color:var(--rose-gold);">Years of Excellence</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 offset-lg-1" data-aos="fade-left">
+                <span class="section-label">Who We Are</span>
+                <h2 class="section-title">A Passion for Beauty,<br>Born in Mumbai</h2>
+                <div class="about-deco-line"></div>
+                <p style="color:var(--text-mid); line-height:1.9; margin-bottom:18px;">
+                    Glamour Studio was founded in 2014 with a singular vision — to create a space where luxury, artistry, and personalised care come together to offer an experience unlike any other in the city.
+                </p>
+                <p style="color:var(--text-mid); line-height:1.9; margin-bottom:18px;">
+                    From our humble beginnings as a boutique studio in Bandra West, we have grown into one of Mumbai's most celebrated beauty destinations — trusted by celebrities, brides, and thousands of loyal clients across the city.
+                </p>
+                <p style="color:var(--text-mid); line-height:1.9; margin-bottom:36px;">
+                    Our philosophy is simple: every person deserves to feel beautiful, confident, and celebrated. Every service we offer is a reflection of that belief.
+                </p>
+                <div style="display:flex; gap:40px;">
+                    <div>
+                        <div style="font-family:var(--font-serif); font-size:2.5rem; color:var(--plum); font-weight:300;">1200+</div>
+                        <div style="font-size:0.7rem; letter-spacing:3px; text-transform:uppercase; color:var(--rose-gold);">Happy Clients</div>
+                    </div>
+                    <div>
+                        <div style="font-family:var(--font-serif); font-size:2.5rem; color:var(--plum); font-weight:300;">50+</div>
+                        <div style="font-size:0.7rem; letter-spacing:3px; text-transform:uppercase; color:var(--rose-gold);">Expert Services</div>
+                    </div>
+                    <div>
+                        <div style="font-family:var(--font-serif); font-size:2.5rem; color:var(--plum); font-weight:300;">12+</div>
+                        <div style="font-size:0.7rem; letter-spacing:3px; text-transform:uppercase; color:var(--rose-gold);">Expert Artists</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- TIMELINE -->
+<section class="timeline-section">
+    <div class="container">
+        <div class="text-center mb-6" style="margin-bottom:70px;" data-aos="fade-up">
+            <span class="section-label">Our Journey</span>
+            <h2 class="section-title">A Decade of Transformation</h2>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item" data-aos="fade-right">
+                <div class="timeline-content">
+                    <div class="timeline-year">2014</div>
+                    <div class="timeline-title">The Beginning</div>
+                    <p class="timeline-desc">Glamour Studio opens its doors in Bandra West with a small but dedicated team of 4 beauty artists.</p>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+
+            <div class="timeline-item" data-aos="fade-left">
+                <div class="timeline-content">
+                    <div class="timeline-year">2016</div>
+                    <div class="timeline-title">First Award</div>
+                    <p class="timeline-desc">Recognised as 'Best New Salon of the Year' by Mumbai Beauty Awards, cementing our commitment to excellence.</p>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+
+            <div class="timeline-item" data-aos="fade-right">
+                <div class="timeline-content">
+                    <div class="timeline-year">2018</div>
+                    <div class="timeline-title">Expansion</div>
+                    <p class="timeline-desc">Expanded to a full-floor luxury studio with dedicated bridal and spa sections to serve our growing clientele.</p>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+
+            <div class="timeline-item" data-aos="fade-left">
+                <div class="timeline-content">
+                    <div class="timeline-year">2021</div>
+                    <div class="timeline-title">Digital Transformation</div>
+                    <p class="timeline-desc">Launched our online booking platform, making luxury beauty accessible at the touch of a button.</p>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+
+            <div class="timeline-item" data-aos="fade-right">
+                <div class="timeline-content">
+                    <div class="timeline-year">2024</div>
+                    <div class="timeline-title">A Decade of Beauty</div>
+                    <p class="timeline-desc">Celebrating 10 years of transformations, 1200+ happy clients, and an unmatched legacy of luxury service.</p>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- MISSION & VISION -->
+<section class="mv-section">
+    <div class="overlay" style="background:rgba(38,10,29,0.78);"></div>
+    <div class="container" style="position:relative; z-index:2;">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="section-label" style="color:var(--rose-gold);">Our Purpose</span>
+            <h2 class="section-title light">Mission & Vision</h2>
+            <div class="section-divider"></div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="glass-card">
+                    <div class="glass-card-icon"><i class="bi bi-bullseye"></i></div>
+                    <div class="glass-card-title">Our Mission</div>
+                    <p class="glass-card-text">To deliver exceptional beauty experiences that make every client feel seen, valued, and absolutely stunning — through expert artistry, premium products, and genuine care.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="glass-card">
+                    <div class="glass-card-icon"><i class="bi bi-eye"></i></div>
+                    <div class="glass-card-title">Our Vision</div>
+                    <p class="glass-card-text">To be India's most beloved luxury beauty destination — a brand synonymous with transformation, trust, and timeless elegance that inspires confidence in every person we serve.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="glass-card">
+                    <div class="glass-card-icon"><i class="bi bi-gem"></i></div>
+                    <div class="glass-card-title">Our Values</div>
+                    <p class="glass-card-text">Excellence in every stroke, honesty in every recommendation, and warmth in every interaction. We treat every client as our most important guest — because you are.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- INFRASTRUCTURE GALLERY -->
+<section class="gallery-section">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="section-label">Our Space</span>
+            <h2 class="section-title">Inside Glamour Studio</h2>
+            <div class="section-divider"></div>
+        </div>
+
+        <div id="infraCarousel" class="carousel slide infra-carousel" data-bs-ride="carousel" data-aos="fade-up" data-aos-delay="100">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#infraCarousel" data-bs-slide-to="0" class="active"
+                        style="background:var(--rose-gold); width:20px; height:2px;"></button>
+                <button type="button" data-bs-target="#infraCarousel" data-bs-slide-to="1"
+                        style="background:rgba(196,139,159,0.4); width:20px; height:2px;"></button>
+                <button type="button" data-bs-target="#infraCarousel" data-bs-slide-to="2"
+                        style="background:rgba(196,139,159,0.4); width:20px; height:2px;"></button>
+                <button type="button" data-bs-target="#infraCarousel" data-bs-slide-to="3"
+                        style="background:rgba(196,139,159,0.4); width:20px; height:2px;"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6?w=1200&q=80" alt="Reception">
+                    <div class="carousel-caption">
+                        <h5>Grand Reception</h5>
+                        <p>Where your luxury journey begins</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1597327898046-b5de74e8a19a?w=1200&q=80" alt="Hair Studio">
+                    <div class="carousel-caption">
+                        <h5>Hair Studio</h5>
+                        <p>State-of-the-art styling chairs and equipment</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1559599101-f09722fb4948?w=1200&q=80" alt="Spa Room">
+                    <div class="carousel-caption">
+                        <h5>Spa & Treatment Rooms</h5>
+                        <p>Your private sanctuary of relaxation</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1470259078422-826894b933aa?w=1200&q=80" alt="Bridal Suite">
+                    <div class="carousel-caption">
+                        <h5>Bridal Suite</h5>
+                        <p>Dedicated space for your most special day</p>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#infraCarousel" data-bs-slide="prev"
+                    style="background:rgba(59,15,43,0.5); border:1px solid rgba(196,139,159,0.3); width:44px; height:44px; top:50%; margin-top:-22px; margin-left:16px; border-radius:0; opacity:1;">
+                <i class="bi bi-chevron-left text-white"></i>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#infraCarousel" data-bs-slide="next"
+                    style="background:rgba(59,15,43,0.5); border:1px solid rgba(196,139,159,0.3); width:44px; height:44px; top:50%; margin-top:-22px; margin-right:16px; border-radius:0; opacity:1;">
+                <i class="bi bi-chevron-right text-white"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+
+<!-- CERTIFICATIONS -->
+<section class="certs-section">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="section-label">Recognition</span>
+            <h2 class="section-title">Our Certifications & Awards</h2>
+            <div class="section-divider"></div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="cert-card">
+                    <i class="bi bi-award cert-icon"></i>
+                    <div class="cert-name">Best Luxury Salon 2023</div>
+                    <p class="cert-body">Mumbai Beauty & Wellness Awards</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="cert-card">
+                    <i class="bi bi-patch-check cert-icon"></i>
+                    <div class="cert-name">ISO 9001:2015</div>
+                    <p class="cert-body">Quality Management System Certified</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="cert-card">
+                    <i class="bi bi-shield-check cert-icon"></i>
+                    <div class="cert-name">Hygiene Excellence</div>
+                    <p class="cert-body">Certified by Maharashtra Health Dept.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="cert-card">
+                    <i class="bi bi-star cert-icon"></i>
+                    <div class="cert-name">5-Star Client Rating</div>
+                    <p class="cert-body">Consistently rated 5 stars on Google</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section style="background:var(--plum); padding:90px 0; text-align:center;">
+    <div class="container">
+        <span class="section-label" style="color:var(--rose-gold);" data-aos="fade-up">Experience It Yourself</span>
+        <h2 class="section-title light" data-aos="fade-up" data-aos-delay="100">
+            Your Story of<br>Beauty Begins Here
+        </h2>
+        <div class="section-divider" data-aos="fade-up" data-aos-delay="150"></div>
+        <a href="{% url 'booking' %}" class="btn-glamour-outline" data-aos="fade-up" data-aos-delay="200">
+            Book An Appointment
+        </a>
+    </div>
+</section>
+
+{% endblock %}

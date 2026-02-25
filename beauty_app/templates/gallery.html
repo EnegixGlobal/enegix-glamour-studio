@@ -1,0 +1,380 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gallery — Glamour Studio{% endblock %}
+{% block nav_gallery %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-hero {
+    height: 50vh; min-height: 360px;
+    background: url('https://images.unsplash.com/photo-1487412947147-5cebf100d293?w=1920&q=80') center/cover no-repeat;
+    position: relative;
+    display: flex; align-items: flex-end;
+    padding-bottom: 60px; padding-top: 100px;
+}
+.page-hero-content { position: relative; z-index: 2; }
+.page-hero-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: var(--champagne);
+    font-weight: 300; line-height: 1.1;
+}
+.breadcrumb-glamour a { color: var(--rose-gold); font-size:0.78rem; letter-spacing:1px; }
+.breadcrumb-glamour span { color: rgba(247,231,206,0.5); font-size:0.78rem; margin:0 8px; }
+.breadcrumb-glamour .current { color: rgba(247,231,206,0.75); font-size:0.78rem; }
+
+.gallery-main { padding: 80px 0 100px; }
+
+/* Gallery Grid */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+@media (max-width: 992px) { .gallery-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 576px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.gallery-item {
+    overflow: hidden; position: relative;
+    cursor: pointer;
+    background: var(--plum);
+}
+.gallery-item.span-2 { grid-column: span 2; }
+.gallery-item.span-row { grid-row: span 2; }
+
+.gallery-item img {
+    width: 100%; height: 100%; min-height: 220px;
+    object-fit: cover; display: block;
+    transition: transform 0.7s ease;
+}
+.gallery-item:hover img { transform: scale(1.08); }
+.gallery-item-overlay {
+    position: absolute; inset: 0;
+    background: rgba(59,15,43,0.6);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    opacity: 0; transition: var(--transition);
+    text-align: center; padding: 20px;
+}
+.gallery-item:hover .gallery-item-overlay { opacity: 1; }
+.gallery-item-overlay i {
+    font-size: 2rem; color: var(--champagne);
+    margin-bottom: 10px;
+}
+.gallery-item-overlay span {
+    font-family: var(--font-sans);
+    font-size: 0.7rem; letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--rose-gold);
+}
+
+/* Before/After */
+.ba-section {
+    padding: 100px 0;
+    background: var(--champagne);
+}
+.ba-card { position: relative; overflow: hidden; }
+.ba-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    height: 320px;
+}
+.ba-side {
+    position: relative; overflow: hidden;
+}
+.ba-side img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: top;
+}
+.ba-label {
+    position: absolute; bottom: 12px;
+    font-family: var(--font-sans);
+    font-size: 0.65rem; letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+}
+.ba-side:first-child .ba-label {
+    right: 8px;
+    background: rgba(59,15,43,0.8);
+    color: var(--champagne);
+}
+.ba-side:last-child .ba-label {
+    left: 8px;
+    background: var(--rose-gold);
+    color: var(--plum);
+}
+.ba-divider {
+    position: absolute; left: 50%; top: 0; bottom: 0;
+    width: 2px; background: var(--champagne);
+    transform: translateX(-50%); z-index: 2;
+}
+.ba-divider::before {
+    content: '';
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%,-50%);
+    width: 28px; height: 28px;
+    background: var(--champagne);
+    border-radius: 50%;
+}
+.ba-body { padding: 20px 22px; background: var(--white); }
+.ba-service-name {
+    font-family: var(--font-serif);
+    font-size: 1.1rem; color: var(--plum); margin-bottom: 4px;
+}
+.ba-artist { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--rose-gold); }
+
+/* Lightbox Modal */
+.lightbox-modal .modal-dialog { max-width: 90vw; margin: 20px auto; }
+.lightbox-modal .modal-content { background: rgba(0,0,0,0.95); border: none; border-radius: 0; }
+.lightbox-modal .modal-body { padding: 0; }
+.lightbox-modal img { max-height: 85vh; width: 100%; object-fit: contain; display: block; }
+.lightbox-caption {
+    padding: 16px 24px;
+    text-align: center;
+}
+.lightbox-caption span {
+    font-size: 0.75rem; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--rose-gold);
+}
+
+@media (max-width: 768px) {
+    .page-hero {
+        height: auto; min-height: 280px;
+        padding-bottom: 40px; padding-top: 100px;
+    }
+    .page-hero-title { font-size: clamp(2rem, 8vw, 3rem) !important; }
+    .gallery-main { padding: 50px 0 60px !important; }
+
+    /* Gallery grid - disable span on mobile */
+    .gallery-item.span-2 { grid-column: span 1; }
+    .gallery-item.span-row { grid-row: span 1; }
+    .gallery-item img { min-height: 160px; }
+
+    /* Before/After */
+    .ba-section { padding: 60px 0 !important; }
+    .ba-compare { height: 240px; }
+
+    /* Lightbox */
+    .lightbox-modal .modal-dialog { max-width: 100%; margin: 10px; }
+    .lightbox-modal img { max-height: 70vh; }
+}
+
+@media (max-width: 480px) {
+    .gallery-grid { gap: 6px; }
+    .gallery-item img { min-height: 130px; }
+    .ba-compare { height: 180px; }
+    .ba-body { padding: 14px 16px; }
+    .ba-service-name { font-size: 0.95rem; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+    <div class="overlay overlay-plum"></div>
+    <div class="container page-hero-content">
+        <div class="breadcrumb-glamour mb-12" style="margin-bottom:12px;">
+            <a href="{% url 'home' %}">Home</a>
+            <span>›</span>
+            <span class="current">Gallery</span>
+        </div>
+        <span class="section-label">Our Work</span>
+        <h1 class="page-hero-title">The Art of<br>Transformation</h1>
+    </div>
+</div>
+
+<!-- GALLERY MAIN -->
+<section class="gallery-main">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="section-label">Browse Our Work</span>
+            <h2 class="section-title">Gallery</h2>
+            <div class="section-divider"></div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="glamour-tabs mb-5" data-aos="fade-up">
+            <button class="glamour-tab-btn active" onclick="filterGallery('all', this)">All</button>
+            <button class="glamour-tab-btn" onclick="filterGallery('hair', this)">Hair</button>
+            <button class="glamour-tab-btn" onclick="filterGallery('makeup', this)">Makeup</button>
+            <button class="glamour-tab-btn" onclick="filterGallery('bridal', this)">Bridal</button>
+            <button class="glamour-tab-btn" onclick="filterGallery('spa', this)">Spa & Skin</button>
+        </div>
+
+        <!-- GALLERY GRID -->
+        <div class="gallery-grid" id="galleryGrid" data-aos="fade-up" data-aos-delay="100">
+            <div class="gallery-item span-2" data-cat="bridal" onclick="openLightbox('https://images.unsplash.com/photo-1487412947147-5cebf100d293?w=1200&q=80','Bridal Makeup — Radiant Bride')">
+                <img src="https://images.unsplash.com/photo-1487412947147-5cebf100d293?w=1000&q=80" alt="Bridal">
+                <div class="gallery-item-overlay"><i class="bi bi-zoom-in"></i><span>Bridal</span></div>
+            </div>
+            <div class="gallery-item span-row" data-cat="hair" onclick="openLightbox('https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1200&q=80','Hair Transformation')">
+                <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=80" alt="Hair">
+                <div class="gallery-item-overlay"><i class="bi bi-zoom-in"></i><span>Hair</span></div>
+            </div>
+            <div class="gallery-item" data-cat="makeup" onclick="openLightbox('https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=1200&q=80','Glam Makeup Look')">
+                <img src="https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=600&q=80" alt="Makeup">
+                <div class="gallery-item-overlay"><i class="bi bi-zoom-in"></i><span>Makeup</span></div>
+            </div>
+            <div class="gallery-item" data-cat="spa" onclick="openLightbox('https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1200&q=80','Spa Treatment')">
+                <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&q=80" alt="Spa">
+                <div class="gallery-item-overlay"><i class="bi bi-zoom-in"></i><span>Spa</span></div>
+            </div>
+            <div class="gallery-item" data-cat="hair" onclick="openLightbox('https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1200&q=80','Salon Interior')">
+                <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80" alt="Salon">
+                <div class="gallery-item-overlay"><i class="bi bi-zoom-in"></i><span>Styling</span></div>
+            </div>
+            <div class="gallery-item span-2" data-cat="makeup" onclick="openLightbox('https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1200&q=80','Beauty Products')">
+                <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1000&q=80" alt="Products">
+                <div class="gallery-item-overlay"><i class="bi bi-zoom-in"></i><span>Products</span></div>
+            </div>
+            <div class="gallery-item" data-cat="bridal" onclick="openLightbox('https://images.unsplash.com/photo-1470259078422-826894b933aa?w=1200&q=80','Bridal Shoot')">
+                <img src="https://images.unsplash.com/photo-1470259078422-826894b933aa?w=600&q=80" alt="Bridal">
+                <div class="gallery-item-overlay"><i class="bi bi-zoom-in"></i><span>Bridal</span></div>
+            </div>
+            <div class="gallery-item" data-cat="hair" onclick="openLightbox('https://images.unsplash.com/photo-1563202443-e29ffe8d3af3?w=1200&q=80','Hair Color')">
+                <img src="https://images.unsplash.com/photo-1563202443-e29ffe8d3af3?w=600&q=80" alt="Color">
+                <div class="gallery-item-overlay"><i class="bi bi-zoom-in"></i><span>Hair Color</span></div>
+            </div>
+            <div class="gallery-item" data-cat="spa" onclick="openLightbox('https://images.unsplash.com/photo-1545173168-9f1947eebb7f?w=1200&q=80','Facial Treatment')">
+                <img src="https://images.unsplash.com/photo-1545173168-9f1947eebb7f?w=600&q=80" alt="Facial">
+                <div class="gallery-item-overlay"><i class="bi bi-zoom-in"></i><span>Facial</span></div>
+            </div>
+            <div class="gallery-item" data-cat="makeup" onclick="openLightbox('https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=1200&q=80','Eye Makeup')">
+                <img src="https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=600&q=80" alt="Eye">
+                <div class="gallery-item-overlay"><i class="bi bi-zoom-in"></i><span>Eye Makeup</span></div>
+            </div>
+            <div class="gallery-item span-2 span-row" data-cat="bridal" onclick="openLightbox('https://images.unsplash.com/photo-1595476479599-a83c23cf5c14?w=1200&q=80','Bridal Lehenga Shoot')">
+                <img src="https://images.unsplash.com/photo-1595476479599-a83c23cf5c14?w=1000&q=80" alt="Bridal Lehenga" style="min-height:320px;">
+                <div class="gallery-item-overlay"><i class="bi bi-zoom-in"></i><span>Bridal</span></div>
+            </div>
+            <div class="gallery-item" data-cat="hair" onclick="openLightbox('https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=1200&q=80','Hair Cut')">
+                <img src="https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&q=80" alt="Cut">
+                <div class="gallery-item-overlay"><i class="bi bi-zoom-in"></i><span>Hair Cut</span></div>
+            </div>
+            <div class="gallery-item" data-cat="spa" onclick="openLightbox('https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=1200&q=80','Nail Art')">
+                <img src="https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=600&q=80" alt="Nail">
+                <div class="gallery-item-overlay"><i class="bi bi-zoom-in"></i><span>Nail Art</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- BEFORE / AFTER -->
+<section class="ba-section">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="section-label">The Difference We Make</span>
+            <h2 class="section-title">Before & After</h2>
+            <div class="section-divider"></div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="ba-card">
+                    <div class="ba-compare">
+                        <div class="ba-side">
+                            <img src="https://images.unsplash.com/photo-1487412947147-5cebf100d293?w=400&q=80" alt="Before">
+                            <span class="ba-label">Before</span>
+                        </div>
+                        <div class="ba-side">
+                            <img src="https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=400&q=80" alt="After">
+                            <span class="ba-label">After</span>
+                        </div>
+                        <div class="ba-divider"></div>
+                    </div>
+                    <div class="ba-body">
+                        <div class="ba-service-name">Bridal Glam Makeup</div>
+                        <div class="ba-artist">by Priya Kapoor · Makeup Artist</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="ba-card">
+                    <div class="ba-compare">
+                        <div class="ba-side">
+                            <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80" alt="Before">
+                            <span class="ba-label">Before</span>
+                        </div>
+                        <div class="ba-side">
+                            <img src="https://images.unsplash.com/photo-1563202443-e29ffe8d3af3?w=400&q=80" alt="After">
+                            <span class="ba-label">After</span>
+                        </div>
+                        <div class="ba-divider"></div>
+                    </div>
+                    <div class="ba-body">
+                        <div class="ba-service-name">Hair Color Transformation</div>
+                        <div class="ba-artist">by Rahul Sharma · Senior Stylist</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="ba-card">
+                    <div class="ba-compare">
+                        <div class="ba-side">
+                            <img src="https://images.unsplash.com/photo-1545173168-9f1947eebb7f?w=400&q=80" alt="Before">
+                            <span class="ba-label">Before</span>
+                        </div>
+                        <div class="ba-side">
+                            <img src="https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=400&q=80" alt="After">
+                            <span class="ba-label">After</span>
+                        </div>
+                        <div class="ba-divider"></div>
+                    </div>
+                    <div class="ba-body">
+                        <div class="ba-service-name">Skin Glow Facial</div>
+                        <div class="ba-artist">by Anita Mehta · Beauty Therapist</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- LIGHTBOX MODAL -->
+<div class="modal fade lightbox-modal" id="lightboxModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"
+                        style="position:absolute; top:16px; right:16px; z-index:10;"></button>
+                <img id="lightboxImg" src="" alt="Gallery">
+                <div class="lightbox-caption">
+                    <span id="lightboxCaption"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Gallery filter
+function filterGallery(cat, btn) {
+    document.querySelectorAll('.glamour-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.gallery-item').forEach(item => {
+        if (cat === 'all' || item.dataset.cat === cat) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+// Lightbox
+function openLightbox(src, caption) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightboxCaption').textContent = caption;
+    new bootstrap.Modal(document.getElementById('lightboxModal')).show();
+}
+</script>
+{% endblock %}

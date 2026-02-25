@@ -1,0 +1,775 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block content %}
+
+<div class="ribbon-header d-flex justify-content-between align-items-center px-4 pb-5 mb-3" style="color: black">
+  <div class="d-flex align-items-center">
+    <i class="fas fa-user me-3 fs-2" style="color: #ff4f6e;"></i>
+    <div class="fw-bold fs-3">Customer Profile - {{ customer.customer_id }}</div>
+  </div>
+  <div class="breadcrumb-text text-end">
+    <span class="text-black"><i class="fas fa-home me-1"></i>HOME</span>
+    <span class="mx-2 text-black">/</span>
+    <a href="{% url 'customer_list' %}" class="text-black">Customers</a>
+    <span class="mx-2 text-black">/</span>
+    <span class="text-black-50">View Details</span>
+  </div>
+</div>
+
+<div class="container-fluid mt-2">
+  <!-- Customer Summary Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3">
+      <div class="stat-card stat-card-primary">
+        <div class="stat-icon">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ total_appointments }}</div>
+          <div class="stat-label">Total Appointments</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="stat-card stat-card-success">
+        <div class="stat-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ completed_appointments }}</div>
+          <div class="stat-label">Completed</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="stat-card stat-card-danger">
+        <div class="stat-icon">
+          <i class="fas fa-times-circle"></i>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ cancelled_appointments }}</div>
+          <div class="stat-label">Cancelled</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="stat-card stat-card-info">
+        <div class="stat-icon">
+          <i class="fas fa-rupee-sign"></i>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">₹{{ total_spending|floatformat:2 }}</div>
+          <div class="stat-label">Total Spending</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Details Card -->
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-header table-title-bar d-flex justify-content-between align-items-center">
+      <span class="fw-bold text-white">
+        <i class="fas fa-user me-2"></i>Customer Information
+      </span>
+      <div>
+        {% if customer.is_active %}
+          <span class="badge badge-success-lg">
+            <i class="fas fa-check-circle me-1"></i>Active
+          </span>
+        {% else %}
+          <span class="badge badge-danger-lg">
+            <i class="fas fa-times-circle me-1"></i>Inactive
+          </span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="card-body p-4">
+      <div class="row">
+        <!-- Left Column - Profile & Basic Info -->
+        <div class="col-md-4 text-center mb-4">
+          {% if customer.profile_pic %}
+            <img src="{{ customer.profile_pic.url }}" class="profile-picture mb-3" alt="{{ customer.full_name }}">
+          {% else %}
+            <div class="profile-picture-placeholder mb-3">
+              {{ customer.full_name|first|upper }}
+            </div>
+          {% endif %}
+          <h4 class="text-primary mb-2">{{ customer.full_name }}</h4>
+          <p class="text-muted mb-1">{{ customer.customer_id }}</p>
+          {% if customer.customer_type == 'online' %}
+            <span class="badge modern-badge badge-info">
+              <i class="fas fa-globe me-1"></i>Online Customer
+            </span>
+          {% else %}
+            <span class="badge modern-badge badge-secondary">
+              <i class="fas fa-store me-1"></i>Walk-in Customer
+            </span>
+          {% endif %}
+        </div>
+
+        <!-- Right Column - Detailed Info -->
+        <div class="col-md-8">
+          <!-- Contact Information -->
+          <div class="info-section mb-4">
+            <h6 class="section-title"><i class="fas fa-address-card me-2"></i>Contact Details</h6>
+            <div class="info-grid-detail">
+              <div class="info-item-detail">
+                <i class="fas fa-mobile-alt text-primary"></i>
+                <div>
+                  <div class="info-label">Mobile Number</div>
+                  <div class="info-value">{{ customer.mobile }}</div>
+                </div>
+              </div>
+              <div class="info-item-detail">
+                <i class="fas fa-envelope text-primary"></i>
+                <div>
+                  <div class="info-label">Email Address</div>
+                  <div class="info-value">{{ customer.email|default:"Not Provided" }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Personal Information -->
+          <div class="info-section mb-4">
+            <h6 class="section-title"><i class="fas fa-user-circle me-2"></i>Personal Details</h6>
+            <div class="info-grid-detail">
+              <div class="info-item-detail">
+                <i class="fas fa-venus-mars text-primary"></i>
+                <div>
+                  <div class="info-label">Gender</div>
+                  <div class="info-value">
+                    {% if customer.gender == 'male' %}
+                      <i class="fas fa-mars text-primary"></i> Male
+                    {% elif customer.gender == 'female' %}
+                      <i class="fas fa-venus text-danger"></i> Female
+                    {% elif customer.gender == 'other' %}
+                      <i class="fas fa-genderless text-info"></i> Other
+                    {% else %}
+                      Not Specified
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="info-item-detail">
+                <i class="fas fa-birthday-cake text-primary"></i>
+                <div>
+                  <div class="info-label">Date of Birth</div>
+                  <div class="info-value">{{ customer.dob|date:"d M, Y"|default:"Not Provided" }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Address Information -->
+          {% if customer.address_line or customer.city or customer.state %}
+          <div class="info-section mb-4">
+            <h6 class="section-title"><i class="fas fa-map-marker-alt me-2"></i>Address Details</h6>
+            <div class="info-grid-detail">
+              {% if customer.address_line %}
+              <div class="info-item-detail full-width">
+                <i class="fas fa-home text-primary"></i>
+                <div>
+                  <div class="info-label">Address</div>
+                  <div class="info-value">{{ customer.address_line }}</div>
+                </div>
+              </div>
+              {% endif %}
+              {% if customer.city %}
+              <div class="info-item-detail">
+                <i class="fas fa-city text-primary"></i>
+                <div>
+                  <div class="info-label">City</div>
+                  <div class="info-value">{{ customer.city }}</div>
+                </div>
+              </div>
+              {% endif %}
+              {% if customer.state %}
+              <div class="info-item-detail">
+                <i class="fas fa-flag text-primary"></i>
+                <div>
+                  <div class="info-label">State</div>
+                  <div class="info-value">{{ customer.state }}</div>
+                </div>
+              </div>
+              {% endif %}
+              {% if customer.pincode %}
+              <div class="info-item-detail">
+                <i class="fas fa-mail-bulk text-primary"></i>
+                <div>
+                  <div class="info-label">Pincode</div>
+                  <div class="info-value">{{ customer.pincode }}</div>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Registration Info -->
+          <div class="info-section">
+            <h6 class="section-title"><i class="fas fa-calendar-alt me-2"></i>Registration Details</h6>
+            <div class="info-grid-detail">
+              <div class="info-item-detail">
+                <i class="fas fa-calendar-plus text-primary"></i>
+                <div>
+                  <div class="info-label">Registered On</div>
+                  <div class="info-value">{{ customer.registered_on|date:"d M, Y - h:i A" }}</div>
+                </div>
+              </div>
+              {% if customer.created_by %}
+              <div class="info-item-detail">
+                <i class="fas fa-user-tie text-primary"></i>
+                <div>
+                  <div class="info-label">Created By</div>
+                  <div class="info-value">{{ customer.created_by.full_name }}</div>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointments History -->
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-header table-title-bar d-flex justify-content-between align-items-center">
+      <span class="fw-bold text-white">
+        <i class="fas fa-calendar-check me-2"></i>Recent Appointments
+      </span>
+      <a href="{% url 'create_appointment' customer.id %}" class="btn btn-light btn-sm">
+        <i class="fas fa-plus me-2"></i>New Appointment
+      </a>
+    </div>
+    <div class="card-body p-0">
+      {% if appointments %}
+      <div class="table-responsive">
+        <table class="table table-hover modern-table mb-0">
+          <thead>
+            <tr>
+              <th><i class="fas fa-hashtag me-2"></i>Appt. No.</th>
+              <th><i class="fas fa-calendar me-2"></i>Date & Time</th>
+              <th><i class="fas fa-cut me-2"></i>Services</th>
+              <th><i class="fas fa-user-tie me-2"></i>Stylist</th>
+              <th><i class="fas fa-rupee-sign me-2"></i>Amount</th>
+              <th><i class="fas fa-info-circle me-2"></i>Status</th>
+              <th><i class="fas fa-cogs me-2"></i>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for appt in appointments %}
+            <tr>
+              <td><span class="customer-id-badge">{{ appt.appointment_id }}</span></td>
+              <td>
+                <div>{{ appt.appointment_date|date:"d M, Y" }}</div>
+                <small class="text-muted">{{ appt.appointment_time }}</small>
+              </td>
+              <td>{{ appt.services_count }} service(s)</td>
+              <td>{{ appt.stylist.full_name|default:"Not Assigned" }}</td>
+              <td><strong class="text-success">₹{{ appt.total_amount|floatformat:2 }}</strong></td>
+              <td>
+                {% if appt.status == 'pending' %}
+                  <span class="badge modern-badge badge-warning">
+                    <i class="fas fa-clock me-1"></i>Pending
+                  </span>
+                {% elif appt.status == 'confirmed' %}
+                  <span class="badge modern-badge badge-info">
+                    <i class="fas fa-check me-1"></i>Confirmed
+                  </span>
+                {% elif appt.status == 'completed' %}
+                  <span class="badge modern-badge badge-success">
+                    <i class="fas fa-check-circle me-1"></i>Completed
+                  </span>
+                {% elif appt.status == 'cancelled' %}
+                  <span class="badge modern-badge badge-danger">
+                    <i class="fas fa-times-circle me-1"></i>Cancelled
+                  </span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <a href="{% url 'view_appointment' appt.id %}" class="btn btn-action btn-info btn-sm" title="View">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center p-5">
+        <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+        <h5 class="text-muted">No Appointments Found</h5>
+        <p class="text-muted">This customer has no appointment history yet.</p>
+        <a href="{% url 'create_appointment' customer.id %}" class="btn btn-primary mt-3">
+          <i class="fas fa-plus me-2"></i>Create First Appointment
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Bills History -->
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-header table-title-bar fw-bold text-white">
+      <i class="fas fa-file-invoice me-2"></i>Recent Bills
+    </div>
+    <div class="card-body p-0">
+      {% if bills %}
+      <div class="table-responsive">
+        <table class="table table-hover modern-table mb-0">
+          <thead>
+            <tr>
+              <th><i class="fas fa-hashtag me-2"></i>Bill No.</th>
+              <th><i class="fas fa-calendar me-2"></i>Bill Date</th>
+              <th><i class="fas fa-money-bill-wave me-2"></i>Sub Total</th>
+              <th><i class="fas fa-tags me-2"></i>Discount</th>
+              <th><i class="fas fa-receipt me-2"></i>Final Amount</th>
+              <th><i class="fas fa-credit-card me-2"></i>Payment</th>
+              <th><i class="fas fa-cogs me-2"></i>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for bill in bills %}
+            <tr>
+              <td><span class="customer-id-badge">{{ bill.bill_number }}</span></td>
+              <td>{{ bill.bill_date|date:"d M, Y" }}</td>
+              <td>₹{{ bill.sub_total|floatformat:2 }}</td>
+              <td><span class="text-danger">-₹{{ bill.discount|floatformat:2 }}</span></td>
+              <td><strong class="text-success">₹{{ bill.final_amount|floatformat:2 }}</strong></td>
+              <td>
+                {% if bill.payment_status == 'paid' %}
+                  <span class="badge modern-badge badge-success">
+                    <i class="fas fa-check me-1"></i>Paid
+                  </span>
+                {% else %}
+                  <span class="badge modern-badge badge-warning">
+                    <i class="fas fa-clock me-1"></i>Pending
+                  </span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <a href="{% url 'view_bill' bill.id %}" class="btn btn-action btn-info btn-sm" title="View">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center p-5">
+        <i class="fas fa-file-invoice fa-4x text-muted mb-3"></i>
+        <h5 class="text-muted">No Bills Found</h5>
+        <p class="text-muted">This customer has no billing history yet.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between flex-wrap gap-3">
+        <a href="{% url 'customer_list' %}" class="btn btn-secondary btn-action-lg">
+          <i class="fas fa-arrow-left me-2"></i>Back to Customer List
+        </a>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="{% url 'create_appointment' customer.id %}" class="btn btn-success btn-action-lg">
+            <i class="fas fa-calendar-plus me-2"></i>New Appointment
+          </a>
+          <a href="{% url 'edit_customer' customer.id %}" class="btn btn-primary btn-action-lg">
+            <i class="fas fa-edit me-2"></i>Edit Customer
+          </a>
+          <a href="{% url 'toggle_customer_active' customer.id %}" 
+             class="btn {% if customer.is_active %}btn-warning{% else %}btn-success{% endif %} btn-action-lg"
+             onclick="return confirm('{% if customer.is_active %}Are you sure you want to deactivate this customer?{% else %}Are you sure you want to activate this customer?{% endif %}')">
+            <i class="fas {% if customer.is_active %}fa-toggle-on{% else %}fa-toggle-off{% endif %} me-2"></i>
+            {% if customer.is_active %}Deactivate{% else %}Activate{% endif %}
+          </a>
+          <a href="{% url 'delete_customer' customer.id %}" 
+             class="btn btn-danger btn-action-lg"
+             onclick="return confirm('Are you sure you want to delete this customer? This action cannot be undone.')">
+            <i class="fas fa-trash-alt me-2"></i>Delete Customer
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Modern Card Styles */
+.modern-card {
+  border-radius: 15px;
+  border: none;
+  overflow: hidden;
+}
+
+.card-header.table-title-bar {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  padding: 20px;
+  font-size: 18px;
+  border-bottom: 3px solid rgba(255,255,255,0.2);
+}
+
+.ribbon-header {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+}
+
+/* Profile Picture */
+.profile-picture {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid #ff4f6e;
+  box-shadow: 0 4px 15px rgba(255, 79, 110, 0.3);
+}
+
+.profile-picture-placeholder {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 72px;
+  border: 5px solid #fff;
+  box-shadow: 0 4px 15px rgba(255, 79, 110, 0.3);
+  margin: 0 auto;
+}
+
+/* Stat Cards */
+.stat-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+.stat-card-primary {
+  border-color: #ff4f6e;
+}
+
+.stat-card-primary .stat-icon {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+}
+
+.stat-card-success {
+  border-color: #28a745;
+}
+
+.stat-card-success .stat-icon {
+  background: linear-gradient(135deg, #28a745 0%, #48c774 100%);
+}
+
+.stat-card-danger {
+  border-color: #dc3545;
+}
+
+.stat-card-danger .stat-icon {
+  background: linear-gradient(135deg, #dc3545 0%, #e4606d 100%);
+}
+
+.stat-card-info {
+  border-color: #17a2b8;
+}
+
+.stat-card-info .stat-icon {
+  background: linear-gradient(135deg, #17a2b8 0%, #3dbdd1 100%);
+}
+
+.stat-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon i {
+  font-size: 32px;
+  color: white;
+}
+
+.stat-details {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Info Section Styles */
+.info-section {
+  margin-bottom: 25px;
+}
+
+.section-title {
+  font-weight: 700;
+  color: #ff4f6e;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ffe9ed;
+  font-size: 16px;
+}
+
+.info-grid-detail {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.info-item-detail {
+  display: flex;
+  align-items: start;
+  gap: 15px;
+  padding: 15px;
+  background: #fff5f7;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.info-item-detail:hover {
+  background: #ffe9ed;
+  transform: translateX(5px);
+  border-color: #ff4f6e;
+}
+
+.info-item-detail.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-item-detail i {
+  font-size: 24px;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #555;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.info-value {
+  color: #333;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Badge Styles */
+.badge-success-lg,
+.badge-danger-lg {
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.badge-success-lg {
+  background: linear-gradient(135deg, #28a745 0%, #48c774 100%);
+}
+
+.badge-danger-lg {
+  background: linear-gradient(135deg, #dc3545 0%, #e4606d 100%);
+}
+
+.modern-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.badge-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #ffd454 100%);
+  color: #333;
+}
+
+.badge-success {
+  background: linear-gradient(135deg, #28a745 0%, #48c774 100%);
+  color: white;
+}
+
+.badge-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #e4606d 100%);
+  color: white;
+}
+
+.badge-info {
+  background: linear-gradient(135deg, #17a2b8 0%, #3dbdd1 100%);
+  color: white;
+}
+
+.badge-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+  color: white;
+}
+
+/* Table Styles */
+.modern-table {
+  margin-bottom: 0;
+}
+
+.modern-table thead {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+}
+
+.modern-table thead th {
+  color: #333;
+  font-weight: 700;
+  padding: 15px;
+  border: none;
+  font-size: 14px;
+}
+
+.modern-table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.modern-table tbody tr:hover {
+  background: #fff5f7;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(255, 79, 110, 0.1);
+}
+
+.modern-table tbody td {
+  padding: 15px;
+  vertical-align: middle;
+  color: #333;
+  font-size: 14px;
+}
+
+.customer-id-badge {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+  display: inline-block;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-action.btn-info {
+  background: linear-gradient(135deg, #17a2b8 0%, #3dbdd1 100%);
+  color: white;
+}
+
+.btn-action-lg {
+  padding: 12px 30px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-action-lg:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #e63956 0%, #ff6b9d 100%);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #e4606d 100%);
+  border: none;
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #c82333 0%, #dc3545 100%);
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #ffd454 100%);
+  border: none;
+  color: #333;
+}
+
+.btn-warning:hover {
+  background: linear-gradient(135deg, #e0a800 0%, #ffc107 100%);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #28a745 0%, #48c774 100%);
+  border: none;
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #218838 0%, #28a745 100%);
+}
+
+.text-primary {
+  color: #ff4f6e !important;
+}
+</style>
+
+{% endblock %}

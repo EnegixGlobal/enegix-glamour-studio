@@ -1,0 +1,422 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block content %}
+
+<div class="ribbon-header d-flex justify-content-between align-items-center px-4 pb-5 mb-3" style="color: black">
+  <div class="d-flex align-items-center">
+    <i class="fas fa-users-cog me-3 fs-2" style="color: #ff4f6e;"></i>
+    <div class="fw-bold fs-3">Manage Service Employees</div>
+  </div>
+  <div class="breadcrumb-text text-end">
+    <span class="text-black"><i class="fas fa-home me-1"></i>HOME</span>
+    <span class="mx-2 text-black">/</span>
+    <a href="{% url 'service_list' %}" class="text-black">Services</a>
+    <span class="mx-2 text-black">/</span>
+    <span class="text-black-50">Manage Employees</span>
+  </div>
+</div>
+
+<div class="container-fluid mt-2">
+  <!-- Service Details Card -->
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-header table-title-bar fw-bold text-white">
+      <i class="fas fa-concierge-bell me-2"></i>Service Information
+    </div>
+    <div class="card-body p-4">
+      <div class="row align-items-center">
+        <div class="col-md-2 text-center">
+          {% if service.service_image %}
+          <img src="{{ service.service_image.url }}" alt="{{ service.service_name }}" class="service-detail-image">
+          {% else %}
+          <div class="service-detail-placeholder">
+            <i class="fas fa-spa"></i>
+          </div>
+          {% endif %}
+        </div>
+        <div class="col-md-10">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="info-box-small">
+                <small class="text-muted d-block">Service ID</small>
+                <strong class="info-value">{{ service.service_id }}</strong>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="info-box-small">
+                <small class="text-muted d-block">Service Name</small>
+                <strong class="info-value">{{ service.service_name }}</strong>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="info-box-small">
+                <small class="text-muted d-block">Category</small>
+                <strong class="info-value">{{ service.get_category_display }}</strong>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="info-box-small">
+                <small class="text-muted d-block">Base Price</small>
+                <strong class="info-value text-success">₹{{ service.base_price }}</strong>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="info-box-small">
+                <small class="text-muted d-block">Duration</small>
+                <strong class="info-value">{{ service.duration_minutes }} min</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="mb-3 d-flex justify-content-between align-items-center">
+    <a href="{% url 'service_list' %}" class="btn btn-secondary btn-action">
+      <i class="fas fa-arrow-left me-2"></i>Back to Services
+    </a>
+    <a href="{% url 'assign_service_to_employee' service.id %}" class="btn btn-success btn-action-lg">
+      <i class="fas fa-user-plus me-2"></i>Assign More Employees
+    </a>
+  </div>
+
+  <!-- Assigned Employees Table -->
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-header table-title-bar fw-bold text-white">
+      <i class="fas fa-users me-2"></i>Assigned Employees ({{ service_employees.count }})
+    </div>
+    {% if service_employees %}
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0 modern-table">
+          <thead class="table-header">
+            <tr>
+              <th>Employee</th>
+              <th>Role</th>
+              <th>Expertise Level</th>
+              <th>Price</th>
+              <th>Availability</th>
+              <th>Assigned On</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for se in service_employees %}
+            <tr>
+              <td>
+                <div class="d-flex align-items-center">
+                  {% if se.employee.profile_pic %}
+                  <img src="{{ se.employee.profile_pic.url }}" alt="{{ se.employee.full_name }}" class="employee-avatar">
+                  {% else %}
+                  <div class="employee-avatar-placeholder">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  {% endif %}
+                  <div class="ms-3">
+                    <strong class="d-block">{{ se.employee.full_name }}</strong>
+                    <small class="text-muted">{{ se.employee.employee_id }}</small>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="badge-category">{{ se.employee.get_role_display }}</span>
+              </td>
+              <td>
+                <span class="badge-expertise badge-{{ se.expertise_level }}">
+                  <i class="fas fa-star me-1"></i>{{ se.get_expertise_level_display }}
+                </span>
+              </td>
+              <td>
+                {% if se.custom_price %}
+                <strong class="text-success">₹{{ se.custom_price }}</strong>
+                <small class="d-block text-muted">(Custom Price)</small>
+                {% else %}
+                <strong class="text-primary">₹{{ se.service.base_price }}</strong>
+                <small class="d-block text-muted">(Base Price)</small>
+                {% endif %}
+              </td>
+              <td>
+                {% if se.is_available %}
+                <span class="badge-status-active">
+                  <i class="fas fa-check-circle me-1"></i>Available
+                </span>
+                {% else %}
+                <span class="badge-status-inactive">
+                  <i class="fas fa-times-circle me-1"></i>Unavailable
+                </span>
+                {% endif %}
+              </td>
+              <td>
+                <small class="text-muted">{{ se.created_at|date:"d M, Y" }}</small>
+              </td>
+              <td>
+                <div class="btn-group-modern" role="group">
+                  <a href="{% url 'toggle_service_employee_availability' se.id %}" 
+                     class="btn-action-modern btn-warning" 
+                     title="Toggle Availability">
+                    <i class="fas fa-toggle-on"></i>
+                  </a>
+                  <a href="{% url 'remove_employee_from_service' se.id %}" 
+                     class="btn-action-modern btn-danger" 
+                     onclick="return confirm('Remove {{ se.employee.full_name }} from this service?')"
+                     title="Remove">
+                    <i class="fas fa-trash"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% else %}
+    <div class="card-body p-5 text-center">
+      <i class="fas fa-user-slash fa-4x mb-3" style="color: #ff4f6e; opacity: 0.3;"></i>
+      <h4 class="text-muted">No Employees Assigned Yet</h4>
+      <p class="text-muted">Assign employees to this service to get started.</p>
+      <a href="{% url 'assign_service_to_employee' service.id %}" class="btn btn-primary btn-action-lg mt-3">
+        <i class="fas fa-user-plus me-2"></i>Assign Employees Now
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+.modern-card {
+  border-radius: 15px;
+  border: none;
+  overflow: hidden;
+}
+
+.card-header.table-title-bar {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  padding: 20px;
+  font-size: 18px;
+  border-bottom: 3px solid rgba(255,255,255,0.2);
+}
+
+.service-detail-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 15px;
+  object-fit: cover;
+  border: 4px solid #ff4f6e;
+  box-shadow: 0 4px 15px rgba(255, 79, 110, 0.3);
+}
+
+.service-detail-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 40px;
+  box-shadow: 0 4px 15px rgba(255, 79, 110, 0.3);
+}
+
+.info-box-small {
+  padding: 10px 0;
+}
+
+.info-value {
+  font-size: 15px;
+  color: #333;
+}
+
+.modern-table {
+  font-size: 14px;
+}
+
+.modern-table thead.table-header {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  color: #333;
+  font-weight: 600;
+}
+
+.modern-table thead th {
+  border-bottom: 2px solid #ff4f6e;
+  padding: 15px;
+  vertical-align: middle;
+}
+
+.modern-table tbody td {
+  padding: 15px;
+  vertical-align: middle;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.modern-table tbody tr:hover {
+  background-color: #fff5f7;
+  transition: all 0.3s ease;
+}
+
+.employee-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ff4f6e;
+}
+
+.employee-avatar-placeholder {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+}
+
+.badge-category {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #69ffe4 0%, #5ce1e6 100%);
+  color: #000;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.badge-expertise {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12px;
+  color: white;
+}
+
+.badge-beginner {
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+}
+
+.badge-intermediate {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.badge-expert {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.badge-master {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.badge-status-active {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.badge-status-inactive {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.btn-group-modern {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
+
+.btn-action-modern {
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: none;
+  color: white;
+  font-size: 14px;
+}
+
+.btn-action-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  color: white;
+}
+
+.btn-action-modern.btn-warning {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.btn-action-modern.btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.btn-action {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-action-lg {
+  padding: 12px 30px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-action-lg:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #e63956 0%, #ff6b9d 100%);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #ff80ab 0%, #ffa4c4 100%);
+  border: none;
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb5 100%);
+}
+
+.ribbon-header {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+}
+
+.text-primary {
+  color: #ff4f6e !important;
+}
+</style>
+
+{% endblock %}

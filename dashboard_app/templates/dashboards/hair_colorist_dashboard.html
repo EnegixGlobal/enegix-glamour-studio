@@ -1,0 +1,371 @@
+{% extends 'base2.html' %}
+{% load static %}
+{% block title %}Hair Colorist Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+  .welcome-card {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 20px;
+    color: #fff;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .welcome-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: sparkle 8s linear infinite;
+  }
+
+  @keyframes sparkle {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+  }
+
+  .welcome-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(240, 147, 251, 0.4);
+  }
+
+  .welcome-icon {
+    font-size: 70px;
+    color: #fff;
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+    filter: drop-shadow(0 4px 8px rgba(255, 255, 255, 0.3));
+  }
+
+  .welcome-card h4 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: #ffffff;
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .welcome-card p {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    font-weight: 500;
+  }
+
+  .welcome-card p strong {
+    color: #fff;
+    font-weight: 700;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .stat-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    border: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(240, 147, 251, 0.2);
+  }
+
+  .stat-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    color: white;
+    font-size: 32px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    color: #666;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+  }
+
+  .service-card {
+    background: #ffffff;
+    border-radius: 18px;
+    border: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+  }
+
+  .service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(240, 147, 251, 0.2);
+  }
+
+  .service-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    color: white;
+    font-size: 30px;
+    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .service-card:hover .service-icon {
+    transform: scale(1.1) rotate(5deg);
+  }
+
+  .service-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .service-desc {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+
+  .action-btn {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);
+  }
+
+  .action-btn:hover {
+    background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+    transform: translateY(-2px);
+    color: white;
+    box-shadow: 0 6px 15px rgba(240, 147, 251, 0.4);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.05); }
+  }
+
+  .services-table {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  }
+
+  .services-table .card-header {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+  <div class="row mt-4">
+    <div class="col-md-12 mb-4">
+      <div class="card welcome-card text-center p-4">
+        <div class="card-body position-relative">
+          <div class="welcome-icon">
+            <i class="fas fa-palette"></i>
+          </div>
+          <h4>Welcome, Color Expert {{ user.full_name }}</h4>
+          <p>Transform hair with your <strong>Color Artistry</strong>! Create stunning looks with <strong>Expert Techniques</strong> and premium products.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-4 col-6 mb-3">
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-tint"></i></div>
+        <span class="stat-number">{{ color_services_today }}</span>
+        <span class="stat-label">Color Services Today</span>
+      </div>
+    </div>
+    <div class="col-md-4 col-6 mb-3">
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+        <span class="stat-number">{{ completed_today }}</span>
+        <span class="stat-label">Completed</span>
+      </div>
+    </div>
+    <div class="col-md-4 col-6 mb-3">
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-star"></i></div>
+        <span class="stat-number">{{ pending_services }}</span>
+        <span class="stat-label">Pending Services</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4 mb-4">
+      <a href="{% url 'my_services' %}" class="text-decoration-none">
+        <div class="card service-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="service-icon"><i class="fas fa-paint-brush"></i></div>
+            <h5 class="service-title">Color Services</h5>
+            <p class="service-desc">View and manage today's color appointments.</p>
+            <button class="action-btn">View Services</button>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4 mb-4">
+      <a href="{% url 'product_list' %}" class="text-decoration-none">
+        <div class="card service-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="service-icon"><i class="fas fa-flask"></i></div>
+            <h5 class="service-title">Product Inventory</h5>
+            <p class="service-desc">Check color product stock and supplies.</p>
+            <button class="action-btn">View Inventory</button>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4 mb-4">
+      <a href="{% url 'customer_list' %}" class="text-decoration-none">
+        <div class="card service-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="service-icon"><i class="fas fa-users"></i></div>
+            <h5 class="service-title">Client Portfolio</h5>
+            <p class="service-desc">Access client color history and preferences.</p>
+            <button class="action-btn">View Clients</button>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Today's Services List -->
+  {% if my_services_today %}
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <div class="card services-table">
+        <div class="card-header text-white">
+          <h5 class="mb-0"><i class="fas fa-list"></i> Today's Color Services</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Customer</th>
+                  <th>Service</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for service in my_services_today %}
+                <tr>
+                  <td><strong>{{ service.appointment.appointment_time|date:"h:i A" }}</strong></td>
+                  <td>{{ service.appointment.customer.full_name }}</td>
+                  <td>{{ service.service.service_name }}</td>
+                  <td>₹{{ service.service_price }}</td>
+                  <td>
+                    <span class="badge 
+                      {% if service.service_status == 'completed' %}bg-success
+                      {% elif service.service_status == 'in_progress' %}bg-warning
+                      {% else %}bg-secondary{% endif %}">
+                      {{ service.get_service_status_display }}
+                    </span>
+                  </td>
+                  <td>
+                    {% if service.service_status == 'pending' %}
+                    <a href="{% url 'update_service_status' service.id %}?status=in_progress" 
+                       class="btn btn-sm btn-primary">Start</a>
+                    {% elif service.service_status == 'in_progress' %}
+                    <a href="{% url 'update_service_status' service.id %}?status=completed" 
+                       class="btn btn-sm btn-success">Complete</a>
+                    {% else %}
+                    <span class="text-success">✓ Done</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <div class="alert alert-info text-center">
+        <i class="fas fa-info-circle"></i> No color services scheduled for today.
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

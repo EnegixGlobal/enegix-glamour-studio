@@ -1,0 +1,380 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block content %}
+
+<div class="product-page-wrapper">
+  <div class="ribbon-header d-flex justify-content-between align-items-center px-4 pb-5 mb-3" style="color: black">
+    <div class="d-flex align-items-center">
+      <i class="fas fa-boxes me-3 fs-2" style="color: #ff4f6e;"></i>
+      <div class="fw-bold fs-3">Product Management</div>
+    </div>
+    <div class="breadcrumb-text text-end">
+      <span class="text-black"><i class="fas fa-home me-1"></i>HOME</span>
+      <span class="mx-2 text-black">/</span>
+      <span class="text-black-50">Products</span>
+    </div>
+  </div>
+
+  <div class="container-fluid mt-2">
+    <!-- Action Bar -->
+    <div class="card shadow-sm mb-4 product-action-card">
+      <div class="card-body p-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="mb-0 text-dark">
+              <i class="fas fa-list me-2" style="color: #ff4f6e;"></i>All Products
+            </h5>
+          </div>
+          <div>
+            <a href="{% url 'add_product' %}" class="btn product-btn-add">
+              <i class="fas fa-plus-circle me-2"></i>Add New Product
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="card shadow-lg product-modern-card">
+      <div class="card-header product-table-header fw-bold text-white">
+        <i class="fas fa-table me-2"></i>Products List
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover product-modern-table mb-0">
+            <thead>
+              <tr>
+                <th style="width: 5%;">#</th>
+                <th style="width: 10%;">Product ID</th>
+                <th style="width: 8%;">Image</th>
+                <th style="width: 20%;">Product Name</th>
+                <th style="width: 12%;">Category</th>
+                <th style="width: 10%;">Brand</th>
+                <th style="width: 8%;">Price (₹)</th>
+                <th style="width: 10%;">Current Stock</th>
+                <th style="width: 7%;">Status</th>
+                <th style="width: 10%;" class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in products %}
+              <tr>
+                <td class="align-middle">{{ forloop.counter }}</td>
+                <td class="align-middle">
+                  <strong class="product-id-text">{{ product.product_id }}</strong>
+                </td>
+                <td class="align-middle">
+                  {% if product.product_image %}
+                    <img src="{{ product.product_image.url }}" alt="{{ product.product_name }}" class="product-thumb">
+                  {% else %}
+                    <div class="product-thumb-placeholder">
+                      <i class="fas fa-image text-muted"></i>
+                    </div>
+                  {% endif %}
+                </td>
+                <td class="align-middle">
+                  <strong>{{ product.product_name }}</strong>
+                  {% if product.display_on_website %}
+                    <span class="badge bg-success ms-2">
+                      <i class="fas fa-globe"></i> On Website
+                    </span>
+                  {% endif %}
+                </td>
+                <td class="align-middle">
+                  <span class="product-category-badge">
+                    {{ product.get_category_display }}
+                  </span>
+                </td>
+                <td class="align-middle">
+                  {{ product.brand|default:"—" }}
+                </td>
+                <td class="align-middle">
+                  <strong class="text-success">₹{{ product.price }}</strong>
+                </td>
+                
+                <!-- ✅ CURRENT STOCK (from property) -->
+                <td class="align-middle">
+                  <div class="product-stock-info">
+                    <strong class="{% if product.is_low_stock %}text-danger{% else %}text-success{% endif %}">
+                      {{ product.current_stock }}
+                    </strong>
+                    <small class="text-muted d-block">units</small>
+                    
+                    {% if product.is_low_stock %}
+                      <span class="badge bg-danger mt-1">
+                        <i class="fas fa-exclamation-triangle"></i> Low Stock
+                      </span>
+                    {% elif product.current_stock == 0 %}
+                      <span class="badge bg-dark mt-1">
+                        <i class="fas fa-times-circle"></i> Out of Stock
+                      </span>
+                    {% else %}
+                      <span class="badge bg-success mt-1">
+                        <i class="fas fa-check-circle"></i> In Stock
+                      </span>
+                    {% endif %}
+                  </div>
+                </td>
+
+                <td class="align-middle text-center">
+                  {% if product.is_active %}
+                    <span class="badge bg-success">
+                      <i class="fas fa-check-circle"></i> Active
+                    </span>
+                  {% else %}
+                    <span class="badge bg-secondary">
+                      <i class="fas fa-times-circle"></i> Inactive
+                    </span>
+                  {% endif %}
+                </td>
+
+                <td class="align-middle text-center">
+                  <div class="btn-group btn-group-sm" role="group">
+                    <a href="{% url 'edit_product' product.id %}" class="btn btn-outline-primary" title="Edit">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    
+                    <a href="{% url 'toggle_product_active' product.id %}" class="btn btn-outline-warning" title="Toggle Active">
+                      {% if product.is_active %}
+                        <i class="fas fa-toggle-on"></i>
+                      {% else %}
+                        <i class="fas fa-toggle-off"></i>
+                      {% endif %}
+                    </a>
+                    
+                    <a href="{% url 'toggle_product_display' product.id %}" class="btn btn-outline-info" title="Toggle Website Display">
+                      {% if product.display_on_website %}
+                        <i class="fas fa-eye"></i>
+                      {% else %}
+                        <i class="fas fa-eye-slash"></i>
+                      {% endif %}
+                    </a>
+                    
+                    <a href="{% url 'delete_product' product.id %}" class="btn btn-outline-danger" 
+                       onclick="return confirm('Are you sure you want to delete {{ product.product_name }}?')" 
+                       title="Delete">
+                      <i class="fas fa-trash"></i>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="10" class="text-center py-5">
+                  <div class="product-empty-state">
+                    <i class="fas fa-inbox fs-1 text-muted mb-3"></i>
+                    <p class="text-muted mb-3">No products found</p>
+                    <a href="{% url 'add_product' %}" class="btn btn-primary">
+                      <i class="fas fa-plus me-2"></i>Add Your First Product
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      {% if products.has_other_pages %}
+      <div class="card-footer bg-light">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <small class="text-muted">
+              Page {{ products.number }} of {{ products.paginator.num_pages }}
+            </small>
+          </div>
+          <nav>
+            <ul class="pagination pagination-sm mb-0">
+              {% if products.has_previous %}
+                <li class="page-item">
+                  <a class="page-link product-page-link" href="?page=1">First</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link product-page-link" href="?page={{ products.previous_page_number }}">Previous</a>
+                </li>
+              {% endif %}
+
+              <li class="page-item active">
+                <span class="page-link product-page-link">{{ products.number }}</span>
+              </li>
+
+              {% if products.has_next %}
+                <li class="page-item">
+                  <a class="page-link product-page-link" href="?page={{ products.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link product-page-link" href="?page={{ products.paginator.num_pages }}">Last</a>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+/* ✅ SCOPED STYLES - Only affect product page */
+.product-page-wrapper {
+  /* Container scope to prevent conflicts */
+}
+
+.product-page-wrapper .product-modern-card {
+  border-radius: 15px;
+  border: none;
+  overflow: hidden;
+}
+
+.product-page-wrapper .product-action-card {
+  border-radius: 15px;
+  border: none;
+}
+
+.product-page-wrapper .product-table-header {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  padding: 20px;
+  font-size: 18px;
+  border-bottom: 3px solid rgba(255,255,255,0.2);
+}
+
+.product-page-wrapper .product-modern-table {
+  font-size: 14px;
+}
+
+.product-page-wrapper .product-modern-table thead {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  color: #333;
+  font-weight: 600;
+}
+
+.product-page-wrapper .product-modern-table thead th {
+  padding: 15px;
+  border-bottom: 2px solid #dee2e6;
+  vertical-align: middle;
+}
+
+.product-page-wrapper .product-modern-table tbody td {
+  padding: 12px 15px;
+  vertical-align: middle;
+}
+
+.product-page-wrapper .product-modern-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.product-page-wrapper .product-modern-table tbody tr:hover {
+  background-color: #fff5f7;
+  transform: scale(1.005);
+  box-shadow: 0 2px 8px rgba(255, 79, 110, 0.1);
+}
+
+/* Product Thumbnail */
+.product-page-wrapper .product-thumb {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.product-page-wrapper .product-thumb-placeholder {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+/* Stock Info */
+.product-page-wrapper .product-stock-info {
+  text-align: center;
+}
+
+.product-page-wrapper .product-stock-info strong {
+  font-size: 16px;
+}
+
+/* Category Badge */
+.product-page-wrapper .product-category-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1976d2;
+}
+
+/* Product ID Text */
+.product-page-wrapper .product-id-text {
+  color: #ff4f6e;
+}
+
+/* Buttons */
+.product-page-wrapper .product-btn-add {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.product-page-wrapper .product-btn-add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 79, 110, 0.3);
+  color: white;
+}
+
+.product-page-wrapper .btn-group-sm .btn {
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 5px;
+}
+
+/* Ribbon Header */
+.product-page-wrapper .ribbon-header {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+}
+
+/* Empty State */
+.product-page-wrapper .product-empty-state {
+  padding: 40px;
+}
+
+.product-page-wrapper .product-empty-state i {
+  display: block;
+}
+
+/* Pagination - Scoped */
+.product-page-wrapper .product-page-link {
+  color: #ff4f6e;
+  border-color: #dee2e6;
+}
+
+.product-page-wrapper .pagination .page-item.active .product-page-link {
+  background-color: #ff4f6e;
+  border-color: #ff4f6e;
+  color: white;
+}
+
+.product-page-wrapper .product-page-link:hover {
+  background-color: #fff5f7;
+  border-color: #ff4f6e;
+  color: #ff4f6e;
+}
+</style>
+
+{% endblock %}

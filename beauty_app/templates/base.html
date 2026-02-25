@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Glamour Studio — Where Beauty Meets Perfection{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- AOS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <!-- Owl Carousel -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" rel="stylesheet">
+
+    <style>
+    /* =========================================================
+       GLOBAL VARIABLES & RESET
+    ========================================================= */
+    :root {
+        --plum:       #3b0f2b;
+        --plum-dark:  #260a1d;
+        --rose-gold:  #c48b9f;
+        --champagne:  #f7e7ce;
+        --blush:      #e8c3b9;
+        --black:      #111111;
+        --bg-warm:    #faf6f2;
+        --white:      #ffffff;
+        --text-dark:  #2a1520;
+        --text-mid:   #6b4c5a;
+        --font-serif: 'Cormorant Garamond', Georgia, serif;
+        --font-sans:  'Jost', sans-serif;
+        --font-deco:  'Cinzel', serif;
+        --transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        --shadow-soft: 0 8px 40px rgba(59,15,43,0.10);
+        --shadow-card: 0 4px 24px rgba(59,15,43,0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+        font-family: var(--font-sans);
+        background: var(--bg-warm);
+        color: var(--text-dark);
+        font-size: 15px;
+        line-height: 1.75;
+        overflow-x: hidden;
+    }
+    h1,h2,h3,h4,h5 { font-family: var(--font-serif); color: var(--plum); font-weight: 500; line-height: 1.2; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; }
+
+    /* =========================================================
+       PRELOADER
+    ========================================================= */
+    #preloader {
+        position: fixed; inset: 0;
+        background: var(--plum);
+        z-index: 9999;
+        display: flex; align-items: center; justify-content: center;
+        transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #preloader.hidden { opacity: 0; visibility: hidden; }
+    .preloader-inner { text-align: center; animation: preloaderPulse 1.2s ease-in-out infinite alternate; }
+    .preloader-logo { font-family: var(--font-deco); font-size: 2.4rem; color: var(--champagne); letter-spacing: 4px; display: block; }
+    .preloader-tagline { font-family: var(--font-sans); font-size: 0.75rem; color: var(--rose-gold); letter-spacing: 6px; text-transform: uppercase; margin-top: 6px; }
+    .preloader-bar { width: 120px; height: 1px; background: rgba(196,139,159,0.3); margin: 18px auto 0; position: relative; overflow: hidden; }
+    .preloader-bar::after { content: ''; position: absolute; left: -100%; top: 0; width: 100%; height: 100%; background: var(--rose-gold); animation: preloaderBar 1.4s ease infinite; }
+    @keyframes preloaderPulse { from { opacity: 0.7; } to { opacity: 1; } }
+    @keyframes preloaderBar { to { left: 200%; } }
+
+    /* =========================================================
+       NAVBAR
+    ========================================================= */
+    .navbar-glamour {
+        background: transparent;
+        padding: 20px 0;
+        transition: var(--transition);
+        position: fixed; top: 0; left: 0; right: 0;
+        z-index: 1000;
+    }
+    .navbar-glamour.scrolled {
+        background: rgba(38, 10, 29, 0.97);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 12px 0;
+        box-shadow: 0 2px 30px rgba(59,15,43,0.4);
+    }
+    .navbar-brand-glamour { font-family: var(--font-deco); font-size: 1.5rem; color: var(--champagne) !important; letter-spacing: 3px; display: flex; flex-direction: column; }
+    .navbar-brand-glamour .brand-sub { font-family: var(--font-sans); font-size: 0.55rem; letter-spacing: 5px; color: var(--rose-gold); text-transform: uppercase; display: block; margin-top: -2px; }
+    .navbar-nav .nav-link { font-family: var(--font-sans); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(247,231,206,0.85) !important; padding: 6px 18px !important; position: relative; transition: var(--transition); }
+    .navbar-nav .nav-link::after { content: ''; position: absolute; bottom: 0; left: 50%; right: 50%; height: 1px; background: var(--rose-gold); transition: var(--transition); }
+    .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active { color: var(--champagne) !important; }
+    .navbar-nav .nav-link:hover::after, .navbar-nav .nav-link.active::after { left: 18%; right: 18%; }
+    .navbar-toggler { border: 1px solid var(--rose-gold); padding: 4px 10px; }
+    .navbar-toggler-icon { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(196,139,159,1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); }
+    .btn-navbar-book { font-family: var(--font-sans); font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; background: transparent; border: 1px solid var(--rose-gold); color: var(--champagne) !important; padding: 8px 22px !important; transition: var(--transition); border-radius: 0; }
+    .btn-navbar-book:hover { background: var(--rose-gold); color: var(--plum) !important; }
+
+    /* ---- Customer Auth Navbar Button ---- */
+    .nav-customer-dropdown {
+        position: relative;
+    }
+    .btn-nav-customer {
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        background: transparent;
+        border: 1px solid rgba(196,139,159,0.45);
+        color: var(--rose-gold) !important;
+        padding: 8px 18px !important;
+        transition: var(--transition);
+        border-radius: 0;
+        cursor: pointer;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .btn-nav-customer:hover { background: rgba(196,139,159,0.12); }
+    .btn-nav-customer .customer-dot {
+        width: 7px; height: 7px;
+        background: #4caf50;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    /* ---- Login trigger button ---- */
+    .btn-nav-login {
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        background: transparent;
+        border: 1px solid rgba(196,139,159,0.45);
+        color: rgba(247,231,206,0.85) !important;
+        padding: 8px 18px !important;
+        transition: var(--transition);
+        border-radius: 0;
+        cursor: pointer;
+    }
+    .btn-nav-login:hover { border-color: var(--rose-gold); color: var(--champagne) !important; }
+
+    /* =========================================================
+       AUTH MODAL — GLAMOUR THEME
+    ========================================================= */
+    .glamour-auth-backdrop {
+        position: fixed; inset: 0;
+        z-index: 9990;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; visibility: hidden;
+        transition: all 0.4s ease;
+    }
+    .glamour-auth-backdrop.open { opacity: 1; visibility: visible; }
+
+    /* Blurred bg overlay */
+    .glamour-auth-bg {
+        position: absolute; inset: 0;
+        background: rgba(38, 10, 29, 0.75);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    .glamour-auth-box {
+        position: relative; z-index: 2;
+        width: 100%; max-width: 480px;
+        margin: 20px;
+        background: var(--white);
+        box-shadow: 0 32px 80px rgba(59,15,43,0.35);
+        transform: translateY(24px) scale(0.97);
+        transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+        overflow: hidden;
+    }
+    .glamour-auth-backdrop.open .glamour-auth-box {
+        transform: translateY(0) scale(1);
+    }
+
+    /* Modal header strip */
+    .auth-modal-header {
+        background: var(--plum);
+        padding: 32px 36px 28px;
+        position: relative;
+    }
+    .auth-modal-logo {
+        font-family: var(--font-deco);
+        font-size: 1rem;
+        color: var(--rose-gold);
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 8px;
+    }
+    .auth-modal-title {
+        font-family: var(--font-serif);
+        font-size: 2rem;
+        color: var(--champagne);
+        font-weight: 300;
+        line-height: 1.15;
+    }
+    .auth-modal-sub {
+        font-size: 0.8rem;
+        color: rgba(247,231,206,0.55);
+        margin-top: 6px;
+        letter-spacing: 1px;
+    }
+    .auth-close-btn {
+        position: absolute;
+        top: 18px; right: 20px;
+        background: none; border: none;
+        color: rgba(247,231,206,0.5);
+        font-size: 1.3rem;
+        cursor: pointer;
+        transition: color 0.3s;
+        line-height: 1;
+        padding: 4px;
+    }
+    .auth-close-btn:hover { color: var(--rose-gold); }
+
+    /* Tab switcher */
+    .auth-tabs {
+        display: flex;
+        border-bottom: 1px solid rgba(59,15,43,0.1);
+        background: var(--bg-warm);
+    }
+    .auth-tab-btn {
+        flex: 1;
+        background: none; border: none;
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--text-mid);
+        padding: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+    }
+    .auth-tab-btn::after {
+        content: '';
+        position: absolute; bottom: 0; left: 20%; right: 20%;
+        height: 2px;
+        background: var(--plum);
+        transform: scaleX(0);
+        transition: transform 0.3s;
+    }
+    .auth-tab-btn.active {
+        color: var(--plum);
+        font-weight: 600;
+    }
+    .auth-tab-btn.active::after { transform: scaleX(1); }
+
+    /* Form body */
+    .auth-form-body {
+        padding: 28px 36px 36px;
+        background: var(--white);
+    }
+    .auth-panel { display: none; }
+    .auth-panel.active { display: block; }
+
+    /* Form fields */
+    .auth-field {
+        margin-bottom: 18px;
+    }
+    .auth-field label {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 0.68rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--text-mid);
+        margin-bottom: 7px;
+    }
+    .auth-field input {
+        width: 100%;
+        border: 1px solid rgba(59,15,43,0.18);
+        background: var(--bg-warm);
+        padding: 11px 16px;
+        font-family: var(--font-sans);
+        font-size: 0.9rem;
+        color: var(--text-dark);
+        outline: none;
+        border-radius: 0;
+        transition: border-color 0.3s;
+    }
+    .auth-field input:focus {
+        border-color: var(--rose-gold);
+        background: var(--white);
+    }
+    .auth-field input::placeholder { color: rgba(107,76,90,0.45); }
+
+    .auth-row { display: flex; gap: 14px; }
+    .auth-row .auth-field { flex: 1; }
+
+    /* Submit button */
+    .auth-submit-btn {
+        width: 100%;
+        background: var(--plum);
+        color: var(--champagne);
+        border: none;
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.4s;
+        margin-top: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+    .auth-submit-btn::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: var(--rose-gold);
+        transform: translateX(-100%);
+        transition: transform 0.4s ease;
+    }
+    .auth-submit-btn:hover { color: var(--plum); }
+    .auth-submit-btn:hover::before { transform: translateX(0); }
+    .auth-submit-btn span { position: relative; z-index: 1; }
+    .auth-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Error/success messages */
+    .auth-msg {
+        font-size: 0.82rem;
+        padding: 10px 14px;
+        margin-bottom: 16px;
+        display: none;
+        border-left: 3px solid;
+    }
+    .auth-msg.error { color: #b00020; background: #fff0f1; border-color: #b00020; }
+    .auth-msg.success { color: #1b7a2f; background: #f0fff4; border-color: #1b7a2f; }
+    .auth-msg.show { display: block; }
+
+    /* Divider text */
+    .auth-switch-text {
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--text-mid);
+        margin-top: 20px;
+    }
+    .auth-switch-text a {
+        color: var(--rose-gold);
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+    /* Customer dropdown menu */
+    .customer-nav-menu {
+        position: absolute;
+        top: calc(100% + 12px);
+        right: 0;
+        background: var(--white);
+        box-shadow: 0 12px 40px rgba(59,15,43,0.18);
+        min-width: 200px;
+        z-index: 900;
+        border-top: 2px solid var(--rose-gold);
+        display: none;
+        animation: menuFadeIn 0.25s ease;
+    }
+    .customer-nav-menu.open { display: block; }
+    @keyframes menuFadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+    .customer-nav-menu .menu-customer-name {
+        padding: 14px 18px;
+        font-family: var(--font-serif);
+        font-size: 1rem;
+        color: var(--plum);
+        border-bottom: 1px solid rgba(59,15,43,0.08);
+    }
+    .customer-nav-menu .menu-customer-name small {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        color: var(--rose-gold);
+        letter-spacing: 1px;
+        margin-top: 2px;
+    }
+    .customer-nav-menu a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 18px;
+        font-size: 0.82rem;
+        color: var(--text-mid);
+        transition: all 0.2s;
+        border-bottom: 1px solid rgba(59,15,43,0.05);
+    }
+    .customer-nav-menu a:hover { background: var(--bg-warm); color: var(--plum); padding-left: 22px; }
+    .customer-nav-menu a i { color: var(--rose-gold); width: 16px; }
+    .customer-nav-menu .menu-logout { color: #b00020 !important; }
+    .customer-nav-menu .menu-logout i { color: #b00020 !important; }
+    .customer-nav-menu .menu-logout:hover { background: #fff0f1 !important; }
+
+    /* =========================================================
+       SECTION UTILITIES
+    ========================================================= */
+    .section-label { font-family: var(--font-sans); font-size: 0.7rem; letter-spacing: 6px; text-transform: uppercase; color: var(--rose-gold); display: block; margin-bottom: 10px; }
+    .section-title { font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3.2rem); color: var(--plum); font-weight: 500; line-height: 1.15; }
+    .section-title.light { color: var(--champagne); }
+    .section-divider { width: 50px; height: 1px; background: var(--rose-gold); margin: 18px auto; }
+    .section-divider.left { margin-left: 0; }
+
+    /* =========================================================
+       BTN STYLES
+    ========================================================= */
+    .btn-glamour-primary { font-family: var(--font-sans); font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; background: var(--plum); color: var(--champagne); border: 1px solid var(--plum); padding: 14px 34px; border-radius: 0; position: relative; overflow: hidden; transition: var(--transition); display: inline-block; }
+    .btn-glamour-primary::before { content: ''; position: absolute; inset: 0; background: var(--rose-gold); transform: translateX(-100%); transition: transform 0.4s ease; z-index: 0; }
+    .btn-glamour-primary:hover { color: var(--plum) !important; border-color: var(--rose-gold); }
+    .btn-glamour-primary:hover::before { transform: translateX(0); }
+    .btn-glamour-primary span { position: relative; z-index: 1; }
+    .btn-glamour-outline { font-family: var(--font-sans); font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; background: transparent; color: var(--champagne); border: 1px solid var(--champagne); padding: 14px 34px; border-radius: 0; transition: var(--transition); display: inline-block; }
+    .btn-glamour-outline:hover { background: var(--champagne); color: var(--plum) !important; }
+    .btn-glamour-rose { font-family: var(--font-sans); font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; background: var(--rose-gold); color: var(--plum); border: 1px solid var(--rose-gold); padding: 12px 28px; border-radius: 0; transition: var(--transition); display: inline-block; }
+    .btn-glamour-rose:hover { background: var(--plum); color: var(--champagne) !important; border-color: var(--plum); }
+
+    /* =========================================================
+       FLIP CARD
+    ========================================================= */
+    .flip-card { background: transparent; perspective: 1200px; height: 380px; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.75s cubic-bezier(0.4,0,0.2,1); transform-style: preserve-3d; }
+    .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden; }
+    .flip-card-front { background: var(--white); box-shadow: var(--shadow-card); }
+    .flip-card-back { background: var(--plum); transform: rotateY(180deg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+
+    /* =========================================================
+       OVERLAY
+    ========================================================= */
+    .overlay { position: absolute; inset: 0; pointer-events: none; }
+    .overlay-plum   { background: rgba(59,15,43,0.65); }
+    .overlay-rose   { background: rgba(196,139,159,0.30); }
+    .overlay-dark   { background: rgba(17,17,17,0.55); }
+    .overlay-grad   { background: linear-gradient(135deg, rgba(59,15,43,0.85) 0%, rgba(59,15,43,0.40) 60%, transparent 100%); }
+
+    /* =========================================================
+       FILTER TABS
+    ========================================================= */
+    .glamour-tabs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 48px; }
+    .glamour-tab-btn { font-family: var(--font-sans); font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; padding: 9px 22px; background: transparent; border: 1px solid rgba(59,15,43,0.25); color: var(--text-mid); cursor: pointer; transition: var(--transition); }
+    .glamour-tab-btn:hover, .glamour-tab-btn.active { background: var(--plum); border-color: var(--plum); color: var(--champagne); }
+
+    /* =========================================================
+       ANIMATED COUNTER
+    ========================================================= */
+    .counter-number { font-family: var(--font-serif); font-size: 3.5rem; color: var(--champagne); font-weight: 300; line-height: 1; }
+    .counter-label { font-family: var(--font-sans); font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--rose-gold); margin-top: 6px; }
+
+    /* =========================================================
+       WHATSAPP FLOAT
+    ========================================================= */
+    .whatsapp-float { position: fixed; bottom: 30px; right: 30px; width: 54px; height: 54px; background: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 999; box-shadow: 0 4px 20px rgba(37,211,102,0.4); animation: waBounce 2s ease infinite; transition: var(--transition); }
+    .whatsapp-float:hover { transform: scale(1.1); background: #128c7e; }
+    .whatsapp-float i { font-size: 1.5rem; color: white; }
+    @keyframes waBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+    /* =========================================================
+       SCROLL TO TOP
+    ========================================================= */
+    #scrollTop { position: fixed; bottom: 94px; right: 30px; width: 44px; height: 44px; background: var(--plum); color: var(--champagne); border: none; border-radius: 0; display: flex; align-items: center; justify-content: center; z-index: 998; cursor: pointer; opacity: 0; visibility: hidden; transition: var(--transition); box-shadow: var(--shadow-soft); }
+    #scrollTop.show { opacity: 1; visibility: visible; }
+    #scrollTop:hover { background: var(--rose-gold); color: var(--plum); }
+
+    /* =========================================================
+       WAVE DIVIDER
+    ========================================================= */
+    .wave-divider { line-height: 0; }
+    .wave-divider svg { display: block; width: 100%; }
+
+    /* =========================================================
+       FOOTER
+    ========================================================= */
+    .footer-glamour { background: var(--plum-dark); padding: 70px 0 30px; }
+    .footer-brand { font-family: var(--font-deco); font-size: 1.6rem; color: var(--champagne); letter-spacing: 3px; }
+    .footer-tagline { font-size: 0.7rem; letter-spacing: 4px; color: var(--rose-gold); text-transform: uppercase; margin-top: 4px; display: block; }
+    .footer-heading { font-family: var(--font-sans); font-size: 0.72rem; letter-spacing: 4px; text-transform: uppercase; color: var(--rose-gold); margin-bottom: 20px; }
+    .footer-links a { display: block; font-size: 0.88rem; color: rgba(247,231,206,0.65); margin-bottom: 10px; transition: var(--transition); }
+    .footer-links a:hover { color: var(--champagne); padding-left: 6px; }
+    .footer-info { font-size: 0.88rem; color: rgba(247,231,206,0.65); display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+    .footer-info i { color: var(--rose-gold); margin-top: 2px; flex-shrink: 0; }
+    .footer-social a { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1px solid rgba(196,139,159,0.35); color: var(--rose-gold); margin-right: 8px; transition: var(--transition); font-size: 0.9rem; }
+    .footer-social a:hover { background: var(--rose-gold); border-color: var(--rose-gold); color: var(--plum); }
+    .footer-bottom { border-top: 1px solid rgba(196,139,159,0.15); padding-top: 24px; margin-top: 50px; font-size: 0.78rem; color: rgba(247,231,206,0.35); text-align: center; }
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+    @media (max-width: 991px) {
+        .navbar-collapse { background: rgba(38,10,29,0.97); padding: 20px 24px; margin-top: 8px; border-top: 1px solid rgba(196,139,159,0.15); }
+        .navbar-nav .nav-link { padding: 10px 0 !important; border-bottom: 1px solid rgba(196,139,159,0.1); font-size: 0.82rem; }
+        .btn-navbar-book { margin-top: 12px; display: inline-block; width: 100%; text-align: center; }
+        .customer-nav-menu { position: static; box-shadow: none; border-top: none; border-left: 2px solid var(--rose-gold); margin: 8px 0; }
+        .btn-nav-customer, .btn-nav-login { display: inline-block !important; width: 100%; text-align: left !important; margin-top: 8px; }
+    }
+
+    @media (max-width: 768px) {
+        .flip-card { height: 360px; }
+        section { padding-top: 60px !important; padding-bottom: 60px !important; }
+        .section-title { font-size: clamp(1.6rem, 6vw, 2.4rem) !important; }
+        .glamour-tabs { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .glamour-tabs::-webkit-scrollbar { display: none; }
+        .glamour-tab-btn { flex-shrink: 0; }
+        .footer-glamour { padding: 50px 0 24px; }
+        .whatsapp-float { bottom: 20px; right: 16px; width: 48px; height: 48px; }
+        #scrollTop { bottom: 80px; right: 16px; width: 40px; height: 40px; }
+        .glamour-auth-box { margin: 12px; }
+        .auth-modal-header { padding: 24px 24px 20px; }
+        .auth-form-body { padding: 22px 24px 28px; }
+        .auth-modal-title { font-size: 1.6rem; }
+        .auth-row { flex-direction: column; gap: 0; }
+    }
+
+    @media (max-width: 480px) {
+        .section-title { font-size: clamp(1.4rem, 7vw, 2rem) !important; }
+        .counter-number { font-size: 2.5rem; }
+        .auth-form-body { padding: 18px 18px 24px; }
+    }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- ============ PRELOADER ============ -->
+<div id="preloader">
+    <div class="preloader-inner">
+        <span class="preloader-logo">GLAMOUR</span>
+        <span class="preloader-tagline">Studio</span>
+        <div class="preloader-bar"></div>
+    </div>
+</div>
+
+<!-- ============ NAVBAR ============ -->
+<nav class="navbar navbar-glamour navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand navbar-brand-glamour" href="{% url 'home' %}">
+            GLAMOUR<span class="brand-sub">Beauty Studio</span>
+        </a>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navbarMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+                <li class="nav-item">
+                    <a class="nav-link {% block nav_home %}{% endblock %}" href="{% url 'home' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% block nav_about %}{% endblock %}" href="{% url 'about' %}">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% block nav_services %}{% endblock %}" href="{% url 'services' %}">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% block nav_team %}{% endblock %}" href="{% url 'team' %}">Team</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% block nav_products %}{% endblock %}" href="{% url 'products' %}">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% block nav_gallery %}{% endblock %}" href="{% url 'gallery' %}">Gallery</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% block nav_contact %}{% endblock %}" href="{% url 'contact' %}">Contact</a>
+                </li>
+
+                <!-- Admin Panel Link -->
+                <li class="nav-item ms-lg-2">
+                    <a href="/admin-panel/" target="_blank"
+                       style="font-family:var(--font-sans); font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:rgba(247,231,206,0.4) !important; padding:6px 10px !important; border:1px solid rgba(247,231,206,0.1); transition:var(--transition);"
+                       onmouseover="this.style.color='rgba(196,139,159,0.8)'; this.style.borderColor='rgba(196,139,159,0.3)'"
+                       onmouseout="this.style.color='rgba(247,231,206,0.4)'; this.style.borderColor='rgba(247,231,206,0.1)'">
+                        <i class="bi bi-shield-lock fs-6" style="font-size:0.7rem;"></i> 
+                    </a>
+                </li>
+
+                <!-- ===== DYNAMIC AUTH SECTION ===== -->
+                {% if request.session.website_customer_id %}
+                <!-- Logged In: Show Customer Dropdown -->
+                <li class="nav-item ms-lg-3 nav-customer-dropdown" id="customerNavItem">
+                    <button class="btn-nav-customer" id="customerNavBtn" onclick="toggleCustomerMenu()">
+                        <span class="customer-dot"></span>
+                        <span id="navCustomerName">{{ request.session.website_customer_name|truncatechars:14 }}</span>
+                        <i class="bi bi-chevron-down" style="font-size:0.65rem;"></i>
+                    </button>
+                    <div class="customer-nav-menu" id="customerNavMenu">
+                        <div class="menu-customer-name">
+                            {{ request.session.website_customer_name }}
+                            <small>Glamour Member</small>
+                        </div>
+                        <a href="{% url 'booking' %}"><i class="bi bi-calendar-plus"></i> Book Appointment</a>
+                        <a href="{% url 'booking_history' %}"><i class="bi bi-clock-history"></i> My Bookings</a>
+                        <a href="{% url 'customer_logout' %}?next=/" class="menu-logout"><i class="bi bi-box-arrow-right"></i> Sign Out</a>
+                    </div>
+                </li>
+                <!-- Book Now button when logged in -->
+                <li class="nav-item ms-lg-1">
+                    <a class="nav-link btn-navbar-book {% block nav_booking %}{% endblock %}" href="{% url 'booking' %}">Book Now</a>
+                </li>
+                {% else %}
+                <!-- Not Logged In -->
+                <li class="nav-item ms-lg-2">
+                    <button class="btn-nav-login" onclick="openAuthModal('login')">
+                        <i class="bi bi-person"></i> Login
+                    </button>
+                </li>
+                <li class="nav-item ms-lg-1">
+                    <a class="nav-link btn-navbar-book" onclick="openAuthModal('login'); return false;" href="#">Book Now</a>
+                </li>
+                {% endif %}
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ============ AUTH MODAL ============ -->
+<div class="glamour-auth-backdrop" id="authBackdrop">
+    <div class="glamour-auth-bg" onclick="closeAuthModal()"></div>
+    <div class="glamour-auth-box">
+        <!-- Header -->
+        <div class="auth-modal-header">
+            <span class="auth-modal-logo">✦ Glamour Studio</span>
+            <h2 class="auth-modal-title" id="authModalTitle">Welcome Back</h2>
+            <p class="auth-modal-sub" id="authModalSub">Sign in to your account to book & manage appointments</p>
+            <button class="auth-close-btn" onclick="closeAuthModal()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Tab Switcher -->
+        <div class="auth-tabs">
+            <button class="auth-tab-btn active" id="loginTabBtn" onclick="switchAuthTab('login')">
+                Sign In
+            </button>
+            <button class="auth-tab-btn" id="registerTabBtn" onclick="switchAuthTab('register')">
+                Create Account
+            </button>
+        </div>
+
+        <!-- Form Body -->
+        <div class="auth-form-body">
+
+            <!-- === LOGIN PANEL === -->
+            <div class="auth-panel active" id="loginPanel">
+                <div class="auth-msg" id="loginMsg"></div>
+                <div class="auth-field">
+                    <label>Mobile Number</label>
+                    <input type="tel" id="loginMobile" maxlength="10" placeholder="10-digit mobile number">
+                </div>
+                <div class="auth-field">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                </div>
+                <button class="auth-submit-btn" id="loginBtn" onclick="submitLogin()">
+                    <span>Sign In to Glamour</span>
+                </button>
+                <div class="auth-switch-text">
+                    New here? <a onclick="switchAuthTab('register')">Create an account →</a>
+                </div>
+            </div>
+
+            <!-- === REGISTER PANEL === -->
+            <div class="auth-panel" id="registerPanel">
+                <div class="auth-msg" id="registerMsg"></div>
+                <div class="auth-row">
+                    <div class="auth-field">
+                        <label>Full Name</label>
+                        <input type="text" id="regName" placeholder="Your name">
+                    </div>
+                    <div class="auth-field">
+                        <label>Mobile Number</label>
+                        <input type="tel" id="regMobile" maxlength="10" placeholder="10 digits">
+                    </div>
+                </div>
+                <div class="auth-field">
+                    <label>Email Address <span style="color:var(--rose-gold); font-size:0.75em;">(optional)</span></label>
+                    <input type="email" id="regEmail" placeholder="your@email.com">
+                </div>
+                <div class="auth-row">
+                    <div class="auth-field">
+                        <label>Password</label>
+                        <input type="password" id="regPassword" placeholder="Min. 6 characters">
+                    </div>
+                    <div class="auth-field">
+                        <label>Confirm Password</label>
+                        <input type="password" id="regConfirmPassword" placeholder="Repeat password">
+                    </div>
+                </div>
+                <button class="auth-submit-btn" id="registerBtn" onclick="submitRegister()">
+                    <span>Create My Account</span>
+                </button>
+                <div class="auth-switch-text">
+                    Already a member? <a onclick="switchAuthTab('login')">Sign in →</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ============ MAIN CONTENT ============ -->
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer-glamour">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-4">
+                <div class="footer-brand">GLAMOUR</div>
+                <span class="footer-tagline">Beauty Studio</span>
+                <p class="mt-18" style="color:rgba(247,231,206,0.55); font-size:0.88rem; margin-top:18px; line-height:1.8;">
+                    Where every visit is an experience of luxury. We believe beauty is not just appearance — it's confidence, grace, and feeling your absolute best.
+                </p>
+                <div class="footer-social mt-4">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-pinterest-p"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-2 col-6">
+                <div class="footer-heading">Quick Links</div>
+                <div class="footer-links">
+                    <a href="{% url 'home' %}">Home</a>
+                    <a href="{% url 'about' %}">About Us</a>
+                    <a href="{% url 'services' %}">Our Services</a>
+                    <a href="{% url 'team' %}">Our Team</a>
+                    <a href="{% url 'gallery' %}">Gallery</a>
+                    {% if request.session.website_customer_id %}
+                    <a href="{% url 'booking' %}">Book Appointment</a>
+                    <a href="{% url 'booking_history' %}">My Bookings</a>
+                    {% else %}
+                    <a href="#" onclick="openAuthModal('login'); return false;">Book Appointment</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-2 col-6">
+                <div class="footer-heading">Services</div>
+                <div class="footer-links">
+                    <a href="{% url 'services' %}?category=hair_service">Hair Services</a>
+                    <a href="{% url 'services' %}?category=makeup_service">Makeup</a>
+                    <a href="{% url 'services' %}?category=beauty_service">Skin Care</a>
+                    <a href="{% url 'services' %}?category=bridal_service">Bridal Packages</a>
+                    <a href="{% url 'services' %}?category=spa_service">Spa & Massage</a>
+                    <a href="{% url 'services' %}?category=nail_service">Nail Care</a>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="footer-heading">Visit Us</div>
+                <div class="footer-info">
+                    <i class="bi bi-geo-alt"></i>
+                    <span>123, Glamour Street, Bandra West, Mumbai – 400050, Maharashtra</span>
+                </div>
+                <div class="footer-info">
+                    <i class="bi bi-telephone"></i>
+                    <span>+91 98765 43210</span>
+                </div>
+                <div class="footer-info">
+                    <i class="bi bi-envelope"></i>
+                    <span>glamourstudio@gmail.com</span>
+                </div>
+                <div class="footer-info">
+                    <i class="bi bi-clock"></i>
+                    <span>Mon – Sat: 10:00 AM – 8:00 PM<br>Sunday: 11:00 AM – 6:00 PM</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Glamour Beauty Studio. All rights reserved. Crafted with &hearts; for luxury.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- ============ WHATSAPP FLOAT ============ -->
+<a href="https://wa.me/919876543210" class="whatsapp-float" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+<!-- ============ SCROLL TO TOP ============ -->
+<button id="scrollTop"><i class="bi bi-arrow-up"></i></button>
+
+<!-- ============ SCRIPTS ============ -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+<script>
+// AOS
+AOS.init({ duration: 800, once: true, easing: 'ease-out-cubic', offset: 60 });
+
+// Preloader
+window.addEventListener('load', () => {
+    const pre = document.getElementById('preloader');
+    setTimeout(() => { pre.classList.add('hidden'); }, 500);
+});
+
+// Sticky Navbar
+window.addEventListener('scroll', () => {
+    const nav = document.querySelector('.navbar-glamour');
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+    const st = document.getElementById('scrollTop');
+    st.classList.toggle('show', window.scrollY > 400);
+});
+
+// Scroll to top
+document.getElementById('scrollTop').addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// Touch: Flip Cards
+(function() {
+    var isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    if (isTouchDevice) {
+        document.querySelectorAll('.flip-card').forEach(function(card) {
+            card.addEventListener('click', function() { this.classList.toggle('flipped'); });
+        });
+        var style = document.createElement('style');
+        style.textContent = '.flip-card.flipped .flip-card-inner { transform: rotateY(180deg); } @media (hover: none) { .flip-card:hover .flip-card-inner { transform: none; } }';
+        document.head.appendChild(style);
+    }
+})();
+
+// iOS: Fix background-attachment fixed
+(function() {
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+        var style = document.createElement('style');
+        style.textContent = '.why-section, .cta-section, .booking-section, .mv-section { background-attachment: scroll !important; }';
+        document.head.appendChild(style);
+    }
+})();
+
+// Animated counters
+function animateCounter(el) {
+    const target = +el.dataset.target;
+    const duration = 2000;
+    const step = target / (duration / 16);
+    let current = 0;
+    const timer = setInterval(() => {
+        current += step;
+        if (current >= target) { current = target; clearInterval(timer); }
+        el.textContent = Math.floor(current).toLocaleString('en-IN');
+    }, 16);
+}
+const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) { animateCounter(e.target); counterObserver.unobserve(e.target); }
+    });
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-target]').forEach(el => counterObserver.observe(el));
+
+// ================================================================
+// AUTH MODAL FUNCTIONS
+// ================================================================
+
+function openAuthModal(tab) {
+    document.getElementById('authBackdrop').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    switchAuthTab(tab || 'login');
+}
+
+function closeAuthModal() {
+    document.getElementById('authBackdrop').classList.remove('open');
+    document.body.style.overflow = '';
+    // Clear messages
+    clearAuthMsg('login');
+    clearAuthMsg('register');
+}
+
+// Close on ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeAuthModal();
+});
+
+function switchAuthTab(tab) {
+    document.querySelectorAll('.auth-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+
+    if (tab === 'login') {
+        document.getElementById('loginTabBtn').classList.add('active');
+        document.getElementById('loginPanel').classList.add('active');
+        document.getElementById('authModalTitle').textContent = 'Welcome Back';
+        document.getElementById('authModalSub').textContent = 'Sign in to book & manage your appointments';
+    } else {
+        document.getElementById('registerTabBtn').classList.add('active');
+        document.getElementById('registerPanel').classList.add('active');
+        document.getElementById('authModalTitle').textContent = 'Join Glamour';
+        document.getElementById('authModalSub').textContent = 'Create your account to start your beauty journey';
+    }
+}
+
+function showAuthMsg(panel, type, msg) {
+    const el = document.getElementById(panel + 'Msg');
+    el.className = 'auth-msg ' + type + ' show';
+    el.textContent = msg;
+}
+function clearAuthMsg(panel) {
+    const el = document.getElementById(panel + 'Msg');
+    if (el) { el.className = 'auth-msg'; el.textContent = ''; }
+}
+
+function setAuthLoading(btnId, loading) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    btn.querySelector('span').textContent = loading ? 'Please wait...' : (btnId === 'loginBtn' ? 'Sign In to Glamour' : 'Create My Account');
+}
+
+// ---- LOGIN SUBMIT ----
+function submitLogin() {
+    clearAuthMsg('login');
+    const mobile   = document.getElementById('loginMobile').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+
+    if (!mobile || !password) {
+        showAuthMsg('login', 'error', 'Mobile aur password dono zaroori hain.');
+        return;
+    }
+
+    setAuthLoading('loginBtn', true);
+
+    const formData = new FormData();
+    formData.append('mobile', mobile);
+    formData.append('password', password);
+    formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+    fetch('{% url "customer_login" %}', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            setAuthLoading('loginBtn', false);
+            if (data.success) {
+                showAuthMsg('login', 'success', '✓ Login successful! Welcome back, ' + data.customer_name + '!');
+                setTimeout(() => { window.location.reload(); }, 900);
+            } else {
+                showAuthMsg('login', 'error', data.error || 'Kuch galat ho gaya. Dobara try karein.');
+            }
+        })
+        .catch(() => {
+            setAuthLoading('loginBtn', false);
+            showAuthMsg('login', 'error', 'Network error. Dobara try karein.');
+        });
+}
+
+// ---- REGISTER SUBMIT ----
+function submitRegister() {
+    clearAuthMsg('register');
+    const name     = document.getElementById('regName').value.trim();
+    const mobile   = document.getElementById('regMobile').value.trim();
+    const email    = document.getElementById('regEmail').value.trim();
+    const pwd      = document.getElementById('regPassword').value.trim();
+    const cpwd     = document.getElementById('regConfirmPassword').value.trim();
+
+    if (!name || !mobile || !pwd) {
+        showAuthMsg('register', 'error', 'Naam, mobile aur password zaroori hain.');
+        return;
+    }
+
+    setAuthLoading('registerBtn', true);
+
+    const formData = new FormData();
+    formData.append('full_name',        name);
+    formData.append('mobile',           mobile);
+    formData.append('email',            email);
+    formData.append('password',         pwd);
+    formData.append('confirm_password', cpwd);
+    formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+    fetch('{% url "customer_register" %}', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            setAuthLoading('registerBtn', false);
+            if (data.success) {
+                showAuthMsg('register', 'success', '✓ Account created! Welcome to Glamour, ' + data.customer_name + '!');
+                setTimeout(() => { window.location.reload(); }, 900);
+            } else {
+                showAuthMsg('register', 'error', data.error || 'Kuch galat ho gaya. Dobara try karein.');
+            }
+        })
+        .catch(() => {
+            setAuthLoading('registerBtn', false);
+            showAuthMsg('register', 'error', 'Network error. Dobara try karein.');
+        });
+}
+
+// Enter key for login
+document.addEventListener('DOMContentLoaded', function() {
+    ['loginMobile', 'loginPassword'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('keydown', function(e) { if (e.key === 'Enter') submitLogin(); });
+    });
+    ['regName','regMobile','regEmail','regPassword','regConfirmPassword'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('keydown', function(e) { if (e.key === 'Enter') submitRegister(); });
+    });
+
+    // Auto-open modal if login_required param
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('login_required') === '1') {
+        setTimeout(() => openAuthModal('login'), 500);
+    }
+});
+
+// Customer dropdown toggle
+function toggleCustomerMenu() {
+    const menu = document.getElementById('customerNavMenu');
+    if (menu) menu.classList.toggle('open');
+}
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    const navItem = document.getElementById('customerNavItem');
+    if (navItem && !navItem.contains(e.target)) {
+        const menu = document.getElementById('customerNavMenu');
+        if (menu) menu.classList.remove('open');
+    }
+});
+
+// CSRF helper
+function getCookie(name) {
+    let v = null;
+    if (document.cookie && document.cookie !== '') {
+        document.cookie.split(';').forEach(function(c) {
+            c = c.trim();
+            if (c.startsWith(name + '=')) v = decodeURIComponent(c.slice(name.length + 1));
+        });
+    }
+    return v;
+}
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

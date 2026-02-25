@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Team — Glamour Studio{% endblock %}
+{% block nav_team %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-hero {
+    height: 50vh; min-height: 360px;
+    background: url('https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=1920&q=80') center/cover no-repeat;
+    position: relative;
+    display: flex; align-items: flex-end;
+    padding-bottom: 60px; padding-top: 100px;
+}
+.page-hero-content { position: relative; z-index: 2; }
+.page-hero-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: var(--champagne);
+    font-weight: 300; line-height: 1.1;
+}
+.breadcrumb-glamour a { color: var(--rose-gold); font-size:0.78rem; letter-spacing:1px; }
+.breadcrumb-glamour span { color: rgba(247,231,206,0.5); font-size:0.78rem; margin:0 8px; }
+.breadcrumb-glamour .current { color: rgba(247,231,206,0.75); font-size:0.78rem; }
+
+.team-main { padding: 80px 0 100px; }
+
+/* Team Cards */
+.team-card-wrap { margin-bottom: 30px; }
+
+/* Large flip card for team page */
+.team-page-flip { height: 420px; }
+.team-page-flip .flip-card-front img {
+    width: 100%; height: 300px;
+    object-fit: cover; object-position: top;
+    display: block;
+}
+.team-front-body { padding: 20px 22px; }
+.team-front-name {
+    font-family: var(--font-serif);
+    font-size: 1.2rem; color: var(--plum);
+    margin-bottom: 4px;
+}
+.team-front-role {
+    font-size: 0.68rem; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--rose-gold);
+}
+.team-back-name {
+    font-family: var(--font-serif);
+    font-size: 1.25rem; color: var(--champagne);
+    margin: 10px 0 4px;
+}
+.team-back-role {
+    font-size: 0.68rem; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--rose-gold);
+    margin-bottom: 16px; display: block;
+}
+.team-back-divider {
+    width: 40px; height: 1px;
+    background: rgba(196,139,159,0.4);
+    margin: 0 auto 16px;
+}
+.team-back-info {
+    font-size: 0.82rem;
+    color: rgba(247,231,206,0.7);
+    line-height: 1.8; margin-bottom: 18px;
+}
+.team-expertise-badge {
+    display: inline-block;
+    background: rgba(196,139,159,0.2);
+    border: 1px solid rgba(196,139,159,0.3);
+    color: var(--rose-gold);
+    font-size: 0.65rem; letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px; margin-bottom: 20px;
+}
+.team-socials { display: flex; gap: 10px; justify-content: center; }
+.team-socials a {
+    width: 34px; height: 34px;
+    border: 1px solid rgba(247,231,206,0.25);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--rose-gold); font-size: 0.85rem;
+    transition: var(--transition);
+}
+.team-socials a:hover {
+    background: var(--rose-gold);
+    border-color: var(--rose-gold);
+    color: var(--plum);
+}
+
+/* Senior Stylists Owl */
+.senior-section {
+    background: var(--champagne);
+    padding: 80px 0;
+}
+
+@media (max-width: 768px) {
+    .page-hero {
+        height: auto; min-height: 280px;
+        padding-bottom: 40px; padding-top: 100px;
+    }
+    .page-hero-title { font-size: clamp(2rem, 8vw, 3rem) !important; }
+    .team-main { padding: 50px 0 60px !important; }
+    .senior-section { padding: 60px 0 !important; }
+
+    /* Team flip cards - on mobile make them tappable */
+    .team-page-flip { height: 380px; }
+    .team-page-flip .flip-card-front img { height: 260px; }
+
+    .team-back-info { font-size: 0.78rem; }
+    .team-back-name { font-size: 1.1rem; }
+
+    /* CTA section */
+    section[style*="padding:80px"] { padding: 60px 0 !important; }
+}
+
+@media (max-width: 480px) {
+    .team-page-flip { height: 340px; }
+    .team-page-flip .flip-card-front img { height: 230px; }
+    .team-front-body { padding: 14px 16px; }
+    .team-front-name { font-size: 1rem; }
+    .team-back-info { font-size: 0.75rem; margin-bottom: 12px; }
+    .team-back-divider { margin-bottom: 10px; }
+    .team-expertise-badge { font-size: 0.58rem; padding: 3px 10px; margin-bottom: 6px; }
+    .team-socials a { width: 30px; height: 30px; font-size: 0.75rem; }
+    .flip-card-back { padding: 20px 16px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+    <div class="overlay overlay-plum"></div>
+    <div class="container page-hero-content">
+        <div class="breadcrumb-glamour mb-12" style="margin-bottom:12px;">
+            <a href="{% url 'home' %}">Home</a>
+            <span>›</span>
+            <span class="current">Our Team</span>
+        </div>
+        <span class="section-label">The Artists</span>
+        <h1 class="page-hero-title">Meet Our<br>Expert Team</h1>
+    </div>
+</div>
+
+<!-- TEAM MAIN -->
+<section class="team-main">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="section-label">Filter by Expertise</span>
+            <h2 class="section-title">Our Professionals</h2>
+            <div class="section-divider"></div>
+        </div>
+
+        <!-- ROLE FILTER TABS -->
+        <div class="glamour-tabs" data-aos="fade-up">
+            <button class="glamour-tab-btn {% if active_role == 'all' %}active{% endif %}"
+                    onclick="filterTeam('all')">All Team</button>
+            {% for role_value, role_label in roles %}
+            <button class="glamour-tab-btn {% if active_role == role_value %}active{% endif %}"
+                    onclick="filterTeam('{{ role_value }}')">
+                {{ role_label }}
+            </button>
+            {% endfor %}
+        </div>
+
+        <!-- TEAM GRID -->
+        <div class="row" id="teamGrid">
+            {% for emp in employees %}
+            <div class="col-lg-3 col-md-4 col-6 team-card-wrap team-item"
+                 data-role="{{ emp.role }}"
+                 data-aos="fade-up"
+                 data-aos-delay="{{ forloop.counter0|add:1|stringformat:'d' }}00">
+                <div class="flip-card team-page-flip">
+                    <div class="flip-card-inner">
+                        <!-- FRONT -->
+                        <div class="flip-card-front">
+                            {% if emp.profile_pic %}
+                            <img src="{{ emp.profile_pic.url }}" alt="{{ emp.full_name }}">
+                            {% else %}
+                            <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&q=80"
+                                 alt="{{ emp.full_name }}">
+                            {% endif %}
+                            <div class="team-front-body">
+                                <div class="team-front-name">{{ emp.full_name }}</div>
+                                <div class="team-front-role">{{ emp.get_role_display }}</div>
+                            </div>
+                        </div>
+                        <!-- BACK -->
+                        <div class="flip-card-back">
+                            <span class="team-expertise-badge">{{ emp.get_role_display }}</span>
+                            <div class="team-back-name">{{ emp.full_name }}</div>
+                            <span class="team-back-role">{{ emp.designation }}</span>
+                            <div class="team-back-divider"></div>
+                            <p class="team-back-info">
+                                Expert in delivering premium {{ emp.get_role_display }} services with precision and care for every client.
+                            </p>
+                            <div class="team-socials">
+                                <a href="#"><i class="fab fa-instagram"></i></a>
+                                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                                <a href="mailto:{{ emp.email }}"><i class="bi bi-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5" id="noTeamMsg">
+                <i class="bi bi-people" style="font-size:2.5rem; color:var(--rose-gold); display:block; margin-bottom:16px;"></i>
+                <p style="color:var(--text-mid);">No team members found.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Empty state for JS filter -->
+        <div id="teamEmptyMsg" class="text-center py-5" style="display:none;">
+            <i class="bi bi-person-x" style="font-size:2.5rem; color:var(--rose-gold); display:block; margin-bottom:16px;"></i>
+            <p style="color:var(--text-mid);">No team members found for this role.</p>
+        </div>
+    </div>
+</section>
+
+
+<!-- SENIOR STYLISTS SPOTLIGHT – Owl Carousel -->
+<section class="senior-section">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="section-label">In The Spotlight</span>
+            <h2 class="section-title">Senior Stylists</h2>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="owl-carousel senior-owl" data-aos="fade-up" data-aos-delay="100">
+            {% for emp in employees %}
+            {% if emp.role == 'senior_stylist' or emp.role == 'makeup_artist' or emp.role == 'hair_colorist' %}
+            <div style="padding: 10px;">
+                <div style="background:var(--white); box-shadow:var(--shadow-card); overflow:hidden;">
+                    {% if emp.profile_pic %}
+                    <img src="{{ emp.profile_pic.url }}" alt="{{ emp.full_name }}"
+                         style="width:100%; height:260px; object-fit:cover; object-position:top;">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1487412947147-5cebf100d293?w=500&q=80"
+                         alt="{{ emp.full_name }}"
+                         style="width:100%; height:260px; object-fit:cover; object-position:top;">
+                    {% endif %}
+                    <div style="padding:22px 24px;">
+                        <div style="font-family:var(--font-serif); font-size:1.15rem; color:var(--plum); margin-bottom:4px;">
+                            {{ emp.full_name }}
+                        </div>
+                        <div style="font-size:0.68rem; letter-spacing:2px; text-transform:uppercase; color:var(--rose-gold); margin-bottom:14px;">
+                            {{ emp.get_role_display }}
+                        </div>
+                        <div style="height:1px; background:rgba(59,15,43,0.08); margin-bottom:14px;"></div>
+                        <div style="font-size:0.85rem; color:var(--text-mid);">{{ emp.designation }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% empty %}
+            <!-- Fallback placeholder when no employees -->
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section style="background:var(--plum); padding:80px 0; text-align:center;">
+    <div class="container">
+        <span class="section-label" style="color:var(--rose-gold);" data-aos="fade-up">Book Your Session</span>
+        <h2 class="section-title light" data-aos="fade-up" data-aos-delay="100">
+            Ready to Meet Your Artist?
+        </h2>
+        <div class="section-divider" data-aos="fade-up" data-aos-delay="150"></div>
+        <a href="{% url 'booking' %}" class="btn-glamour-outline" data-aos="fade-up" data-aos-delay="200">
+            Book An Appointment
+        </a>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Client-side role filtering
+function filterTeam(role) {
+    document.querySelectorAll('.glamour-tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    const items = document.querySelectorAll('.team-item');
+    let visibleCount = 0;
+
+    items.forEach(item => {
+        if (role === 'all' || item.dataset.role === role) {
+            item.style.display = 'block';
+            visibleCount++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    document.getElementById('teamEmptyMsg').style.display = visibleCount === 0 ? 'block' : 'none';
+
+    const url = new URL(window.location);
+    if (role === 'all') {
+        url.searchParams.delete('role');
+    } else {
+        url.searchParams.set('role', role);
+    }
+    window.history.pushState({}, '', url);
+
+    AOS.refresh();
+}
+
+// Senior Owl Carousel
+$('.senior-owl').owlCarousel({
+    loop: true, margin: 24, nav: false, dots: true,
+    autoplay: true, autoplayTimeout: 4500,
+    autoplayHoverPause: true,
+    responsive: {
+        0:   { items: 1 },
+        576: { items: 2 },
+        992: { items: 3 },
+        1200:{ items: 4 }
+    }
+});
+</script>
+{% endblock %}

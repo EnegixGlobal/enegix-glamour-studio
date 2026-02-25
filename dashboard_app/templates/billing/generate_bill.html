@@ -1,0 +1,502 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block content %}
+
+<div class="ribbon-header d-flex justify-content-between align-items-center px-4 pb-5 mb-3" style="color: black">
+  <div class="d-flex align-items-center">
+    <i class="fas fa-file-invoice me-3 fs-2" style="color: #ff4f6e;"></i>
+    <div class="fw-bold fs-3">Generate Bill - {{ appointment.appointment_id }}</div>
+  </div>
+  <div class="breadcrumb-text text-end">
+    <span class="text-black"><i class="fas fa-home me-1"></i>HOME</span>
+    <span class="mx-2 text-black">/</span>
+    <a href="{% url 'bill_list' %}" class="text-black">Bills</a>
+    <span class="mx-2 text-black">/</span>
+    <span class="text-black-50">Generate</span>
+  </div>
+</div>
+
+<div class="container-fluid mt-2">
+  <form method="POST" id="billForm">
+    {% csrf_token %}
+    
+    <!-- Appointment & Customer Info -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header table-title-bar fw-bold text-white">
+        <i class="fas fa-info-circle me-2"></i>Appointment & Customer Details
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="info-box">
+              <h6 class="mb-3"><i class="fas fa-user me-2 text-primary"></i>Customer Information</h6>
+              <div class="d-flex align-items-center mb-3">
+                {% if appointment.customer.profile_pic %}
+                  <img src="{{ appointment.customer.profile_pic.url }}" class="customer-avatar me-3" alt="{{ appointment.customer.full_name }}">
+                {% else %}
+                  <div class="customer-avatar-placeholder me-3">
+                    {{ appointment.customer.full_name|first|upper }}
+                  </div>
+                {% endif %}
+                <div>
+                  <strong>{{ appointment.customer.full_name }}</strong>
+                  <br>
+                  <small class="text-muted">{{ appointment.customer.customer_id }} | {{ appointment.customer.mobile }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="info-box">
+              <h6 class="mb-3"><i class="fas fa-calendar-alt me-2 text-primary"></i>Appointment Information</h6>
+              <p class="mb-1">
+                <i class="fas fa-id-badge me-2 text-muted"></i>
+                <strong>Appointment ID:</strong> {{ appointment.appointment_id }}
+              </p>
+              <p class="mb-1">
+                <i class="fas fa-calendar me-2 text-muted"></i>
+                <strong>Date:</strong> {{ appointment.appointment_date|date:"d M, Y" }}
+              </p>
+              <p class="mb-0">
+                <i class="fas fa-clock me-2 text-muted"></i>
+                <strong>Time:</strong> {{ appointment.appointment_time }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Services List -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header table-title-bar fw-bold text-white">
+        <i class="fas fa-cut me-2"></i>Services in This Appointment
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover modern-table mb-0">
+            <thead>
+              <tr>
+                <th><i class="fas fa-hashtag me-2"></i>S.No</th>
+                <th><i class="fas fa-scissors me-2"></i>Service Name</th>
+                <th><i class="fas fa-user-tie me-2"></i>Stylist/Employee</th>
+                <th><i class="fas fa-rupee-sign me-2"></i>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for service in appointment_services %}
+              <tr>
+                <td><span class="serial-number">{{ forloop.counter }}</span></td>
+                <td><strong>{{ service.service.service_name }}</strong></td>
+                <td>{{ service.employee.full_name }}</td>
+                <td><strong class="text-success">₹{{ service.service_price|floatformat:2 }}</strong></td>
+              </tr>
+              {% endfor %}
+              <tr class="table-total-row">
+                <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                <td><strong class="text-success">₹{{ subtotal|floatformat:2 }}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Billing Details -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header table-title-bar fw-bold text-white">
+        <i class="fas fa-calculator me-2"></i>Billing Details
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label"><i class="fas fa-tag me-2 text-primary"></i>Discount Amount</label>
+            <input type="number" name="discount" id="discount" class="form-control modern-input" 
+                   placeholder="Enter discount amount" min="0" step="0.01" value="0" onchange="calculateTotal()">
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label"><i class="fas fa-percent me-2 text-primary"></i>GST Percentage</label>
+            <input type="number" name="gst_percentage" id="gst_percentage" class="form-control modern-input" 
+                   placeholder="Enter GST %" min="0" max="100" step="0.01" value="0" onchange="calculateTotal()">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label"><i class="fas fa-credit-card me-2 text-primary"></i>Payment Method <span class="text-danger">*</span></label>
+            <select name="payment_method" class="form-control modern-input" required>
+              <option value="cash">Cash</option>
+              <option value="card">Debit/Credit Card</option>
+              <option value="upi">UPI</option>
+              <option value="online">Online Payment</option>
+            </select>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label"><i class="fas fa-money-bill-wave me-2 text-primary"></i>Additional Payment Now</label>
+            <input type="number" name="amount_paid" id="amount_paid" class="form-control modern-input" 
+                   placeholder="Amount received at counter today" min="0" step="0.01" value="0" onchange="calculateBalance()">
+            {% if appointment.advance_paid > 0 %}
+            <small class="text-success fw-bold">
+              <i class="fas fa-info-circle me-1"></i>
+              Advance already collected: ₹{{ appointment.advance_paid }} — auto-deducted from balance
+            </small>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <label class="form-label"><i class="fas fa-sticky-note me-2 text-primary"></i>Notes (Optional)</label>
+            <textarea name="notes" class="form-control modern-input" rows="3" 
+                      placeholder="Any additional notes or remarks..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bill Summary -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header table-title-bar fw-bold text-white">
+        <i class="fas fa-file-invoice-dollar me-2"></i>Bill Summary
+      </div>
+      <div class="card-body p-4">
+        <div class="bill-summary">
+          <div class="summary-row">
+            <div class="summary-label">
+              <i class="fas fa-list me-2 text-primary"></i>Subtotal (Services):
+            </div>
+            <div class="summary-value" id="displaySubtotal">₹{{ subtotal|floatformat:2 }}</div>
+          </div>
+
+          <div class="summary-row">
+            <div class="summary-label">
+              <i class="fas fa-tag me-2 text-primary"></i>Discount:
+            </div>
+            <div class="summary-value text-danger" id="displayDiscount">₹0.00</div>
+          </div>
+
+          <div class="summary-row">
+            <div class="summary-label">
+              <i class="fas fa-percent me-2 text-primary"></i>GST Amount:
+            </div>
+            <div class="summary-value text-info" id="displayGST">₹0.00</div>
+          </div>
+
+          <div class="summary-row-divider"></div>
+
+          <div class="summary-row total-row">
+            <div class="summary-label">
+              <i class="fas fa-calculator me-2 text-primary"></i>Total Amount:
+            </div>
+            <div class="summary-value text-success" id="displayTotal">₹{{ subtotal|floatformat:2 }}</div>
+          </div>
+
+          {% if appointment.advance_paid > 0 %}
+          <div class="summary-row" style="background: linear-gradient(135deg, #e7f9f0, #d4f4dd); border: 1.5px solid #28a745;">
+            <div class="summary-label">
+              <i class="fas fa-hand-holding-usd me-2 text-success"></i>Advance Already Paid:
+            </div>
+            <div class="summary-value text-success">- ₹{{ appointment.advance_paid|floatformat:2 }}</div>
+          </div>
+          {% endif %}
+
+          <div class="summary-row">
+            <div class="summary-label">
+              <i class="fas fa-money-bill-wave me-2 text-primary"></i>Additional Payment (Today):
+            </div>
+            <div class="summary-value text-info" id="displayPaid">₹0.00</div>
+          </div>
+
+          <div class="summary-row-divider"></div>
+
+          <div class="summary-row balance-row">
+            <div class="summary-label">
+              <i class="fas fa-wallet me-2 text-primary"></i>Balance Due:
+            </div>
+            <div class="summary-value text-danger" id="displayBalance">₹{{ subtotal|floatformat:2 }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between">
+          <a href="{% url 'view_appointment' appointment.id %}" class="btn btn-secondary btn-action-lg">
+            <i class="fas fa-arrow-left me-2"></i>Back to Appointment
+          </a>
+          <button type="submit" class="btn btn-success btn-action-lg">
+            <i class="fas fa-check-circle me-2"></i>Generate Bill
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<style>
+/* Modern Card Styles */
+.modern-card {
+  border-radius: 15px;
+  border: none;
+  overflow: hidden;
+}
+
+.modern-input {
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 10px;
+  padding: 12px 15px;
+  transition: all 0.3s ease;
+  color: #000;
+}
+
+.modern-input:focus {
+  border-color: #ff4f6e !important;
+  background-color: #fff5f7 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 79, 110, 0.15);
+  transform: translateY(-2px);
+}
+
+.form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.card-header.table-title-bar {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  padding: 20px;
+  font-size: 18px;
+  border-bottom: 3px solid rgba(255,255,255,0.2);
+}
+
+.info-box {
+  padding: 20px;
+  background: #fff5f7;
+  border-radius: 12px;
+  border: 2px solid #ffe9ed;
+}
+
+.customer-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ff4f6e;
+}
+
+.customer-avatar-placeholder {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+/* Table Styles */
+.modern-table {
+  margin-bottom: 0;
+}
+
+.modern-table thead {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+}
+
+.modern-table thead th {
+  color: #333;
+  font-weight: 700;
+  padding: 15px;
+  border: none;
+  font-size: 14px;
+}
+
+.modern-table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.modern-table tbody tr:hover {
+  background: #fff5f7;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(255, 79, 110, 0.1);
+}
+
+.modern-table tbody td {
+  padding: 15px;
+  vertical-align: middle;
+  color: #333;
+  font-size: 14px;
+}
+
+.table-total-row {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  font-weight: 700;
+}
+
+.table-total-row:hover {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%) !important;
+}
+
+.serial-number {
+  font-weight: 600;
+  color: #666;
+}
+
+/* Bill Summary */
+.bill-summary {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  margin-bottom: 10px;
+  background: #fff5f7;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.summary-row:hover {
+  background: #ffe9ed;
+  transform: translateX(5px);
+}
+
+.summary-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.summary-value {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.summary-row-divider {
+  height: 2px;
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  margin: 20px 0;
+}
+
+.total-row {
+  background: linear-gradient(135deg, #e7f9f0 0%, #d4f4dd 100%);
+  border: 2px solid #28a745;
+  padding: 20px;
+}
+
+.total-row .summary-label {
+  font-size: 18px;
+}
+
+.total-row .summary-value {
+  font-size: 24px;
+}
+
+.balance-row {
+  background: linear-gradient(135deg, #ffe9ed 0%, #ffd4d9 100%);
+  border: 2px solid #dc3545;
+  padding: 20px;
+}
+
+.balance-row .summary-label {
+  font-size: 18px;
+}
+
+.balance-row .summary-value {
+  font-size: 24px;
+}
+
+.btn-action-lg {
+  padding: 12px 30px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-action-lg:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #28a745 0%, #48c774 100%);
+  border: none;
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #218838 0%, #28a745 100%);
+}
+
+.ribbon-header {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+}
+
+.text-primary {
+  color: #ff4f6e !important;
+}
+
+label .text-danger {
+  font-weight: normal;
+}
+</style>
+
+<script>
+const subtotal   = {{ subtotal }};
+const advancePaid = {{ advance_paid|default:0 }};
+
+function calculateTotal() {
+  const discount       = parseFloat(document.getElementById('discount').value) || 0;
+  const gstPercentage  = parseFloat(document.getElementById('gst_percentage').value) || 0;
+  const afterDiscount  = subtotal - discount;
+  const gstAmount      = (afterDiscount * gstPercentage) / 100;
+  const total          = afterDiscount + gstAmount;
+
+  document.getElementById('displayDiscount').textContent = '₹' + discount.toFixed(2);
+  document.getElementById('displayGST').textContent      = '₹' + gstAmount.toFixed(2);
+  document.getElementById('displayTotal').textContent    = '₹' + total.toFixed(2);
+
+  calculateBalance();
+}
+
+function calculateBalance() {
+  const discount         = parseFloat(document.getElementById('discount').value) || 0;
+  const gstPercentage    = parseFloat(document.getElementById('gst_percentage').value) || 0;
+  const additionalPaid   = parseFloat(document.getElementById('amount_paid').value) || 0;
+
+  const afterDiscount    = subtotal - discount;
+  const gstAmount        = (afterDiscount * gstPercentage) / 100;
+  const total            = afterDiscount + gstAmount;
+
+  // Balance = Total - Advance - Additional paid today
+  const balance          = total - advancePaid - additionalPaid;
+
+  document.getElementById('displayPaid').textContent    = '₹' + additionalPaid.toFixed(2);
+  document.getElementById('displayBalance').textContent = '₹' + Math.max(0, balance).toFixed(2);
+
+  // Green agar fully paid
+  const balEl = document.getElementById('displayBalance');
+  balEl.style.color = balance <= 0 ? '#28a745' : '#dc3545';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  calculateTotal();
+});
+</script>
+
+{% endblock %}

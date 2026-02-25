@@ -1,0 +1,424 @@
+{% extends 'base2.html' %}
+{% load static %}
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background: linear-gradient(135deg, #fff5f8 0%, #ffe5f0 50%, #ffd4e5 100%);
+  }
+
+  /* Welcome Card */
+  .welcome-card {
+    background: linear-gradient(135deg, #ff6b9d 0%, #e384c2 50%, #c770cf 100%);
+    border-left: 6px solid #ffd700;
+    border-radius: 20px;
+    color: #fff;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(199, 112, 207, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .welcome-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: sparkle 8s linear infinite;
+  }
+
+  @keyframes sparkle {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+  }
+
+  .welcome-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(199, 112, 207, 0.4);
+  }
+
+  .welcome-icon {
+    font-size: 70px;
+    color: #fff9c4;
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+    filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.4));
+  }
+
+  .welcome-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: #ffffff;
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .welcome-card p {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    font-weight: 500;
+  }
+
+  .welcome-card p strong {
+    color: #fff9c4;
+    font-weight: 700;
+  }
+
+  /* Service Cards */
+  .service-cards {
+    margin-top: 2rem;
+  }
+
+  .service-card {
+    background: linear-gradient(135deg, #ffffff 0%, #fff9fc 100%);
+    border-radius: 18px;
+    border: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 220px;
+    box-shadow: 0 6px 20px rgba(199, 112, 207, 0.15);
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #ffd4e5;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #ff6b9d 0%, #e384c2 50%, #c770cf 100%);
+  }
+
+  .service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(199, 112, 207, 0.25);
+    border-color: #ff9ec4;
+  }
+
+  .service-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #ff6b9d 0%, #c770cf 100%);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    color: white;
+    font-size: 30px;
+    box-shadow: 0 4px 15px rgba(199, 112, 207, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .service-card:hover .service-icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 6px 20px rgba(199, 112, 207, 0.4);
+  }
+
+  .service-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff6b9d 0%, #c770cf 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .service-desc {
+    color: #7b1fa2;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+
+  /* Stats Cards */
+  .stats-section {
+    margin: 2rem 0;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, #ffffff 0%, #fff9fc 100%);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(199, 112, 207, 0.12);
+    border: 2px solid #ffd4e5;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(199, 112, 207, 0.2);
+    border-color: #ff9ec4;
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff6b9d 0%, #c770cf 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    color: #7b1fa2;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+  }
+
+  /* Button */
+  .action-btn {
+    background: linear-gradient(135deg, #ff6b9d 0%, #c770cf 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(199, 112, 207, 0.3);
+  }
+
+  .action-btn:hover {
+    background: linear-gradient(135deg, #e384c2 0%, #b966d6 100%);
+    transform: translateY(-2px);
+    color: white;
+    box-shadow: 0 6px 15px rgba(199, 112, 207, 0.4);
+  }
+
+  /* Floating Elements */
+  .floating-element {
+    position: fixed;
+    font-size: 30px;
+    opacity: 0.12;
+    animation: floatAround 15s ease-in-out infinite;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .floating-element:nth-child(1) {
+    top: 15%;
+    left: 5%;
+    animation-delay: 0s;
+  }
+
+  .floating-element:nth-child(2) {
+    top: 25%;
+    right: 8%;
+    animation-delay: 2s;
+  }
+
+  .floating-element:nth-child(3) {
+    bottom: 20%;
+    left: 10%;
+    animation-delay: 4s;
+  }
+
+  @keyframes floatAround {
+    0%, 100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    25% {
+      transform: translate(20px, -20px) rotate(5deg);
+    }
+    50% {
+      transform: translate(-15px, -30px) rotate(-5deg);
+    }
+    75% {
+      transform: translate(15px, -15px) rotate(3deg);
+    }
+  }
+
+  /* Animations */
+  @keyframes pulse {
+    0%, 100% { 
+      opacity: 1; 
+      transform: scale(1);
+    }
+    50% { 
+      opacity: 0.9; 
+      transform: scale(1.05);
+    }
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .welcome-card {
+      margin: 0 15px;
+    }
+    
+    .welcome-card h4 {
+      font-size: 1.6rem;
+    }
+    
+    .welcome-card p {
+      font-size: 1rem;
+    }
+    
+    .welcome-icon {
+      font-size: 55px;
+    }
+
+    .service-card {
+      height: auto;
+      min-height: 200px;
+      margin-bottom: 20px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Floating decorative elements -->
+<div class="floating-element">💄</div>
+<div class="floating-element">💅</div>
+<div class="floating-element">✨</div>
+
+<div class="container-fluid px-4">
+  <!-- Welcome Section -->
+  <div class="row mt-4">
+    <div class="col-md-12 mb-4">
+      <div class="card welcome-card text-center p-4">
+        <div class="card-body position-relative">
+          <div class="welcome-icon">
+            <i class="fas fa-spa"></i>
+          </div>
+          <h4>Welcome to Beauty Bliss Dashboard</h4>
+          <p>
+            Manage your <strong>Beauty Services</strong>, <strong>Client Appointments</strong>, and <strong>Staff Performance</strong> all in one place. 
+            Keep everything organized and grow your beauty empire efficiently.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="stats-section">
+    <div class="row">
+      <div class="col-md-3 col-6 mb-3">
+        <div class="stat-card">
+          <span class="stat-number">24</span>
+          <span class="stat-label">Staff Members</span>
+        </div>
+      </div>
+      <div class="col-md-3 col-6 mb-3">
+        <div class="stat-card">
+          <span class="stat-number">156</span>
+          <span class="stat-label">Happy Clients</span>
+        </div>
+      </div>
+      <div class="col-md-3 col-6 mb-3">
+        <div class="stat-card">
+          <span class="stat-number">42</span>
+          <span class="stat-label">Today's Bookings</span>
+        </div>
+      </div>
+      <div class="col-md-3 col-6 mb-3">
+        <div class="stat-card">
+          <span class="stat-number">4.9★</span>
+          <span class="stat-label">Average Rating</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Service Cards -->
+  <div class="service-cards">
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="card service-card">
+          <div class="card-body text-center p-4">
+            <div class="service-icon">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <h5 class="service-title">Appointments</h5>
+            <p class="service-desc">Schedule and manage client bookings, view daily schedules, and send automated reminders.</p>
+            <button class="action-btn">Manage Bookings</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="card service-card">
+          <div class="card-body text-center p-4">
+            <div class="service-icon">
+              <i class="fas fa-cut"></i>
+            </div>
+            <h5 class="service-title">Services & Pricing</h5>
+            <p class="service-desc">Manage beauty treatments, update service menus, and track package deals and offers.</p>
+            <button class="action-btn">View Services</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="card service-card">
+          <div class="card-body text-center p-4">
+            <div class="service-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h5 class="service-title">Staff Management</h5>
+            <p class="service-desc">Track staff performance, manage schedules, monitor attendance, and handle payroll.</p>
+            <button class="action-btn">Manage Staff</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="card service-card">
+          <div class="card-body text-center p-4">
+            <div class="service-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h5 class="service-title">Analytics & Reports</h5>
+            <p class="service-desc">View revenue insights, popular services, peak hours, and customer retention metrics.</p>
+            <button class="action-btn">View Analytics</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="card service-card">
+          <div class="card-body text-center p-4">
+            <div class="service-icon">
+              <i class="fas fa-box"></i>
+            </div>
+            <h5 class="service-title">Inventory</h5>
+            <p class="service-desc">Monitor product stock levels, track usage, manage suppliers, and handle reorders.</p>
+            <button class="action-btn">Manage Stock</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="card service-card">
+          <div class="card-body text-center p-4">
+            <div class="service-icon">
+              <i class="fas fa-star"></i>
+            </div>
+            <h5 class="service-title">Reviews & Feedback</h5>
+            <p class="service-desc">Collect customer reviews, respond to feedback, and maintain your salon's reputation.</p>
+            <button class="action-btn">View Reviews</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

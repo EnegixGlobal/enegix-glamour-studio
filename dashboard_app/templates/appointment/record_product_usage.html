@@ -1,0 +1,453 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block content %}
+
+<div class="ribbon-header d-flex justify-content-between align-items-center px-4 pb-5 mb-3" style="color: black">
+  <div class="d-flex align-items-center">
+    <i class="fas fa-clipboard-check me-3 fs-2" style="color: #ff4f6e;"></i>
+    <div class="fw-bold fs-3">Complete Service & Record Products Used</div>
+  </div>
+  <div class="breadcrumb-text text-end">
+    <span class="text-black"><i class="fas fa-home me-1"></i>HOME</span>
+    <span class="mx-2 text-black">/</span>
+    <span class="text-black-50">Record Products</span>
+  </div>
+</div>
+
+<div class="container-fluid mt-2">
+
+  <!-- Service Summary Card -->
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-header table-title-bar fw-bold text-white">
+      <i class="fas fa-info-circle me-2"></i>Service Being Completed
+    </div>
+    <div class="card-body p-4">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="summary-info-box">
+            <i class="fas fa-user info-icon-sm text-primary"></i>
+            <div>
+              <small class="text-muted d-block">Customer</small>
+              <strong>{{ appointment_service.appointment.customer.full_name }}</strong>
+              <small class="d-block text-muted">{{ appointment_service.appointment.customer.mobile }}</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="summary-info-box">
+            <i class="fas fa-spa info-icon-sm" style="color:#ff4f6e;"></i>
+            <div>
+              <small class="text-muted d-block">Service</small>
+              <strong>{{ appointment_service.service.service_name }}</strong>
+              <small class="d-block text-muted">{{ appointment_service.service.duration_minutes }} min</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="summary-info-box">
+            <i class="fas fa-calendar info-icon-sm text-success"></i>
+            <div>
+              <small class="text-muted d-block">Appointment</small>
+              <strong>{{ appointment_service.appointment.appointment_date|date:"d M, Y" }}</strong>
+              <small class="d-block text-muted">{{ appointment_service.appointment.appointment_time }}</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="summary-info-box">
+            <i class="fas fa-rupee-sign info-icon-sm text-warning"></i>
+            <div>
+              <small class="text-muted d-block">Service Price</small>
+              <strong class="text-success fs-5">₹{{ appointment_service.service_price }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Start -->
+  <form method="POST" id="productUsageForm">
+    {% csrf_token %}
+
+    <!-- Step 1: Service Notes -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header section-header fw-bold text-white">
+        <i class="fas fa-sticky-note me-2"></i>Step 1: Service Notes
+        <small class="ms-2 fw-normal opacity-75">(Optional but recommended)</small>
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <div class="col-md-12">
+            <label class="form-label">
+              <i class="fas fa-comment-dots me-2 text-primary"></i>
+              What did you do? Any observations about the customer's hair/skin/service?
+            </label>
+            <textarea name="service_notes" class="form-control modern-input" rows="4"
+              placeholder="e.g., Customer had dry scalp, applied extra conditioner. Hair color came out great. Customer was happy with the result. Suggested monthly treatment...">{{ appointment_service.service_notes|default:'' }}</textarea>
+            <small class="text-muted">
+              <i class="fas fa-info-circle me-1"></i>
+              Yeh notes sirf admin aur tum dekh sakte ho. Customer ko nahi dikhega.
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Products Used -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header section-header fw-bold text-white d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-box-open me-2"></i>Step 2: Products Used During Service</span>
+        <button type="button" class="btn btn-light btn-sm fw-bold" onclick="addProductRow()">
+          <i class="fas fa-plus me-2"></i>Add Product
+        </button>
+      </div>
+      <div class="card-body p-4">
+
+        <!-- Info Alert -->
+        <div class="alert-info-custom mb-4">
+          <i class="fas fa-lightbulb me-2 text-warning"></i>
+          <strong>New vs Existing kya hai?</strong>
+          <ul class="mb-0 mt-2">
+            <li><span class="badge-new-tag">🆕 New Opened</span> — Naya product pehli baar khola → <strong>Stock se minus hoga</strong></li>
+            <li><span class="badge-existing-tag">📦 Already Open</span> — Pehle se khula hua product use kiya → <strong>Stock minus nahi hoga</strong></li>
+          </ul>
+        </div>
+
+        <!-- Suggested Products (category based) -->
+        {% if suggested_products %}
+        <div class="mb-4">
+          <h6 class="text-primary mb-3">
+            <i class="fas fa-star me-2"></i>Suggested Products
+            <small class="text-muted ms-2">({{ appointment_service.service.get_category_display }} ke liye)</small>
+          </h6>
+          <div class="suggested-products-grid">
+            {% for product in suggested_products %}
+            <button type="button" class="btn-suggested-product" onclick="addSuggestedProduct({{ product.id }}, '{{ product.product_name|escapejs }}', {{ product.current_stock }})">
+              <i class="fas fa-plus-circle me-2"></i>
+              {{ product.product_name }}
+              <small class="d-block text-muted mt-1">Stock: {{ product.current_stock }} units</small>
+            </button>
+            {% endfor %}
+          </div>
+        </div>
+        <hr class="my-4">
+        {% endif %}
+
+        <!-- Products Container -->
+        <div id="productsContainer">
+          {% if existing_usages %}
+            {% for usage in existing_usages %}
+            <div class="product-row mb-3 p-3 product-row-box" id="prow-existing-{{ forloop.counter }}">
+              <div class="row align-items-center">
+                <div class="col-md-4 mb-2">
+                  <label class="form-label"><i class="fas fa-box me-2 text-primary"></i>Product</label>
+                  <select name="product_id[]" class="form-control modern-input">
+                    <option value="">-- Select Product --</option>
+                    {% for product in all_products %}
+                      <option value="{{ product.id }}" {% if product.id == usage.product.id %}selected{% endif %}>
+                        {{ product.product_name }} ({{ product.get_category_display }}) — Stock: {{ product.current_stock }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <label class="form-label"><i class="fas fa-tag me-2 text-primary"></i>New or Existing?</label>
+                  <div class="toggle-group">
+                    <label class="toggle-option {% if usage.usage_type == 'new' %}active{% endif %}">
+                      <input type="radio" name="usage_type[]" value="new" {% if usage.usage_type == 'new' %}checked{% endif %}> 🆕 New Opened
+                    </label>
+                    <label class="toggle-option {% if usage.usage_type == 'existing' %}active{% endif %}">
+                      <input type="radio" name="usage_type[]" value="existing" {% if usage.usage_type == 'existing' %}checked{% endif %}> 📦 Already Open
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-2 mb-2">
+                  <label class="form-label"><i class="fas fa-weight me-2 text-primary"></i>Qty Used</label>
+                  <input type="number" name="quantity[]" class="form-control modern-input" value="{{ usage.quantity_used }}" min="0.01" step="0.01" placeholder="1">
+                </div>
+                <div class="col-md-2 mb-2">
+                  <label class="form-label"><i class="fas fa-comment me-2 text-primary"></i>Note</label>
+                  <input type="text" name="product_notes[]" class="form-control modern-input" value="{{ usage.notes|default:'' }}" placeholder="e.g., Half used">
+                </div>
+                <div class="col-md-1 mb-2 d-flex align-items-end">
+                  <button type="button" class="btn btn-danger btn-sm w-100" onclick="removeProductRow(this)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <!-- Default empty row -->
+            <div class="product-row mb-3 p-3 product-row-box" id="prow-1">
+              <div class="row align-items-center">
+                <div class="col-md-4 mb-2">
+                  <label class="form-label"><i class="fas fa-box me-2 text-primary"></i>Product</label>
+                  <select name="product_id[]" class="form-control modern-input">
+                    <option value="">-- Select Product (Optional) --</option>
+                    {% for product in all_products %}
+                      <option value="{{ product.id }}">
+                        {{ product.product_name }} ({{ product.get_category_display }}) — Stock: {{ product.current_stock }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <label class="form-label"><i class="fas fa-tag me-2 text-primary"></i>New or Existing?</label>
+                  <div class="toggle-group">
+                    <label class="toggle-option">
+                      <input type="radio" name="usage_type[]" value="new"> 🆕 New Opened
+                    </label>
+                    <label class="toggle-option active">
+                      <input type="radio" name="usage_type[]" value="existing" checked> 📦 Already Open
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-2 mb-2">
+                  <label class="form-label"><i class="fas fa-weight me-2 text-primary"></i>Qty Used</label>
+                  <input type="number" name="quantity[]" class="form-control modern-input" value="1" min="0.01" step="0.01">
+                </div>
+                <div class="col-md-2 mb-2">
+                  <label class="form-label"><i class="fas fa-comment me-2 text-primary"></i>Note</label>
+                  <input type="text" name="product_notes[]" class="form-control modern-input" placeholder="e.g., Half used">
+                </div>
+                <div class="col-md-1 mb-2 d-flex align-items-end">
+                  <button type="button" class="btn btn-danger btn-sm w-100" onclick="removeProductRow(this)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+
+        <button type="button" class="btn btn-outline-primary btn-add-more mt-2" onclick="addProductRow()">
+          <i class="fas fa-plus me-2"></i>Add Another Product
+        </button>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-body p-4">
+        <div class="alert-warning-custom mb-4">
+          <i class="fas fa-exclamation-triangle me-2 text-warning"></i>
+          <strong>Dhyan do:</strong> Submit karne ke baad yeh service <strong>Complete</strong> ho jaegi.
+          Agar sab services complete ho gayi toh appointment bhi complete ho jaegi.
+        </div>
+        <div class="d-flex justify-content-between">
+          <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-action-lg">
+            <i class="fas fa-arrow-left me-2"></i>Back (Save Later)
+          </a>
+          <button type="submit" class="btn btn-success btn-action-lg" id="submitBtn">
+            <i class="fas fa-check-double me-2"></i>Complete Service & Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- All products JSON for JS -->
+<script>
+const ALL_PRODUCTS = [
+  {% for product in all_products %}
+  {
+    id: {{ product.id }},
+    name: "{{ product.product_name|escapejs }}",
+    category: "{{ product.get_category_display|escapejs }}",
+    stock: {{ product.current_stock }}
+  }{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+
+let productRowCount = {{ existing_usages|length|default:1 }};
+
+// Add product row manually
+function addProductRow(preSelectedId, preSelectedName) {
+  productRowCount++;
+  const container = document.getElementById('productsContainer');
+  const optionsHtml = ALL_PRODUCTS.map(p =>
+    `<option value="${p.id}" ${preSelectedId == p.id ? 'selected' : ''}>
+       ${p.name} (${p.category}) — Stock: ${p.stock}
+     </option>`
+  ).join('');
+
+  const newRow = document.createElement('div');
+  newRow.className = 'product-row mb-3 p-3 product-row-box';
+  newRow.id = `prow-${productRowCount}`;
+  newRow.innerHTML = `
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-2">
+        <label class="form-label"><i class="fas fa-box me-2 text-primary"></i>Product</label>
+        <select name="product_id[]" class="form-control modern-input">
+          <option value="">-- Select Product (Optional) --</option>
+          ${optionsHtml}
+        </select>
+      </div>
+      <div class="col-md-3 mb-2">
+        <label class="form-label"><i class="fas fa-tag me-2 text-primary"></i>New or Existing?</label>
+        <div class="toggle-group">
+          <label class="toggle-option">
+            <input type="radio" name="usage_type[]" value="new"> 🆕 New Opened
+          </label>
+          <label class="toggle-option active">
+            <input type="radio" name="usage_type[]" value="existing" checked> 📦 Already Open
+          </label>
+        </div>
+      </div>
+      <div class="col-md-2 mb-2">
+        <label class="form-label"><i class="fas fa-weight me-2 text-primary"></i>Qty Used</label>
+        <input type="number" name="quantity[]" class="form-control modern-input" value="1" min="0.01" step="0.01">
+      </div>
+      <div class="col-md-2 mb-2">
+        <label class="form-label"><i class="fas fa-comment me-2 text-primary"></i>Note</label>
+        <input type="text" name="product_notes[]" class="form-control modern-input" placeholder="e.g., Half used">
+      </div>
+      <div class="col-md-1 mb-2 d-flex align-items-end">
+        <button type="button" class="btn btn-danger btn-sm w-100" onclick="removeProductRow(this)">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  `;
+  container.appendChild(newRow);
+}
+
+// Add suggested product
+function addSuggestedProduct(id, name, stock) {
+  addProductRow(id, name);
+  // Scroll to bottom of products
+  document.getElementById('productsContainer').lastElementChild.scrollIntoView({behavior: 'smooth'});
+}
+
+// Remove product row
+function removeProductRow(btn) {
+  btn.closest('.product-row').remove();
+}
+
+// Toggle option visual
+document.addEventListener('change', function(e) {
+  if (e.target.type === 'radio' && e.target.name === 'usage_type[]') {
+    const toggleGroup = e.target.closest('.toggle-group');
+    toggleGroup.querySelectorAll('.toggle-option').forEach(opt => opt.classList.remove('active'));
+    e.target.closest('.toggle-option').classList.add('active');
+  }
+});
+</script>
+
+<style>
+.modern-card { border-radius: 15px; border: none; overflow: hidden; }
+.modern-input {
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 10px; padding: 10px 14px;
+  transition: all 0.3s ease; color: #000;
+}
+.modern-input:focus {
+  border-color: #ff4f6e !important;
+  background-color: #fff5f7 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255,79,110,0.15);
+}
+.form-label { font-weight: 600; color: #333; margin-bottom: 8px; font-size: 13px; }
+.card-header.table-title-bar {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  padding: 18px 20px; font-size: 16px;
+  border-bottom: 3px solid rgba(255,255,255,0.2);
+}
+.card-header.section-header {
+  background: linear-gradient(135deg, #4f6eff 0%, #80abff 100%);
+  padding: 18px 20px; font-size: 16px;
+}
+.summary-info-box {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 15px;
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 10px; border-left: 4px solid #ff4f6e;
+  height: 100%;
+}
+.info-icon-sm { font-size: 22px; margin-top: 3px; }
+.product-row-box {
+  background: #fafafa;
+  border-radius: 12px;
+  border: 2px solid #e8e8e8;
+  transition: border-color 0.3s;
+}
+.product-row-box:hover { border-color: #ff4f6e; }
+.toggle-group {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.toggle-option {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  cursor: pointer; font-size: 13px; font-weight: 600;
+  transition: all 0.2s ease; background: #fff;
+  user-select: none;
+}
+.toggle-option input[type="radio"] { display: none; }
+.toggle-option.active {
+  border-color: #ff4f6e;
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  color: #ff4f6e;
+}
+.suggested-products-grid {
+  display: flex; flex-wrap: wrap; gap: 10px;
+}
+.btn-suggested-product {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 2px solid #ff4f6e;
+  background: white;
+  color: #ff4f6e;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+.btn-suggested-product:hover {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255,79,110,0.3);
+}
+.badge-new-tag {
+  display: inline-block; padding: 3px 8px; border-radius: 6px;
+  background: #fff3cd; color: #856404; font-weight: 600; font-size: 12px;
+}
+.badge-existing-tag {
+  display: inline-block; padding: 3px 8px; border-radius: 6px;
+  background: #d1ecf1; color: #0c5460; font-weight: 600; font-size: 12px;
+}
+.alert-info-custom {
+  background: linear-gradient(135deg, #e7f3ff 0%, #d4eaff 100%);
+  border: 2px solid #4f6eff; border-radius: 12px; padding: 15px 20px;
+}
+.alert-warning-custom {
+  background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+  border: 2px solid #ffc107; border-radius: 12px; padding: 15px 20px;
+}
+.btn-add-more {
+  border: 2px dashed #ff4f6e; color: #ff4f6e;
+  border-radius: 10px; padding: 10px 20px;
+  font-weight: 600; transition: all 0.2s;
+}
+.btn-add-more:hover {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  color: white;
+}
+.btn-action-lg {
+  padding: 12px 30px; border-radius: 10px;
+  font-weight: 600; transition: all 0.3s ease;
+}
+.btn-action-lg:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.btn-success { background: linear-gradient(135deg, #28a745 0%, #48c774 100%); border: none; }
+.ribbon-header {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px; padding: 20px; margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(255,79,110,0.05);
+}
+.text-primary { color: #ff4f6e !important; }
+</style>
+{% endblock %}

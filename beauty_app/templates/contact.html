@@ -1,0 +1,340 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us — Glamour Studio{% endblock %}
+{% block nav_contact %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+.contact-hero {
+    height: 50vh; min-height: 360px;
+    background: url('https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=1920&q=80') center/cover no-repeat;
+    position: relative;
+    display: flex; align-items: flex-end;
+    padding-bottom: 60px; padding-top: 100px;
+}
+.contact-hero-content { position: relative; z-index: 2; }
+.contact-hero-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: var(--champagne);
+    font-weight: 300; line-height: 1.1;
+}
+.breadcrumb-glamour a { color: var(--rose-gold); font-size:0.78rem; letter-spacing:1px; }
+.breadcrumb-glamour span { color: rgba(247,231,206,0.5); font-size:0.78rem; margin:0 8px; }
+.breadcrumb-glamour .current { color: rgba(247,231,206,0.75); font-size:0.78rem; }
+
+.contact-main { padding: 80px 0 100px; }
+
+/* Info Cards */
+.contact-info-card {
+    background: var(--white);
+    box-shadow: var(--shadow-card);
+    padding: 36px 32px;
+    display: flex; gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    transition: var(--transition);
+    border-left: 3px solid transparent;
+}
+.contact-info-card:hover {
+    border-left-color: var(--rose-gold);
+    transform: translateX(4px);
+    box-shadow: 0 8px 32px rgba(59,15,43,0.12);
+}
+.contact-card-icon {
+    width: 52px; height: 52px;
+    background: var(--plum);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; color: var(--champagne);
+    flex-shrink: 0;
+}
+.contact-card-label {
+    font-family: var(--font-sans);
+    font-size: 0.65rem; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--rose-gold);
+    margin-bottom: 6px; display: block;
+}
+.contact-card-value {
+    font-family: var(--font-serif);
+    font-size: 1.1rem; color: var(--plum);
+    line-height: 1.5;
+}
+.contact-card-sub {
+    font-size: 0.82rem; color: var(--text-mid);
+    margin-top: 4px; line-height: 1.7;
+}
+
+/* Map Section */
+.map-section { position: relative; }
+.map-section iframe {
+    width: 100%; height: 420px;
+    display: block; border: none;
+    filter: grayscale(20%) sepia(10%);
+}
+.map-overlay-card {
+    position: absolute;
+    top: 30px; right: 30px;
+    background: var(--plum);
+    padding: 28px 32px;
+    max-width: 280px;
+    z-index: 10;
+    box-shadow: 0 8px 40px rgba(59,15,43,0.3);
+}
+.map-card-title {
+    font-family: var(--font-deco);
+    font-size: 1.2rem; color: var(--champagne);
+    letter-spacing: 2px; margin-bottom: 14px;
+}
+.map-info {
+    display: flex; gap: 10px; margin-bottom: 10px;
+    align-items: flex-start;
+}
+.map-info i { color: var(--rose-gold); font-size: 0.9rem; margin-top: 2px; }
+.map-info span { font-size: 0.82rem; color: rgba(247,231,206,0.7); line-height: 1.6; }
+
+/* Hours Table */
+.hours-section { padding: 80px 0; background: var(--champagne); }
+.hours-table { width: 100%; border-collapse: collapse; }
+.hours-table tr {
+    border-bottom: 1px solid rgba(59,15,43,0.08);
+}
+.hours-table tr:last-child { border-bottom: none; }
+.hours-table td { padding: 14px 20px; font-size: 0.9rem; color: var(--text-mid); }
+.hours-table td:first-child { color: var(--plum); font-family: var(--font-serif); font-size: 1rem; }
+.hours-table td:last-child {
+    text-align: right;
+    color: var(--rose-gold);
+    font-weight: 500;
+}
+.hours-table .closed td:last-child { color: #c0392b; }
+.hours-today {
+    background: rgba(59,15,43,0.04);
+}
+.hours-today td:first-child { font-weight: 600; }
+
+/* Social Strip */
+.social-strip {
+    background: var(--plum);
+    padding: 60px 0;
+    text-align: center;
+}
+.social-strip-links { display: flex; justify-content: center; gap: 16px; margin-top: 28px; }
+.social-strip-link {
+    width: 52px; height: 52px;
+    border: 1px solid rgba(196,139,159,0.35);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--rose-gold);
+    font-size: 1.1rem;
+    transition: var(--transition);
+}
+.social-strip-link:hover {
+    background: var(--rose-gold);
+    border-color: var(--rose-gold);
+    color: var(--plum);
+}
+
+@media (max-width:768px) {
+    .contact-hero {
+        height: auto;
+        min-height: 280px;
+        padding-bottom: 40px;
+        padding-top: 100px;
+    }
+    .contact-hero-title { font-size: clamp(2rem, 8vw, 3rem) !important; }
+    .contact-main { padding: 50px 0 60px !important; }
+
+    .contact-info-card { padding: 22px 18px; gap: 14px; }
+    .contact-card-icon { width: 44px; height: 44px; font-size: 1.1rem; flex-shrink: 0; }
+    .contact-card-value { font-size: 1rem; }
+
+    /* Map */
+    .map-section { display: flex; flex-direction: column-reverse; }
+    .map-section iframe { height: 260px; }
+    .map-overlay-card { position: static !important; max-width: 100%; margin: 0; }
+
+    /* Hours table */
+    .hours-table td { padding: 10px 12px; font-size: 0.82rem; }
+    .hours-table td:first-child { font-size: 0.88rem; }
+
+    /* Hours card padding */
+    div[style*="padding:30px"] { padding: 20px 16px !important; }
+
+    /* Buttons */
+    .contact-main .btn-glamour-primary { display: block; text-align: center; width: 100%; margin: 0 !important; }
+
+    /* Social strip */
+    .social-strip { padding: 50px 0; }
+    .social-strip-links { flex-wrap: wrap; gap: 12px; }
+}
+
+@media (max-width: 480px) {
+    .contact-card-icon { width: 38px; height: 38px; font-size: 0.95rem; }
+    .hours-table td { padding: 8px 8px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HERO -->
+<div class="contact-hero">
+    <div class="overlay overlay-plum"></div>
+    <div class="container contact-hero-content">
+        <div class="breadcrumb-glamour mb-12" style="margin-bottom:12px;">
+            <a href="{% url 'home' %}">Home</a>
+            <span>›</span>
+            <span class="current">Contact Us</span>
+        </div>
+        <span class="section-label">Get In Touch</span>
+        <h1 class="contact-hero-title">We'd Love to<br>Hear From You</h1>
+    </div>
+</div>
+
+<!-- CONTACT MAIN -->
+<section class="contact-main">
+    <div class="container">
+        <div class="row g-5">
+
+            <!-- Contact Info Cards -->
+            <div class="col-lg-5" data-aos="fade-right">
+                <span class="section-label">Reach Us</span>
+                <h2 class="section-title" style="margin-bottom:36px;">Contact<br>Information</h2>
+
+                <div class="contact-info-card">
+                    <div class="contact-card-icon"><i class="bi bi-geo-alt"></i></div>
+                    <div>
+                        <span class="contact-card-label">Our Location</span>
+                        <div class="contact-card-value">123, Glamour Street</div>
+                        <div class="contact-card-sub">Bandra West, Mumbai – 400050<br>Maharashtra, India</div>
+                    </div>
+                </div>
+
+                <div class="contact-info-card">
+                    <div class="contact-card-icon"><i class="bi bi-telephone"></i></div>
+                    <div>
+                        <span class="contact-card-label">Call Us</span>
+                        <div class="contact-card-value">+91 98765 43210</div>
+                        <div class="contact-card-sub">Available Mon–Sat, 10 AM to 8 PM</div>
+                    </div>
+                </div>
+
+                <div class="contact-info-card">
+                    <div class="contact-card-icon"><i class="bi bi-envelope"></i></div>
+                    <div>
+                        <span class="contact-card-label">Email Us</span>
+                        <div class="contact-card-value">hello@glamourstudio.in</div>
+                        <div class="contact-card-sub">We respond within 24 hours</div>
+                    </div>
+                </div>
+
+                <div class="contact-info-card">
+                    <div class="contact-card-icon"><i class="fab fa-whatsapp"></i></div>
+                    <div>
+                        <span class="contact-card-label">WhatsApp</span>
+                        <div class="contact-card-value">+91 98765 43210</div>
+                        <div class="contact-card-sub">
+                            <a href="https://wa.me/919876543210" target="_blank"
+                               style="color:var(--rose-gold); text-decoration:underline; font-size:0.82rem;">
+                                Chat with us directly →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <a href="{% url 'booking' %}" class="btn-glamour-primary me-3">
+                        <span>Book Appointment</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right: Map + Hours -->
+            <div class="col-lg-7" data-aos="fade-left">
+                <div class="map-section" style="margin-bottom:30px;">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.5968505803694!2d72.82689931490015!3d19.054567387099876!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c945f517ebdd%3A0x5b7df40c8e4a4d3f!2sBandra%20West%2C%20Mumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1706000000000!5m2!1sen!2sin"
+                        allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                    <div class="map-overlay-card">
+                        <div class="map-card-title">GLAMOUR</div>
+                        <div class="map-info">
+                            <i class="bi bi-geo-alt"></i>
+                            <span>123 Glamour Street, Bandra West, Mumbai</span>
+                        </div>
+                        <div class="map-info">
+                            <i class="bi bi-clock"></i>
+                            <span>Mon–Sat: 10 AM – 8 PM</span>
+                        </div>
+                        <a href="https://maps.google.com" target="_blank"
+                           class="btn-glamour-outline d-inline-block mt-3"
+                           style="font-size:0.65rem; padding:9px 18px; color:var(--champagne); border-color:rgba(247,231,206,0.35);">
+                            Get Directions
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Hours Table -->
+                <div style="background:var(--white); box-shadow:var(--shadow-card); padding:30px;">
+                    <span class="section-label" style="margin-bottom:16px;">Salon Hours</span>
+                    <table class="hours-table">
+                        <tr class="hours-today">
+                            <td>Monday</td>
+                            <td>10:00 AM – 8:00 PM</td>
+                        </tr>
+                        <tr>
+                            <td>Tuesday</td>
+                            <td>10:00 AM – 8:00 PM</td>
+                        </tr>
+                        <tr>
+                            <td>Wednesday</td>
+                            <td>10:00 AM – 8:00 PM</td>
+                        </tr>
+                        <tr>
+                            <td>Thursday</td>
+                            <td>10:00 AM – 8:00 PM</td>
+                        </tr>
+                        <tr>
+                            <td>Friday</td>
+                            <td>10:00 AM – 8:00 PM</td>
+                        </tr>
+                        <tr>
+                            <td>Saturday</td>
+                            <td>9:00 AM – 9:00 PM</td>
+                        </tr>
+                        <tr>
+                            <td>Sunday</td>
+                            <td>11:00 AM – 6:00 PM</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SOCIAL STRIP -->
+<section class="social-strip">
+    <div class="container">
+        <span class="section-label" style="color:var(--rose-gold);" data-aos="fade-up">Follow Our Journey</span>
+        <h2 class="section-title light" data-aos="fade-up" data-aos-delay="100">Stay Connected</h2>
+        <div class="section-divider" data-aos="fade-up" data-aos-delay="150"></div>
+        <p style="font-size:0.9rem; color:rgba(247,231,206,0.65); max-width:480px; margin:0 auto 0;"
+           data-aos="fade-up" data-aos-delay="200">
+            Follow us for daily inspiration, transformation stories, and exclusive offers.
+        </p>
+        <div class="social-strip-links" data-aos="fade-up" data-aos-delay="250">
+            <a href="#" class="social-strip-link"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-strip-link"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-strip-link"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="social-strip-link"><i class="fab fa-pinterest-p"></i></a>
+            <a href="https://wa.me/919876543210" class="social-strip-link" target="_blank">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,271 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block content %}
+
+<div class="ribbon-header d-flex justify-content-between align-items-center px-4 pb-5 mb-3" style="color: black">
+  <div class="d-flex align-items-center">
+    <i class="fas fa-boxes me-3 fs-2" style="color: #ff4f6e;"></i>
+    <div class="fw-bold fs-3">Product Usage — {{ appointment_service.service.service_name }}</div>
+  </div>
+  <div class="breadcrumb-text text-end">
+    <span class="text-black"><i class="fas fa-home me-1"></i>HOME</span>
+    <span class="mx-2 text-black">/</span>
+    <a href="{% url 'appointment_list' %}" class="text-black">Appointments</a>
+    <span class="mx-2 text-black">/</span>
+    <a href="{% url 'view_appointment' appointment_service.appointment.id %}" class="text-black">
+      {{ appointment_service.appointment.appointment_id }}
+    </a>
+    <span class="mx-2 text-black">/</span>
+    <span class="text-black-50">Product Usage</span>
+  </div>
+</div>
+
+<div class="container-fluid mt-2">
+
+  <!-- Service Summary -->
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-header table-title-bar fw-bold text-white">
+      <i class="fas fa-info-circle me-2"></i>Service Summary
+    </div>
+    <div class="card-body p-4">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="summary-box">
+            <small class="text-muted d-block">Customer</small>
+            <strong>{{ appointment_service.appointment.customer.full_name }}</strong>
+            <small class="d-block text-muted">{{ appointment_service.appointment.customer.mobile }}</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="summary-box">
+            <small class="text-muted d-block">Service</small>
+            <strong>{{ appointment_service.service.service_name }}</strong>
+            <small class="d-block text-muted">{{ appointment_service.service.get_category_display }}</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="summary-box">
+            <small class="text-muted d-block">Employee</small>
+            <strong>{{ appointment_service.employee.full_name }}</strong>
+            <small class="d-block text-muted">{{ appointment_service.employee.get_role_display }}</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="summary-box">
+            <small class="text-muted d-block">Completed At</small>
+            <strong>
+              {% if appointment_service.completed_at %}
+                {{ appointment_service.completed_at|date:"d M Y, h:i A" }}
+              {% else %}
+                Not completed yet
+              {% endif %}
+            </strong>
+            <span class="badge-status-{% if appointment_service.service_status == 'completed' %}active{% else %}inactive{% endif %} d-inline-block mt-1">
+              {{ appointment_service.get_service_status_display }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {% if appointment_service.service_notes %}
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <div class="notes-box">
+            <i class="fas fa-sticky-note me-2 text-primary"></i>
+            <strong>Service Notes:</strong>
+            <p class="mb-0 mt-1">{{ appointment_service.service_notes }}</p>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Product Usage Table -->
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-header table-title-bar fw-bold text-white">
+      <i class="fas fa-boxes me-2"></i>Products Used ({{ usages.count }})
+    </div>
+    {% if usages %}
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0 modern-table">
+          <thead class="table-header">
+            <tr>
+              <th>#</th>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Usage Type</th>
+              <th>Qty Used</th>
+              <th>Notes</th>
+              <th>Recorded By</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for usage in usages %}
+            <tr>
+              <td><span class="serial-number">{{ forloop.counter }}</span></td>
+              <td>
+                <strong>{{ usage.product.product_name }}</strong>
+                <small class="d-block text-muted">{{ usage.product.product_id }}</small>
+              </td>
+              <td>
+                <span class="badge-category">{{ usage.product.get_category_display }}</span>
+              </td>
+              <td>
+                {% if usage.usage_type == 'new' %}
+                  <span class="badge-new">
+                    <i class="fas fa-box-open me-1"></i>New Opened
+                    <small class="d-block">Stock deducted</small>
+                  </span>
+                {% else %}
+                  <span class="badge-existing">
+                    <i class="fas fa-box me-1"></i>Already Open
+                    <small class="d-block">Stock not deducted</small>
+                  </span>
+                {% endif %}
+              </td>
+              <td>
+                <strong class="text-primary">{{ usage.quantity_used }}</strong>
+                <small class="text-muted"> units</small>
+              </td>
+              <td>
+                {% if usage.notes %}
+                  <span class="text-muted fst-italic">{{ usage.notes }}</span>
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if usage.recorded_by %}
+                  <strong>{{ usage.recorded_by.full_name }}</strong>
+                  <small class="d-block text-muted">{{ usage.recorded_by.employee_id }}</small>
+                {% else %}
+                  <span class="text-muted">Admin</span>
+                {% endif %}
+              </td>
+              <td>
+                <small class="text-muted">{{ usage.recorded_at|date:"d M, h:i A" }}</small>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Summary Footer -->
+    <div class="card-footer bg-light p-4">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="stat-box-sm">
+            <i class="fas fa-box-open text-warning me-2"></i>
+            <strong>New Products Opened:</strong>
+            {{ usages|dictsortreversed:"usage_type"|length }}
+            <small class="d-block text-muted">
+              ({{ usages.count }} total — check new ones for stock deduction)
+            </small>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-box-sm">
+            <i class="fas fa-boxes text-primary me-2"></i>
+            <strong>Total Products:</strong> {{ usages.count }}
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-box-sm">
+            <i class="fas fa-rupee-sign text-success me-2"></i>
+            <strong>Service Price:</strong> ₹{{ appointment_service.service_price }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% else %}
+    <div class="card-body p-5 text-center">
+      <i class="fas fa-box-open fa-4x mb-3" style="color: #ff4f6e; opacity: 0.3;"></i>
+      <h5 class="text-muted">No Products Recorded</h5>
+      <p class="text-muted">Employee ne koi product record nahi kiya is service ke liye.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Back Button -->
+  <div class="d-flex justify-content-start mb-4">
+    <a href="{% url 'view_appointment' appointment_service.appointment.id %}" class="btn btn-secondary btn-action-lg">
+      <i class="fas fa-arrow-left me-2"></i>Back to Appointment
+    </a>
+  </div>
+</div>
+
+<style>
+.modern-card { border-radius: 15px; border: none; overflow: hidden; }
+.card-header.table-title-bar {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  padding: 18px 20px; font-size: 16px;
+  border-bottom: 3px solid rgba(255,255,255,0.2);
+}
+.summary-box {
+  padding: 15px;
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 10px; border-left: 4px solid #ff4f6e;
+}
+.notes-box {
+  background: #fff8e1; border: 2px solid #ffc107;
+  border-radius: 10px; padding: 15px;
+}
+.modern-table { font-size: 14px; }
+.modern-table thead.table-header {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  color: #333; font-weight: 600;
+}
+.modern-table thead th {
+  border-bottom: 2px solid #ff4f6e; padding: 13px; vertical-align: middle;
+}
+.modern-table tbody td {
+  padding: 13px; vertical-align: middle; border-bottom: 1px solid #f0f0f0;
+}
+.modern-table tbody tr:hover { background-color: #fff5f7; }
+.serial-number { font-weight: 600; color: #666; }
+.badge-category {
+  display: inline-block; padding: 5px 10px; border-radius: 6px;
+  background: linear-gradient(135deg, #69ffe4 0%, #5ce1e6 100%);
+  color: #000; font-weight: 600; font-size: 11px;
+}
+.badge-new {
+  display: inline-block; padding: 6px 12px; border-radius: 8px;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  color: #856404; font-weight: 600; font-size: 12px;
+  border: 1px solid #ffc107;
+}
+.badge-existing {
+  display: inline-block; padding: 6px 12px; border-radius: 8px;
+  background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+  color: #0c5460; font-weight: 600; font-size: 12px;
+  border: 1px solid #17a2b8;
+}
+.badge-status-active {
+  display: inline-block; padding: 4px 10px; border-radius: 6px;
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  color: white; font-weight: 600; font-size: 11px;
+}
+.badge-status-inactive {
+  display: inline-block; padding: 4px 10px; border-radius: 6px;
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+  color: white; font-weight: 600; font-size: 11px;
+}
+.stat-box-sm { padding: 10px; }
+.btn-action-lg {
+  padding: 12px 30px; border-radius: 10px;
+  font-weight: 600; transition: all 0.3s ease;
+}
+.btn-action-lg:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.ribbon-header {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px; padding: 20px; margin-bottom: 20px;
+}
+.text-primary { color: #ff4f6e !important; }
+</style>
+{% endblock %}

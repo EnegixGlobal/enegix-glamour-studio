@@ -1,0 +1,355 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block content %}
+
+<div class="ribbon-header d-flex justify-content-between align-items-center px-4 pb-5 mb-3" style="color: black">
+  <div class="d-flex align-items-center">
+    <i class="fas fa-edit me-3 fs-2" style="color: #ff4f6e;"></i>
+    <div class="fw-bold fs-3">Edit Appointment - {{ appointment.appointment_id }}</div>
+  </div>
+  <div class="breadcrumb-text text-end">
+    <span class="text-black"><i class="fas fa-home me-1"></i>HOME</span>
+    <span class="mx-2 text-black">/</span>
+    <a href="{% url 'appointment_list' %}" class="text-black">Appointments</a>
+    <span class="mx-2 text-black">/</span>
+    <span class="text-black-50">Edit</span>
+  </div>
+</div>
+
+<div class="container-fluid mt-2">
+  <form method="POST">
+    {% csrf_token %}
+    
+    <!-- Customer Information (Read-only) -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header table-title-bar fw-bold text-white">
+        <i class="fas fa-user me-2"></i>Customer Information (Cannot be changed)
+      </div>
+      <div class="card-body p-4">
+        <div class="customer-info-box">
+          <div class="d-flex align-items-center">
+            {% if appointment.customer.profile_pic %}
+              <img src="{{ appointment.customer.profile_pic.url }}" class="customer-avatar-large me-3" alt="{{ appointment.customer.full_name }}">
+            {% else %}
+              <div class="customer-avatar-large-placeholder me-3">
+                {{ appointment.customer.full_name|first|upper }}
+              </div>
+            {% endif %}
+            <div class="flex-grow-1">
+              <h5 class="mb-1">{{ appointment.customer.full_name }}</h5>
+              <p class="text-muted mb-1">{{ appointment.customer.customer_id }}</p>
+              <p class="mb-0">
+                <i class="fas fa-mobile-alt me-2 text-primary"></i>{{ appointment.customer.mobile }}
+                {% if appointment.customer.email %}
+                  <span class="ms-3"><i class="fas fa-envelope me-2 text-primary"></i>{{ appointment.customer.email }}</span>
+                {% endif %}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appointment Details -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header table-title-bar fw-bold text-white">
+        <i class="fas fa-calendar-alt me-2"></i>Appointment Details
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="form-label"><i class="fas fa-calendar me-2 text-primary"></i>Appointment Date <span class="text-danger">*</span></label>
+            <input type="date" name="appointment_date" class="form-control modern-input" 
+                   value="{{ appointment.appointment_date|date:'Y-m-d' }}" required>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label"><i class="fas fa-clock me-2 text-primary"></i>Appointment Time <span class="text-danger">*</span></label>
+            <input type="time" name="appointment_time" class="form-control modern-input" 
+                   value="{{ appointment.appointment_time|time:'H:i' }}" required>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label"><i class="fas fa-info-circle me-2 text-primary"></i>Status <span class="text-danger">*</span></label>
+            <select name="status" class="form-control modern-input" required>
+              <option value="pending" {% if appointment.status == 'pending' %}selected{% endif %}>Pending</option>
+              <option value="confirmed" {% if appointment.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+              <option value="in_progress" {% if appointment.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+              <option value="completed" {% if appointment.status == 'completed' %}selected{% endif %}>Completed</option>
+              <option value="cancelled" {% if appointment.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label"><i class="fas fa-rupee-sign me-2 text-primary"></i>Advance Payment</label>
+            <input type="number" name="advance_paid" class="form-control modern-input" 
+                   value="{{ appointment.advance_paid }}" min="0" step="0.01">
+            <small class="text-muted">Current advance: ₹{{ appointment.advance_paid|floatformat:2 }}</small>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label"><i class="fas fa-calculator me-2 text-primary"></i>Total Amount</label>
+            <input type="text" class="form-control modern-input" 
+                   value="₹{{ appointment.total_amount|floatformat:2 }}" readonly disabled>
+            <small class="text-muted">Auto-calculated from services (cannot be edited)</small>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <label class="form-label"><i class="fas fa-sticky-note me-2 text-primary"></i>Special Notes</label>
+            <textarea name="special_notes" class="form-control modern-input" rows="3">{{ appointment.special_notes|default:'' }}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Services (Read-only Information) -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header table-title-bar fw-bold text-white">
+        <i class="fas fa-cut me-2"></i>Current Services (To modify services, go to appointment details)
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover modern-table mb-0">
+            <thead>
+              <tr>
+                <th><i class="fas fa-hashtag me-2"></i>S.No</th>
+                <th><i class="fas fa-scissors me-2"></i>Service Name</th>
+                <th><i class="fas fa-user-tie me-2"></i>Stylist/Employee</th>
+                <th><i class="fas fa-rupee-sign me-2"></i>Price</th>
+                <th><i class="fas fa-tag me-2"></i>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for service in appointment.appointment_services.all %}
+              <tr>
+                <td><span class="serial-number">{{ forloop.counter }}</span></td>
+                <td><strong>{{ service.service.service_name }}</strong></td>
+                <td>{{ service.employee.full_name }}</td>
+                <td><strong class="text-success">₹{{ service.service_price|floatformat:2 }}</strong></td>
+                <td>
+                  {% if service.is_additional %}
+                    <span class="badge modern-badge badge-info">
+                      <i class="fas fa-plus-circle me-1"></i>Additional
+                    </span>
+                  {% else %}
+                    <span class="badge modern-badge badge-secondary">
+                      <i class="fas fa-check-circle me-1"></i>Initial
+                    </span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Alert -->
+    <div class="alert alert-info mb-4">
+      <i class="fas fa-info-circle me-2"></i>
+      <strong>Note:</strong> To add or remove services, please use the "Add Additional Service" option from the appointment details page. 
+      This form only allows you to edit the appointment date, time, status, advance payment, and notes.
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between">
+          <div class="d-flex gap-3">
+            <a href="{% url 'view_appointment' appointment.id %}" class="btn btn-secondary btn-action-lg">
+              <i class="fas fa-arrow-left me-2"></i>Back to Details
+            </a>
+            <a href="{% url 'appointment_list' %}" class="btn btn-secondary btn-action-lg">
+              <i class="fas fa-list me-2"></i>Back to List
+            </a>
+          </div>
+          <button type="submit" class="btn btn-primary btn-action-lg">
+            <i class="fas fa-save me-2"></i>Update Appointment
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<style>
+/* Modern Card Styles */
+.modern-card {
+  border-radius: 15px;
+  border: none;
+  overflow: hidden;
+}
+
+.modern-input {
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 10px;
+  padding: 12px 15px;
+  transition: all 0.3s ease;
+  color: #000;
+}
+
+.modern-input:focus {
+  border-color: #ff4f6e !important;
+  background-color: #fff5f7 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 79, 110, 0.15);
+  transform: translateY(-2px);
+}
+
+.modern-input:disabled {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.card-header.table-title-bar {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  padding: 20px;
+  font-size: 18px;
+  border-bottom: 3px solid rgba(255,255,255,0.2);
+}
+
+.customer-info-box {
+  padding: 20px;
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 12px;
+  border: 2px solid #ff4f6e;
+}
+
+.customer-avatar-large {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ff4f6e;
+  box-shadow: 0 4px 15px rgba(255, 79, 110, 0.3);
+}
+
+.customer-avatar-large-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 32px;
+  box-shadow: 0 4px 15px rgba(255, 79, 110, 0.3);
+}
+
+/* Table Styles */
+.modern-table {
+  margin-bottom: 0;
+}
+
+.modern-table thead {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+}
+
+.modern-table thead th {
+  color: #333;
+  font-weight: 700;
+  padding: 15px;
+  border: none;
+  font-size: 14px;
+}
+
+.modern-table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.modern-table tbody tr:hover {
+  background: #fff5f7;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(255, 79, 110, 0.1);
+}
+
+.modern-table tbody td {
+  padding: 15px;
+  vertical-align: middle;
+  color: #333;
+  font-size: 14px;
+}
+
+.serial-number {
+  font-weight: 600;
+  color: #666;
+}
+
+/* Badge Styles */
+.modern-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.badge-info {
+  background: linear-gradient(135deg, #17a2b8 0%, #3dbdd1 100%);
+  color: white;
+}
+
+.badge-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+  color: white;
+}
+
+.btn-action-lg {
+  padding: 12px 30px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-action-lg:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #e63956 0%, #ff6b9d 100%);
+}
+
+.ribbon-header {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+}
+
+.text-primary {
+  color: #ff4f6e !important;
+}
+
+label .text-danger {
+  font-weight: normal;
+}
+
+.alert-info {
+  background: linear-gradient(135deg, #e7f9ff 0%, #d4f1ff 100%);
+  border: 2px solid #17a2b8;
+  border-radius: 12px;
+  color: #0c5460;
+}
+</style>
+
+{% endblock %}

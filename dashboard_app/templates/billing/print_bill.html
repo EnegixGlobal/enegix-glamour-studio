@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice {{ bill.bill_id }} – Glamour Studio</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #ddd;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 16px 50px;
+      color: #111;
+    }
+
+    /* ── ACTION BAR (hidden on print) ── */
+    .action-bar {
+      width: 100%;
+      max-width: 780px;
+      background: #111;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 22px;
+      border-radius: 8px 8px 0 0;
+    }
+    .ab-left strong  { font-size: 15px; display: block; margin-bottom: 2px; }
+    .ab-left span    { font-size: 11px; color: #aaa; }
+    .ab-right        { display: flex; gap: 8px; }
+    .btn {
+      padding: 8px 18px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      display: inline-block;
+    }
+    .btn-outline { background: transparent; color: #fff; border: 1.5px solid #666; }
+    .btn-outline:hover { background: #333; }
+    .btn-solid   { background: #fff; color: #111; }
+    .btn-solid:hover { background: #ddd; }
+
+    /* ── BILL WRAPPER ── */
+    .bill {
+      width: 100%;
+      max-width: 780px;
+      background: white;
+      border: 1px solid #999;
+    }
+
+    .top-bar { height: 6px; background: #111; }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 26px 32px 20px;
+      border-bottom: 2px solid #111;
+    }
+    .salon-name {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #111;
+      line-height: 1;
+    }
+    .salon-tagline {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #999;
+      margin-top: 4px;
+    }
+    .salon-contact {
+      margin-top: 12px;
+      font-size: 11px;
+      color: #555;
+      line-height: 1.9;
+    }
+    .invoice-side { text-align: right; }
+    .inv-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 6px;
+    }
+    .inv-id {
+      display: inline-block;
+      border: 2.5px solid #111;
+      font-size: 20px;
+      font-weight: 900;
+      padding: 5px 20px;
+      letter-spacing: 1.5px;
+      margin-bottom: 10px;
+    }
+    .inv-meta {
+      font-size: 11.5px;
+      color: #555;
+      line-height: 1.9;
+    }
+    .inv-meta strong { color: #111; }
+
+    /* ── INFO GRID ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      border-bottom: 1.5px solid #111;
+    }
+    .ig-cell {
+      padding: 14px 20px;
+      border-right: 1px solid #ccc;
+      font-size: 11px;
+    }
+    .ig-cell:last-child { border-right: none; }
+    .ig-title {
+      font-size: 8.5px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #999;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #e0e0e0;
+      margin-bottom: 7px;
+    }
+    .ig-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #111;
+      margin-bottom: 4px;
+    }
+    .ig-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 2.5px 0;
+      border-bottom: 1px dotted #e5e5e5;
+      color: #555;
+      font-size: 11px;
+    }
+    .ig-line:last-child { border-bottom: none; }
+    .ig-line .v { font-weight: 700; color: #111; }
+    .badge {
+      display: inline-block;
+      background: #111;
+      color: #fff;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      padding: 2px 9px;
+      border-radius: 3px;
+    }
+
+    /* ── TABLE ── */
+    .tbl-wrap { padding: 0 32px; }
+    .tbl-title {
+      font-size: 8.5px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: #999;
+      padding: 14px 0 7px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    thead tr { background: #111; color: #fff; }
+    thead th {
+      padding: 9px 11px;
+      text-align: left;
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    tbody tr { border-bottom: 1px solid #eee; }
+    tbody tr:nth-child(even) { background: #f8f8f8; }
+    tbody tr:last-child { border-bottom: 2px solid #111; }
+    td { padding: 10px 11px; color: #333; }
+    td.sn  { text-align: center; color: #bbb; font-size: 10px; }
+    td.svc { font-weight: 700; color: #111; }
+    td.emp { color: #666; font-size: 11px; }
+    td.qty { text-align: center; }
+    td.rt  { text-align: right; color: #666; }
+    td.amt { text-align: right; font-weight: 700; color: #111; }
+    tfoot td {
+      padding: 7px 11px;
+      font-size: 11px;
+      text-align: right;
+      color: #888;
+      border-bottom: 1px solid #eee;
+      background: #fafafa;
+    }
+
+    /* ── SUMMARY SECTION ── */
+    .summary {
+      display: flex;
+      padding: 20px 32px 26px;
+      border-top: 1.5px solid #111;
+      margin-top: 14px;
+      gap: 28px;
+    }
+    .sum-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      justify-content: space-between;
+    }
+    .notes-box {
+      border: 1px dashed #bbb;
+      padding: 10px 14px;
+      font-size: 11px;
+      color: #666;
+    }
+    .notes-box .nt { font-size: 8.5px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #999; margin-bottom: 4px; }
+    .status-stamp {
+      display: inline-block;
+      border: 2.5px solid #111;
+      padding: 8px 18px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background: #f5f5f5;
+    }
+    .genby { font-size: 10px; color: #bbb; font-style: italic; }
+
+    /* Amounts */
+    .sum-right {
+      width: 235px;
+      border: 1.5px solid #111;
+      padding: 14px;
+    }
+    .sr-hd {
+      font-size: 8.5px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #999;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+    .arow {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #555;
+      padding: 4px 0;
+      border-bottom: 1px dotted #eee;
+    }
+    .arow:last-child { border-bottom: none; }
+    .arow .av { font-weight: 700; color: #111; }
+    .adiv { border-top: 1.5px solid #111; margin: 7px 0; }
+    .arow.grand {
+      background: #f0f0f0;
+      padding: 7px 8px;
+      margin: 3px 0;
+      border-bottom: none;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .arow.grand .av { font-size: 14px; }
+    .arow.balance {
+      background: #111;
+      color: #fff;
+      padding: 8px 8px;
+      margin: 3px 0;
+      border-bottom: none;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .arow.balance .av { color: #fff; font-size: 14px; }
+
+    /* ── FOOTER ── */
+    .footer {
+      border-top: 2px solid #111;
+      padding: 16px 32px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .sig { text-align: center; width: 150px; }
+    .sig-lbl { font-size: 8.5px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #999; margin-bottom: 20px; }
+    .sig-ln  { border-bottom: 1px solid #aaa; margin-bottom: 4px; }
+    .sig-nm  { font-size: 10px; color: #aaa; }
+    .fc      { text-align: center; flex: 1; padding: 0 20px; }
+    .fc-ty   { font-size: 16px; font-weight: 900; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .fc-sub  { font-size: 10px; color: #999; line-height: 1.9; }
+
+    /* ── BOTTOM STRIP ── */
+    .strip {
+      background: #111;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      font-size: 8px;
+      letter-spacing: 2px;
+      padding: 7px;
+      text-transform: uppercase;
+    }
+
+    /* ── PRINT ── */
+    @media print {
+      body { background: white; padding: 0; }
+      .action-bar { display: none !important; }
+      .bill { border: none; max-width: 100%; }
+      @page { size: A4; margin: 8mm 10mm; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Action Bar -->
+<div class="action-bar">
+  <div class="ab-left">
+    <strong>Invoice {{ bill.bill_id }} – Glamour Studio</strong>
+    <span>Bill generated successfully. Review and print below.</span>
+  </div>
+  <div class="ab-right">
+    <a href="{% url 'bill_list' %}"          class="btn btn-outline">Bill List</a>
+    <a href="{% url 'view_bill' bill.id %}"  class="btn btn-outline">Full View</a>
+    <button class="btn btn-solid" onclick="window.print()">🖨&nbsp; Print / PDF</button>
+  </div>
+</div>
+
+<!-- BILL -->
+<div class="bill">
+  <div class="top-bar"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="salon-name">Glamour Studio</div>
+      <div class="salon-tagline">Beauty &amp; Wellness</div>
+      <div class="salon-contact">
+        📍 Your Salon Address, City – PIN Code<br>
+        📞 +91 XXXXXXXXXX &nbsp;·&nbsp; ✉ info@glamourstudio.com<br>
+        🌐 www.glamourstudio.com &nbsp;·&nbsp; GSTIN: 00AAAAA0000A1Z5
+      </div>
+    </div>
+    <div class="invoice-side">
+      <div class="inv-label">Tax Invoice</div>
+      <div class="inv-id">{{ bill.bill_id }}</div>
+      <div class="inv-meta">
+        <strong>Date &nbsp;</strong> {{ bill.bill_date|date:"d M, Y" }}<br>
+        <strong>Time &nbsp;</strong> {{ bill.bill_date|date:"h:i A" }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Grid -->
+  <div class="info-grid">
+
+    <!-- Customer -->
+    <div class="ig-cell">
+      <div class="ig-title">Bill To</div>
+      <div class="ig-name">{{ bill.customer.full_name }}</div>
+      <div class="ig-line"><span>Customer ID</span><span class="v">{{ bill.customer.customer_id }}</span></div>
+      <div class="ig-line"><span>Mobile</span><span class="v">{{ bill.customer.mobile }}</span></div>
+      {% if bill.customer.email %}
+      <div class="ig-line"><span>Email</span><span class="v">{{ bill.customer.email }}</span></div>
+      {% endif %}
+    </div>
+
+    <!-- Appointment -->
+    <div class="ig-cell">
+      <div class="ig-title">Appointment</div>
+      <div class="ig-line"><span>Appt. ID</span>   <span class="v">{{ bill.appointment.appointment_id }}</span></div>
+      <div class="ig-line"><span>Visit Date</span> <span class="v">{{ bill.appointment.appointment_date|date:"d M, Y" }}</span></div>
+      <div class="ig-line"><span>Visit Time</span> <span class="v">{{ bill.appointment.appointment_time }}</span></div>
+    </div>
+
+    <!-- Payment -->
+    <div class="ig-cell">
+      <div class="ig-title">Payment</div>
+      <div class="ig-line">
+        <span>Mode</span>
+        <span><span class="badge">
+          {% if bill.payment_method == 'cash' %}CASH
+          {% elif bill.payment_method == 'card' %}CARD
+          {% elif bill.payment_method == 'upi'  %}UPI
+          {% else %}ONLINE{% endif %}
+        </span></span>
+      </div>
+      <div class="ig-line">
+        <span>Status</span>
+        <span class="v">
+          {% if bill.payment_status == 'paid'    %}✔ Fully Paid
+          {% elif bill.payment_status == 'partial'%}◑ Partial
+          {% else %}✕ Pending{% endif %}
+        </span>
+      </div>
+      <div class="ig-line">
+        <span>Prepared By</span>
+        <span class="v">{% if bill.generated_by %}{{ bill.generated_by.full_name }}{% else %}Super Admin{% endif %}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="tbl-wrap">
+    <div class="tbl-title">Services Availed</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:4%;  text-align:center">#</th>
+          <th style="width:38%">Service</th>
+          <th style="width:30%">Stylist / Employee</th>
+          <th style="width:8%;  text-align:center">Qty</th>
+          <th style="width:10%; text-align:right">Rate</th>
+          <th style="width:10%; text-align:right">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in bill_items %}
+        <tr>
+          <td class="sn">{{ forloop.counter }}</td>
+          <td class="svc">{{ item.service_name }}</td>
+          <td class="emp">{{ item.employee_name }}</td>
+          <td class="qty">{{ item.quantity }}</td>
+          <td class="rt">₹{{ item.price|floatformat:2 }}</td>
+          <td class="amt">₹{{ item.subtotal|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="5">Subtotal</td>
+          <td style="font-weight:700; color:#333">₹{{ bill.subtotal|floatformat:2 }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary">
+
+    <!-- Left -->
+    <div class="sum-left">
+      {% if bill.notes %}
+      <div class="notes-box">
+        <div class="nt">Notes</div>
+        {{ bill.notes }}
+      </div>
+      {% endif %}
+
+      <div class="status-stamp">
+        {% if bill.payment_status == 'paid'    %}✔&nbsp; Fully Paid
+        {% elif bill.payment_status == 'partial'%}◑&nbsp; Partially Paid
+        {% else %}✕&nbsp; Payment Pending{% endif %}
+      </div>
+
+      <div class="genby">
+        Prepared by:&nbsp;
+        {% if bill.generated_by %}{{ bill.generated_by.full_name }} · {{ bill.generated_by.employee_id }}
+        {% else %}Super Admin{% endif %}
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div class="sum-right">
+      <div class="sr-hd">Amount Summary</div>
+
+      <div class="arow"><span>Subtotal</span><span class="av">₹{{ bill.subtotal|floatformat:2 }}</span></div>
+
+      {% if bill.discount > 0 %}
+      <div class="arow"><span>Discount (–)</span><span class="av">₹{{ bill.discount|floatformat:2 }}</span></div>
+      {% endif %}
+
+      {% if bill.gst_amount > 0 %}
+      <div class="arow"><span>GST (+)</span><span class="av">₹{{ bill.gst_amount|floatformat:2 }}</span></div>
+      {% endif %}
+
+      <div class="adiv"></div>
+
+      <div class="arow grand">
+        <span>Grand Total</span><span class="av">₹{{ bill.total_amount|floatformat:2 }}</span>
+      </div>
+
+      {% if bill.appointment.advance_paid > 0 %}
+      <div class="arow"><span>Advance Paid (–)</span><span class="av">₹{{ bill.appointment.advance_paid|floatformat:2 }}</span></div>
+      {% endif %}
+
+      <div class="arow"><span>Amount Paid</span><span class="av">₹{{ bill.amount_paid|floatformat:2 }}</span></div>
+
+      <div class="adiv"></div>
+
+      <div class="arow balance">
+        <span>Balance Due</span><span class="av">₹{{ bill.balance_amount|floatformat:2 }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="sig">
+      <div class="sig-lbl">Authorised Signatory</div>
+      <div class="sig-ln"></div>
+      <div class="sig-nm">Glamour Studio</div>
+    </div>
+    <div class="fc">
+      <div class="fc-ty">✦ Thank You for Visiting! ✦</div>
+      <div class="fc-sub">
+        We look forward to pampering you again at Glamour Studio.<br>
+        📞 +91 XXXXXXXXXX &nbsp;·&nbsp; 🌐 www.glamourstudio.com
+      </div>
+    </div>
+    <div class="sig">
+      <div class="sig-lbl">Customer Signature</div>
+      <div class="sig-ln"></div>
+      <div class="sig-nm">&nbsp;</div>
+    </div>
+  </div>
+
+  <div class="strip">Computer Generated Invoice — No Physical Signature Required &nbsp;|&nbsp; Glamour Studio © 2025</div>
+</div>
+
+{% if auto_print %}
+<script>
+  window.addEventListener('load', function() {
+    setTimeout(function() { window.print(); }, 500);
+  });
+</script>
+{% endif %}
+
+</body>
+</html>

@@ -1,0 +1,953 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Services — Glamour Studio{% endblock %}
+{% block nav_services %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ═══════════════════════════════════════════
+   PAGE HERO  (unchanged)
+═══════════════════════════════════════════ */
+.page-hero {
+    height: 50vh; min-height: 360px;
+    background: url('https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=80') center/cover no-repeat;
+    position: relative; display: flex; align-items: flex-end;
+    padding-bottom: 60px; padding-top: 100px;
+}
+.page-hero-content { position: relative; z-index: 2; }
+.page-hero-title {
+    font-family: var(--font-serif); font-size: clamp(2.5rem,5vw,4rem);
+    color: var(--champagne); font-weight: 300; line-height: 1.1;
+}
+.breadcrumb-glamour a { color: var(--rose-gold); font-size:.78rem; letter-spacing:1px; }
+.breadcrumb-glamour span { color: rgba(247,231,206,.5); font-size:.78rem; margin:0 8px; }
+.breadcrumb-glamour .current { color: rgba(247,231,206,.75); font-size:.78rem; }
+
+/* ═══════════════════════════════════════════
+   BOOK SECTION
+═══════════════════════════════════════════ */
+.services-book-section { padding: 80px 0 110px; background: var(--bg-warm,#faf6f2); }
+
+/* Hint text above book */
+.book-hint {
+    text-align: center; margin-bottom: 36px;
+    font-size: .6rem; letter-spacing: 4px; text-transform: uppercase;
+    color: rgba(59,15,43,.3);
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.book-hint::before, .book-hint::after {
+    content: ''; width: 40px; height: 1px;
+    background: linear-gradient(to right,transparent,rgba(196,139,159,.35),transparent);
+}
+
+/* Book outer */
+.book-outer {
+    width: min(960px,94vw); margin: 0 auto; position: relative;
+}
+.book-outer::after {
+    content: ''; position: absolute;
+    bottom: -20px; left: 6%; right: 6%; height: 28px;
+    background: radial-gradient(ellipse,rgba(59,15,43,.22) 0%,transparent 70%);
+    border-radius: 50%; pointer-events: none;
+}
+
+/* The book */
+#book {
+    width: 100%; height: min(600px,66vw);
+    position: relative; touch-action: none; cursor: grab;
+    box-shadow:
+        0 0 0 1px rgba(196,139,159,.1),
+        0 30px 80px rgba(59,15,43,.28),
+        0 8px 24px rgba(59,15,43,.15);
+}
+#book:active { cursor: grabbing; }
+#book::after {
+    content: ''; position: absolute;
+    left: 50%; top: 4%; bottom: 4%; width: 1px;
+    background: linear-gradient(to bottom,transparent,rgba(196,139,159,.35) 20%,rgba(196,139,159,.35) 80%,transparent);
+    z-index: 10; pointer-events: none;
+}
+
+/* Pages */
+.bk-page {
+    width: 50%; height: 100%; position: absolute; top: 0;
+    box-sizing: border-box; user-select: none; overflow: hidden;
+}
+#bk-left-under,  #bk-left-front  { left: 0; }
+#bk-right-under, #bk-right-front { left: 50%; }
+#bk-left-front,  #bk-left-under  { background-image: linear-gradient(to left,rgba(0,0,0,.18) 0%,transparent 10%); }
+#bk-right-front, #bk-right-under {
+    background-image: linear-gradient(to right,rgba(0,0,0,.18) 0%,transparent 10%);
+    border-left: 1px solid rgba(196,139,159,.12);
+}
+.bk-front { z-index: 2; }
+
+/* Flap */
+.bk-flap {
+    width: 100%; height: 100%;
+    position: absolute; top: 0; left: 0;
+    z-index: 5; pointer-events: none; display: none;
+    filter: drop-shadow(0 0 20px rgba(0,0,0,.5));
+}
+.bk-flap-content {
+    width: 50%; height: 100%;
+    position: absolute; top: 0; left: 0;
+    box-sizing: border-box; overflow: hidden;
+}
+.bk-fold-gradient {
+    position: absolute; width: 300%; height: 300%; left: -150%; top: -150%;
+    background: linear-gradient(to right,
+        transparent 48%,
+        rgba(0,0,0,.25) 50%,
+        rgba(255,255,255,.65) 51.5%,
+        rgba(0,0,0,.04) 58%,
+        transparent 65%);
+}
+
+/* Corner glow hints */
+.bk-corner { position: absolute; width: 64px; height: 64px; pointer-events: none; z-index: 8; opacity: 0; transition: opacity .3s; }
+.bk-corner::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle,rgba(196,139,159,.28) 0%,transparent 70%); }
+.bk-corner.tl { top:0; left:0; }
+.bk-corner.tr { top:0; right:0; }
+.bk-corner.bl { bottom:0; left:0; }
+.bk-corner.br { bottom:0; right:0; }
+#book:hover .bk-corner { opacity: 1; }
+
+/* ═══════════════════════════════════════════
+   PAGE CONTENT TYPES
+═══════════════════════════════════════════ */
+.pg { width:100%; height:100%; position:relative; overflow:hidden; box-sizing:border-box; }
+
+/* ── COVER LEFT ── */
+.pg-cover {
+    background: linear-gradient(145deg,#1a0812 0%,#260a1d 40%,#3b0f2b 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 44px 32px;
+}
+.pg-cover::before {
+    content: ''; position: absolute; inset: 14px;
+    border: 1px solid rgba(196,139,159,.18); pointer-events: none;
+}
+.pg-cover::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+        radial-gradient(ellipse 70% 50% at 50% 20%,rgba(196,139,159,.08) 0%,transparent 70%),
+        radial-gradient(ellipse 40% 60% at 20% 80%,rgba(196,139,159,.05) 0%,transparent 70%);
+    pointer-events: none;
+}
+.cover-watermark {
+    position: absolute; font-family: var(--font-deco);
+    font-size: clamp(8rem,16vw,14rem); color: rgba(247,231,206,.03);
+    line-height: 1; pointer-events: none; z-index: 0;
+}
+.cover-ornament { font-size: 1rem; color: var(--rose-gold); letter-spacing: 10px; margin-bottom: 20px; opacity: .65; position: relative; z-index: 1; }
+.cover-title {
+    font-family: var(--font-deco);
+    font-size: clamp(1.3rem,3vw,2rem);
+    color: var(--champagne); letter-spacing: 6px; line-height: 1.25;
+    margin-bottom: 6px; position: relative; z-index: 1;
+}
+.cover-brand {
+    font-family: var(--font-deco);
+    font-size: clamp(1.6rem,3.5vw,2.4rem);
+    color: var(--champagne); letter-spacing: 8px;
+    margin-bottom: 8px; position: relative; z-index: 1;
+}
+.cover-sub {
+    font-family: var(--font-serif); font-style: italic;
+    font-size: clamp(.8rem,1.4vw,.95rem);
+    color: var(--rose-gold); letter-spacing: 2px;
+    margin-bottom: 28px; position: relative; z-index: 1;
+}
+.cover-line { width: 50px; height: 1px; background: linear-gradient(to right,transparent,var(--rose-gold),transparent); margin: 0 auto 22px; }
+.cover-stats { display: flex; gap: 24px; justify-content: center; position: relative; z-index: 1; }
+.cover-stat-val { font-family: var(--font-serif); font-size: clamp(1.4rem,2.5vw,1.9rem); color: var(--champagne); display: block; }
+.cover-stat-lbl { font-size: .48rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(196,139,159,.5); }
+
+/* ── CHAPTER INDEX / TOC ── */
+.pg-index {
+    background: #faf6f2;
+    padding: clamp(24px,3.5vw,40px) clamp(22px,3vw,36px);
+    display: flex; flex-direction: column;
+}
+.pg-index-header { margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid rgba(59,15,43,.1); }
+.pg-index-label { font-size: .52rem; letter-spacing: 4px; text-transform: uppercase; color: var(--rose-gold); display: block; margin-bottom: 5px; }
+.pg-index-title { font-family: var(--font-serif); font-size: clamp(1.1rem,2.2vw,1.5rem); color: var(--plum); font-weight: 400; line-height: 1.2; }
+.ch-index-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 9px 10px; border-radius: 0;
+    cursor: pointer; transition: all .25s ease;
+    border-bottom: 1px solid rgba(59,15,43,.06);
+    position: relative;
+}
+.ch-index-item:last-child { border-bottom: none; }
+.ch-index-item::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 0; background: rgba(196,139,159,.08);
+    transition: width .25s ease;
+}
+.ch-index-item:hover::before { width: 100%; }
+.ch-index-item:hover .ch-index-name { color: var(--rose-gold); }
+.ch-icon { font-size: .9rem; color: var(--rose-gold); opacity: .7; flex-shrink: 0; width: 18px; text-align: center; position: relative; z-index: 1; }
+.ch-num-pill { font-size: .48rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(196,139,159,.6); flex-shrink: 0; position: relative; z-index: 1; width: 22px; }
+.ch-index-name { font-family: var(--font-serif); font-size: clamp(.88rem,1.5vw,1.02rem); color: var(--plum); transition: color .25s; flex: 1; position: relative; z-index: 1; }
+.ch-index-count { font-size: .58rem; color: var(--text-mid); letter-spacing: 1px; flex-shrink: 0; position: relative; z-index: 1; }
+.ch-index-arrow { font-size: .6rem; color: rgba(196,139,159,.4); flex-shrink: 0; transition: transform .2s,color .2s; position: relative; z-index: 1; }
+.ch-index-item:hover .ch-index-arrow { transform: translateX(4px); color: var(--rose-gold); }
+
+/* ── CHAPTER COVER PAGE (dark) ── */
+.pg-ch-dark {
+    background: linear-gradient(145deg,#1e0818 0%,#3b0f2b 60%,#55173e 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px 28px;
+}
+.pg-ch-dark::before { content: ''; position: absolute; inset: 14px; border: 1px solid rgba(196,139,159,.15); pointer-events: none; }
+.pg-ch-dark .ch-wm { position: absolute; font-family: var(--font-deco); font-size: clamp(6rem,12vw,10rem); color: rgba(247,231,206,.04); line-height: 1; pointer-events: none; }
+.pg-ch-dark .ch-label { font-size: .5rem; letter-spacing: 5px; text-transform: uppercase; color: var(--rose-gold); margin-bottom: 10px; position: relative; z-index: 1; }
+.pg-ch-dark .ch-icon-big { font-size: clamp(1.5rem,3vw,2.2rem); color: rgba(196,139,159,.5); margin-bottom: 10px; position: relative; z-index: 1; }
+.pg-ch-dark .ch-title { font-family: var(--font-serif); font-size: clamp(1.6rem,3.2vw,2.4rem); color: var(--champagne); font-weight: 300; line-height: 1.15; margin-bottom: 16px; position: relative; z-index: 1; }
+.pg-ch-dark .ch-divider { width: 38px; height: 1px; background: linear-gradient(to right,transparent,var(--rose-gold),transparent); margin: 0 auto 14px; position: relative; z-index: 1; }
+.pg-ch-dark .ch-desc { font-size: clamp(.7rem,1.2vw,.82rem); color: rgba(247,231,206,.5); line-height: 1.85; max-width: 200px; position: relative; z-index: 1; }
+.pg-ch-dark .ch-count { margin-top: 16px; font-size: .52rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(196,139,159,.45); position: relative; z-index: 1; }
+
+/* ── CHAPTER COVER PAGE (light/champagne) ── */
+.pg-ch-light {
+    background: linear-gradient(145deg,#f7e7ce 0%,#eedfc2 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px 28px;
+}
+.pg-ch-light::before { content: ''; position: absolute; inset: 14px; border: 1px solid rgba(59,15,43,.1); pointer-events: none; }
+.pg-ch-light .ch-wm { position: absolute; font-family: var(--font-deco); font-size: clamp(6rem,12vw,10rem); color: rgba(59,15,43,.05); line-height: 1; pointer-events: none; }
+.pg-ch-light .ch-label { font-size: .5rem; letter-spacing: 5px; text-transform: uppercase; color: var(--rose-gold); margin-bottom: 10px; position: relative; z-index: 1; }
+.pg-ch-light .ch-icon-big { font-size: clamp(1.5rem,3vw,2.2rem); color: rgba(196,139,159,.6); margin-bottom: 10px; position: relative; z-index: 1; }
+.pg-ch-light .ch-title { font-family: var(--font-serif); font-size: clamp(1.6rem,3.2vw,2.4rem); color: var(--plum); font-weight: 300; line-height: 1.15; margin-bottom: 16px; position: relative; z-index: 1; }
+.pg-ch-light .ch-divider { width: 38px; height: 1px; background: linear-gradient(to right,transparent,var(--rose-gold),transparent); margin: 0 auto 14px; position: relative; z-index: 1; }
+.pg-ch-light .ch-desc { font-size: clamp(.7rem,1.2vw,.82rem); color: var(--text-mid); line-height: 1.85; max-width: 200px; position: relative; z-index: 1; }
+.pg-ch-light .ch-count { margin-top: 16px; font-size: .52rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(196,139,159,.6); position: relative; z-index: 1; }
+
+/* ── SERVICE PAGE ── */
+.pg-svc {
+    padding: clamp(22px,3.2vw,34px) clamp(20px,2.8vw,30px);
+    position: relative;
+}
+.pg-svc-white { background: #fff; }
+.pg-svc-cream { background: #faf6f2; }
+
+.svc-cat-tag { font-size: .48rem; letter-spacing: 4px; text-transform: uppercase; color: var(--rose-gold); display: block; margin-bottom: 9px; }
+.svc-title { font-family: var(--font-serif); font-size: clamp(1rem,2vw,1.38rem); color: var(--plum); font-weight: 400; line-height: 1.2; margin-bottom: 10px; }
+.svc-divider { width: 28px; height: 1px; background: linear-gradient(to right,var(--rose-gold),transparent); margin-bottom: 11px; }
+.svc-desc { font-size: clamp(.7rem,1.1vw,.8rem); color: var(--text-mid); line-height: 1.88; margin-bottom: 13px; }
+
+/* Highlights */
+.svc-hl { list-style: none; margin-bottom: 12px; }
+.svc-hl li {
+    font-size: clamp(.65rem,1vw,.75rem);
+    color: var(--text-mid); padding: 4px 0;
+    border-bottom: 1px solid rgba(59,15,43,.06);
+    display: flex; align-items: center; gap: 8px;
+}
+.svc-hl li::before { content: '◆'; font-size: .36rem; color: var(--rose-gold); flex-shrink: 0; }
+
+/* Footer bar */
+.svc-footer {
+    position: absolute;
+    bottom: clamp(18px,2.8vw,26px);
+    left:  clamp(20px,2.8vw,30px);
+    right: clamp(20px,2.8vw,30px);
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding-top: 11px; border-top: 1px solid rgba(59,15,43,.08);
+    gap: 8px;
+}
+.svc-price-lbl { font-size: .46rem; letter-spacing: 3px; text-transform: uppercase; color: var(--rose-gold); display: block; margin-bottom: 2px; }
+.svc-price-val { font-family: var(--font-serif); font-size: clamp(1.1rem,2vw,1.4rem); color: var(--plum); }
+.svc-dur-wrap { text-align: right; }
+.svc-dur-lbl { font-size: .46rem; letter-spacing: 3px; text-transform: uppercase; color: var(--rose-gold); display: block; margin-bottom: 2px; }
+.svc-dur-val { font-family: var(--font-serif); font-size: clamp(.9rem,1.5vw,1.1rem); color: var(--text-mid); }
+.svc-book-btn {
+    font-size: .5rem; letter-spacing: 2px; text-transform: uppercase;
+    border: 1px solid var(--rose-gold); background: transparent;
+    color: var(--rose-gold); padding: 6px 13px; cursor: pointer;
+    transition: all .25s ease; flex-shrink: 0; align-self: center;
+    font-family: var(--font-sans);
+}
+.svc-book-btn:hover { background: var(--rose-gold); color: var(--plum); }
+
+/* ── IMAGE + TEXT page ── */
+.pg-img-split { position: relative; overflow: hidden; }
+.pg-img-split img { width: 100%; height: 55%; object-fit: cover; display: block; }
+.pg-img-split-body { padding: 18px 22px; background: #faf6f2; height: 45%; display: flex; flex-direction: column; justify-content: center; }
+.pg-img-split-overlay { position: absolute; bottom: 45%; left: 0; right: 0; height: 60px; background: linear-gradient(to bottom,transparent,rgba(250,246,242,.92)); pointer-events: none; }
+
+/* ── BACK COVER ── */
+.pg-back {
+    background: linear-gradient(135deg,#55173e 0%,#3b0f2b 45%,#1e0818 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 44px 32px;
+}
+.pg-back::before { content: ''; position: absolute; inset: 14px; border: 1px solid rgba(196,139,159,.14); pointer-events: none; }
+
+/* Page numbers */
+.pg-num { position: absolute; bottom: 11px; font-size: .58rem; letter-spacing: 2px; color: rgba(196,139,159,.3); font-family: var(--font-sans); pointer-events: none; }
+.pg-num-l { left: 18px; }
+.pg-num-r { right: 18px; }
+
+/* ═══════════════════════════════════════════
+   BOOK NAV
+═══════════════════════════════════════════ */
+.book-nav-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 16px; margin-top: 30px;
+}
+.bk-btn {
+    background: transparent;
+    border: 1px solid rgba(59,15,43,.18);
+    color: var(--text-mid);
+    font-family: var(--font-sans); font-size: .6rem; letter-spacing: 2.5px; text-transform: uppercase;
+    padding: 10px 26px; cursor: pointer; transition: all .3s ease;
+}
+.bk-btn:hover:not(:disabled) { border-color: var(--rose-gold); color: var(--plum); background: rgba(196,139,159,.06); }
+.bk-btn:disabled { opacity: .3; cursor: not-allowed; }
+.bk-spread-txt { font-size: .58rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(59,15,43,.28); min-width: 70px; text-align: center; }
+
+/* Dots */
+.bk-dots { display: flex; justify-content: center; gap: 6px; margin-top: 16px; }
+.bk-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(196,139,159,.22); transition: all .4s ease; cursor: pointer; }
+.bk-dot.active { background: var(--rose-gold); width: 20px; border-radius: 3px; }
+
+/* ═══════════════════════════════════════════
+   SERVICE MODAL (unchanged)
+═══════════════════════════════════════════ */
+.service-modal .modal-content { border: none; border-radius: 0; overflow: hidden; }
+.service-modal .modal-header { background: var(--plum); border: none; padding: 24px 30px; }
+.service-modal .modal-title { font-family: var(--font-serif); color: var(--champagne); font-size: 1.5rem; font-weight: 400; }
+.service-modal .btn-close { filter: invert(1) sepia(1) saturate(0); }
+.service-modal .modal-body { padding: 30px; background: var(--bg-warm); }
+.expert-card { background: var(--white); border: 1px solid rgba(59,15,43,.08); padding: 16px 20px; display: flex; gap: 14px; align-items: center; margin-bottom: 12px; transition: var(--transition); }
+.expert-card:hover { border-color: var(--rose-gold); }
+.expert-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.expert-name  { font-family: var(--font-serif); font-size: 1rem; color: var(--plum); }
+.expert-badge { font-size: .65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--rose-gold); }
+.expert-price { font-family: var(--font-serif); font-size: 1.1rem; color: var(--plum); margin-left: auto; }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .page-hero { height: auto; min-height: 280px; padding-bottom: 40px; padding-top: 100px; }
+    .page-hero-title { font-size: clamp(2rem,8vw,3rem) !important; }
+    .services-book-section { padding: 50px 0 70px; }
+    #book { height: min(480px,82vw); }
+    .svc-book-btn { display: none; }
+    .service-modal .modal-dialog { margin: 10px; }
+    .service-modal .modal-body { padding: 20px; }
+    .service-modal .modal-header { padding: 18px 20px; }
+    .service-modal .modal-title { font-size: 1.2rem; }
+    #modalBookBtn { font-size: .68rem !important; padding: 10px !important; }
+}
+@media (max-width: 520px) {
+    .book-outer { width: 99vw; }
+    #book { height: min(420px,92vw); }
+    .ch-index-count { display: none; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+    <div class="overlay overlay-plum"></div>
+    <div class="container page-hero-content">
+        <div class="breadcrumb-glamour mb-12" style="margin-bottom:12px;">
+            <a href="{% url 'home' %}">Home</a>
+            <span>›</span>
+            <span class="current">Our Services</span>
+        </div>
+        <span class="section-label">What We Offer</span>
+        <h1 class="page-hero-title">Our Signature<br>Services</h1>
+    </div>
+</div>
+
+
+<!-- SERVICES BOOK -->
+<section class="services-book-section">
+    <div class="container">
+
+        <div class="book-hint" data-aos="fade-up">Drag corners or click chapter to explore</div>
+
+        <div class="book-outer" data-aos="fade-up" data-aos-delay="60">
+            <div id="book">
+                <div class="bk-page" id="bk-left-under"></div>
+                <div class="bk-page" id="bk-right-under"></div>
+                <div class="bk-page bk-front" id="bk-left-front"></div>
+                <div class="bk-page bk-front" id="bk-right-front"></div>
+                <div class="bk-flap" id="bkFlap">
+                    <div class="bk-flap-content" id="bkFlapContent"></div>
+                    <div class="bk-fold-gradient" id="bkFoldGradient"></div>
+                </div>
+                <div class="bk-corner tl"></div>
+                <div class="bk-corner tr"></div>
+                <div class="bk-corner bl"></div>
+                <div class="bk-corner br"></div>
+            </div>
+        </div>
+
+        <div class="book-nav-row">
+            <button class="bk-btn" id="bkPrevBtn" onclick="bkNavPrev()">← Prev</button>
+            <span class="bk-spread-txt" id="bkSpreadTxt"></span>
+            <button class="bk-btn" id="bkNextBtn" onclick="bkNavNext()">Next →</button>
+        </div>
+        <div class="bk-dots" id="bkDots"></div>
+
+    </div>
+</section>
+
+
+<!-- SERVICE MODAL -->
+<div class="modal fade service-modal" id="serviceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalServiceName">Service Name</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-md-5">
+                        <div class="p-4" style="background:var(--white);border:1px solid rgba(59,15,43,.08);">
+                            <div class="mb-3">
+                                <span class="section-label" style="margin-bottom:4px;">Description</span>
+                                <p id="modalServiceDesc" style="font-size:.88rem;color:var(--text-mid);line-height:1.8;"></p>
+                            </div>
+                            <div class="d-flex gap-4">
+                                <div>
+                                    <span class="section-label" style="margin-bottom:4px;">Duration</span>
+                                    <div style="font-family:var(--font-serif);font-size:1.4rem;color:var(--plum);">
+                                        <span id="modalDuration"></span> <span style="font-size:.9rem;">min</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="section-label" style="margin-bottom:4px;">Starting From</span>
+                                    <div style="font-family:var(--font-serif);font-size:1.4rem;color:var(--plum);">₹<span id="modalPrice"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <a id="modalBookBtn" href="#" class="btn-glamour-primary d-block text-center mt-3" style="font-size:.7rem;padding:12px;">
+                            <span>Book This Service</span>
+                        </a>
+                    </div>
+                    <div class="col-md-7">
+                        <span class="section-label">Available Experts</span>
+                        <div id="expertsList">
+                            <div class="text-center py-4" style="color:var(--text-mid);">
+                                <div class="spinner-border spinner-border-sm" style="color:var(--rose-gold);"></div>
+                                <span class="ms-2">Loading experts...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+// ══════════════════════════════════════════════════════════════
+// 1. DJANGO DATA
+// ══════════════════════════════════════════════════════════════
+const ALL_SERVICES = [
+    {% for s in services %}{
+        id:    {{ s.id }},
+        name:  `{{ s.service_name|escapejs }}`,
+        cat:   `{{ s.category }}`,
+        cLbl:  `{{ s.get_category_display|escapejs }}`,
+        desc:  `{{ s.description|escapejs }}`,
+        price: `{{ s.base_price }}`,
+        dur:   `{{ s.duration_minutes }}`,
+        img:   `{% if s.service_image %}{{ s.service_image.url }}{% else %}https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500&q=80{% endif %}`
+    },{% endfor %}
+];
+
+const CATEGORIES = [{% for v,l in categories %}{val:`{{ v }}`,label:`{{ l|escapejs }}`},{% endfor %}];
+
+const META = {
+    hair:   { icon:'✂', desc:'From cuts to colour — every strand crafted with expert precision and premium products.', img:'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=700&q=80' },
+    makeup: { icon:'✦', desc:'From everyday glow to bridal perfection — every face is a canvas, every look is a masterpiece.', img:'https://images.unsplash.com/photo-1487412947147-5cebf100d293?w=700&q=80' },
+    skin:   { icon:'◈', desc:'Glow-boosting facials and treatments for every skin type, using medical-grade products.', img:'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=700&q=80' },
+    nails:  { icon:'◆', desc:'Precision nail care, vibrant gel colours and artistic nail designs that last.', img:'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=700&q=80' },
+    spa:    { icon:'❋', desc:'Surrender to serenity — holistic therapies that restore body, mind and soul.', img:'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=700&q=80' },
+    bridal: { icon:'♔', desc:'Complete bridal beauty journeys, from pre-wedding glow prep to walking down the aisle.', img:'https://images.unsplash.com/photo-1470259078422-826894b933aa?w=700&q=80' },
+};
+
+function esc(s){ return String(s).replace(/`/g,"'").replace(/\\/g,'\\\\'); }
+
+// ══════════════════════════════════════════════════════════════
+// 2. PAGE BUILDERS
+// ══════════════════════════════════════════════════════════════
+
+/* ── Cover left ── */
+function pgCover(){
+    const total = ALL_SERVICES.length;
+    return `<div class="pg pg-cover">
+        <div class="cover-watermark">G</div>
+        <div class="cover-ornament">✦ ✦ ✦</div>
+        <div class="cover-title">SERVICE</div>
+        <div class="cover-brand">LOOKBOOK</div>
+        <div class="cover-sub">Where Beauty Meets Perfection</div>
+        <div class="cover-line"></div>
+        <div class="cover-stats">
+            <div><span class="cover-stat-val">${total}+</span><span class="cover-stat-lbl">Services</span></div>
+            <div><span class="cover-stat-val">10+</span><span class="cover-stat-lbl">Years</span></div>
+            <div><span class="cover-stat-val">1200+</span><span class="cover-stat-lbl">Clients</span></div>
+        </div>
+        <span class="pg-num pg-num-l">01</span>
+    </div>`;
+}
+
+/* ── Chapter index (TOC) — right page of cover spread ── */
+function pgIndex(){
+    const rows = CATEGORIES.map((c,i)=>{
+        const m   = META[c.val] || {icon:'✦'};
+        const cnt = ALL_SERVICES.filter(s=>s.cat===c.val).length;
+        const spreadIdx = 1 + i*2; // spread number this chapter opens at
+        return `<div class="ch-index-item" onclick="bkJumpToSpread(${spreadIdx+1})">
+            <span class="ch-icon">${m.icon}</span>
+            <span class="ch-num-pill">${String(i+1).padStart(2,'0')}</span>
+            <span class="ch-index-name">${esc(c.label)}</span>
+            <span class="ch-index-count">${cnt} services</span>
+            <span class="ch-index-arrow">›</span>
+        </div>`;
+    }).join('');
+
+    return `<div class="pg pg-index">
+        <div class="pg-index-header">
+            <span class="pg-index-label">What We Offer</span>
+            <div class="pg-index-title">Our Chapters</div>
+        </div>
+        ${rows}
+        <span class="pg-num pg-num-r">02</span>
+    </div>`;
+}
+
+/* ── Chapter divider (left page, alternates dark/light) ── */
+function pgChapterDivider(num, cat, pgN){
+    const m    = META[cat.val] || {icon:'✦', desc:''};
+    const svcs = ALL_SERVICES.filter(s=>s.cat===cat.val);
+    const cls  = num%2===0 ? 'pg-ch-light' : 'pg-ch-dark';
+    return `<div class="pg ${cls}">
+        <div class="ch-wm">${String(num).padStart(2,'0')}</div>
+        <div class="ch-label">Chapter ${num}</div>
+        <div class="ch-icon-big">${m.icon}</div>
+        <div class="ch-title">${esc(cat.label)}</div>
+        <div class="ch-divider"></div>
+        <p class="ch-desc">${esc(m.desc)}</p>
+        <div class="ch-count">${svcs.length} Signature Services</div>
+        <span class="pg-num pg-num-l">${pgN}</span>
+    </div>`;
+}
+
+/* ── Image intro right page ── */
+function pgImgIntro(cat, pgN){
+    const m = META[cat.val] || {};
+    return `<div class="pg pg-img-split">
+        <img src="${m.img||''}" alt="${esc(cat.label)}" loading="lazy">
+        <div class="pg-img-split-overlay"></div>
+        <div class="pg-img-split-body">
+            <span class="svc-cat-tag">${esc(cat.label)} · Signature Collection</span>
+            <div class="svc-title" style="font-size:clamp(.95rem,1.8vw,1.15rem);">${esc(cat.label)} Services</div>
+            <p style="font-size:.72rem;color:var(--text-mid);line-height:1.75;margin:0;">${esc(m.desc||'')}</p>
+        </div>
+        <span class="pg-num pg-num-r">${pgN}</span>
+    </div>`;
+}
+
+/* ── Service detail page ── */
+function pgService(svc, pgN, variant){
+    const cls = variant==='cream' ? 'pg-svc-cream' : 'pg-svc-white';
+    // Up to 4 dummy highlights (real ones would come from DB; here we generate from desc)
+    const words   = esc(svc.desc).split(' ');
+    const snippet = words.slice(0,18).join(' ') + (words.length>18?'…':'');
+
+    return `<div class="pg pg-svc ${cls}">
+        <span class="svc-cat-tag">${esc(svc.cLbl)}</span>
+        <div class="svc-title">${esc(svc.name)}</div>
+        <div class="svc-divider"></div>
+        <p class="svc-desc">${snippet}</p>
+        <ul class="svc-hl">
+            <li>Professional consultation included</li>
+            <li>Premium certified products used</li>
+            <li>Expert stylist / therapist assigned</li>
+            <li>${esc(svc.dur)}-minute dedicated session</li>
+        </ul>
+        <div class="svc-footer">
+            <div>
+                <span class="svc-price-lbl">Starting From</span>
+                <span class="svc-price-val">₹${esc(svc.price)}</span>
+            </div>
+            <div class="svc-dur-wrap">
+                <span class="svc-dur-lbl">Duration</span>
+                <span class="svc-dur-val">${esc(svc.dur)} min</span>
+            </div>
+            <button class="svc-book-btn"
+                onclick="openServiceModal(${svc.id},'${esc(svc.name)}','${esc(svc.desc)}','${esc(svc.price)}','${esc(svc.dur)}')">
+                Details
+            </button>
+        </div>
+        <span class="pg-num ${pgN%2===0?'pg-num-l':'pg-num-r'}">${pgN}</span>
+    </div>`;
+}
+
+/* ── Back cover ── */
+function pgBackCover(){
+    return `<div class="pg pg-back">
+        <div class="cover-watermark" style="color:rgba(247,231,206,.03);">★</div>
+        <div class="cover-ornament">✦</div>
+        <div style="font-family:var(--font-deco);font-size:clamp(1.2rem,2.5vw,1.8rem);color:var(--champagne);letter-spacing:7px;margin-bottom:14px;position:relative;z-index:1;">GLAMOUR</div>
+        <div style="font-family:var(--font-serif);font-style:italic;font-size:clamp(.82rem,1.4vw,.96rem);color:rgba(196,139,159,.65);margin-bottom:22px;position:relative;z-index:1;">Where Beauty Meets Perfection</div>
+        <div class="cover-line"></div>
+        <div style="font-size:.62rem;letter-spacing:2px;color:rgba(247,231,206,.35);line-height:2.2;position:relative;z-index:1;">
+            123, Glamour Street, Bandra West<br>
+            Mumbai – 400050 · Mon–Sat 10AM–8PM<br>
+            +91 98765 43210
+        </div>
+        <div style="font-size:.66rem;letter-spacing:3px;color:var(--rose-gold);margin-top:16px;position:relative;z-index:1;">glamourstudio.in</div>
+    </div>`;
+}
+
+/* ── Empty chapter placeholder ── */
+function pgEmpty(label){
+    return `<div class="pg pg-svc pg-svc-white" style="display:flex;align-items:center;justify-content:center;text-align:center;">
+        <div>
+            <div style="font-size:2rem;color:var(--rose-gold);margin-bottom:12px;">✂</div>
+            <p style="font-size:.82rem;color:var(--text-mid);">No ${esc(label)} services added yet.</p>
+        </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// 3. ASSEMBLE ALL PAGES
+//    Layout:
+//    0  Cover (left)         1  Index/TOC (right)
+//    2  Ch1 divider (left)   3  Ch1 img   (right)
+//    4  Svc 1 (left)         5  Svc 2 (right)
+//    6  Svc 3 (left) …etc
+//    (then next chapter, and so on until back cover)
+// ══════════════════════════════════════════════════════════════
+const PAGES = [];
+let globalPgN = 1;
+
+PAGES.push(pgCover());          // 0
+PAGES.push(pgIndex());          // 1
+globalPgN = 3;
+
+CATEGORIES.forEach((cat, idx)=>{
+    const svcs = ALL_SERVICES.filter(s=>s.cat===cat.val);
+    const chNum = idx+1;
+
+    PAGES.push(pgChapterDivider(chNum, cat, globalPgN));   globalPgN++;
+    PAGES.push(pgImgIntro(cat, globalPgN));                globalPgN++;
+
+    if(!svcs.length){
+        PAGES.push(pgEmpty(cat.label)); globalPgN++;
+        PAGES.push(`<div class="pg" style="background:#faf6f2;"></div>`); globalPgN++;
+    } else {
+        svcs.forEach((svc,i)=>{
+            PAGES.push(pgService(svc, globalPgN, i%2===0?'white':'cream'));
+            globalPgN++;
+        });
+    }
+
+    // Pad to even page count within chapter (so chapters always start on left)
+    if(PAGES.length % 2 !== 0){
+        // filler right page with ornament
+        PAGES.push(`<div class="pg" style="background:${idx%2===0?'#f7e7ce':'#faf6f2'};display:flex;align-items:center;justify-content:center;">
+            <div style="text-align:center;opacity:.25;">
+                <div style="font-family:var(--font-deco);font-size:4rem;color:var(--plum);">${META[cat.val]?.icon||'✦'}</div>
+            </div>
+        </div>`);
+        globalPgN++;
+    }
+});
+
+// Back cover (must be last 2)
+if(PAGES.length%2!==0){
+    PAGES.push(`<div class="pg" style="background:#faf6f2;"></div>`);
+}
+PAGES.push(`<div class="pg" style="background:#1e0818;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;opacity:.15;font-family:var(--font-deco);font-size:5rem;color:var(--champagne);">G</div></div>`);
+PAGES.push(pgBackCover());
+
+// ══════════════════════════════════════════════════════════════
+// 4. BOOK ENGINE  (exact same math as original standalone)
+// ══════════════════════════════════════════════════════════════
+const book       = document.getElementById('book');
+const bkFlap     = document.getElementById('bkFlap');
+const bkFlapC    = document.getElementById('bkFlapContent');
+const bkFoldG    = document.getElementById('bkFoldGradient');
+
+const bk = {
+    W:0, H:0, PW:0, SX:0, diag:0,
+    li: 0,                 // leftIndex
+    side:null, corner:null,
+    drag:false,
+    TH: 90,                // corner threshold px
+};
+
+// ── resize ──
+function bkResize(){
+    const r=book.getBoundingClientRect();
+    bk.W=r.width; bk.H=r.height;
+    bk.PW=r.width/2; bk.SX=bk.PW;
+    bk.diag=Math.sqrt(bk.PW**2+bk.H**2);
+    if(!bk.drag) bkRender();
+}
+new ResizeObserver(bkResize).observe(book);
+
+// ── render ──
+function bkRender(){
+    const lf=document.getElementById('bk-left-front');
+    const rf=document.getElementById('bk-right-front');
+    lf.innerHTML = PAGES[bk.li]   ||'';
+    rf.innerHTML = PAGES[bk.li+1] ||'';
+    lf.style.display = bk.li<0          ?'none':'';
+    rf.style.display = bk.li+1>=PAGES.length?'none':'';
+    bkUpdateUI();
+}
+bkRender();
+
+// ── UI ──
+function bkUpdateUI(){
+    document.getElementById('bkPrevBtn').disabled = bk.li<=0;
+    document.getElementById('bkNextBtn').disabled = bk.li+1>=PAGES.length-1;
+    const total=Math.ceil(PAGES.length/2);
+    const cur  =Math.floor(bk.li/2)+1;
+    document.getElementById('bkSpreadTxt').textContent=`${cur} / ${total}`;
+    document.querySelectorAll('.bk-dot').forEach((d,i)=>d.classList.toggle('active',i===Math.floor(bk.li/2)));
+}
+function bkBuildDots(){
+    const el=document.getElementById('bkDots'); el.innerHTML='';
+    const n=Math.ceil(PAGES.length/2);
+    for(let i=0;i<n;i++){
+        const d=document.createElement('div');
+        d.className='bk-dot'+(i===0?' active':'');
+        d.title=`Spread ${i+1}`;
+        d.onclick=(()=>{const idx=i;return()=>{if(!bk.drag){bk.li=idx*2;bkRender();}};})();
+        el.appendChild(d);
+    }
+}
+bkBuildDots();
+
+// ── jump to spread (used by TOC) ──
+function bkJumpToSpread(spreadIdx){
+    const targetLi = spreadIdx*2;
+    if(bk.drag||targetLi===bk.li) return;
+    const forward = targetLi > bk.li;
+    // Show quick turn then jump
+    bkAnimChapter(forward, ()=>{ bk.li=targetLi; bkRender(); });
+}
+
+// ── clip math ──
+function clipPoly(pts,a,b,c,keep){
+    let r=[];
+    for(let i=0;i<pts.length;i++){
+        let p1=pts[i],p2=pts[(i+1)%pts.length];
+        let d1=a*p1[0]+b*p1[1]+c,d2=a*p2[0]+b*p2[1]+c;
+        let in1=keep?d1<=0:d1>0,in2=keep?d2<=0:d2>0;
+        if(in1)r.push(p1);
+        if(in1!==in2){let t=d1/(d1-d2);r.push([p1[0]+t*(p2[0]-p1[0]),p1[1]+t*(p2[1]-p1[1])]);}
+    }return r;
+}
+function refPt(p,a,b,c){let d=(a*p[0]+b*p[1]+c)/(a*a+b*b);return[p[0]-2*d*a,p[1]-2*d*b];}
+function toCP(pts){if(!pts.length)return'polygon(0 0)';return'polygon('+pts.map(p=>`${p[0]}px ${p[1]}px`).join(',')+')';}
+function constrPt(mx,my){
+    const{PW,H,diag,corner:ac}=bk;
+    for(let i=0;i<3;i++){
+        let dx=mx-bk.SX,dy=my-ac[1],d=Math.sqrt(dx*dx+dy*dy);
+        if(d>PW){mx=bk.SX+(dx/d)*PW;my=ac[1]+(dy/d)*PW;}
+        let c2y=ac[1]===0?H:0,dx2=mx-bk.SX,dy2=my-c2y,d2=Math.sqrt(dx2*dx2+dy2*dy2);
+        if(d2>diag){mx=bk.SX+(dx2/d2)*diag;my=c2y+(dy2/d2)*diag;}
+    }return[mx,my];
+}
+
+// ── fold ──
+function fold(X,Y){
+    if(X===bk.corner[0]&&Y===bk.corner[1])return;
+    const{W,H,PW,corner:AC,side}=bk;
+    let[mx,my]=constrPt(X,Y);
+    const fp=document.getElementById(`bk-${side}-front`);
+    let a=AC[0]-mx,b=AC[1]-my,midx=(AC[0]+mx)/2,midy=(AC[1]+my)/2,c=-(a*midx+b*midy);
+    let base,p1f,p2f,shX;
+    if(side==='right'){base=[[PW,0],[PW,H],[W,H],[W,0]];p1f=[W,0];p2f=[PW,0];shX=PW;}
+    else{base=[[0,0],[0,H],[PW,H],[PW,0]];p1f=[PW,0];p2f=[0,0];shX=0;}
+    fp.style.clipPath=toCP(clipPoly(base,a,b,c,true).map(p=>[p[0]-shX,p[1]]));
+    bkFlap.style.clipPath=toCP(clipPoly(base,a,b,c,false).map(p=>refPt(p,a,b,c)));
+    let p1r=refPt(p1f,a,b,c),p2r=refPt(p2f,a,b,c);
+    let ang=Math.atan2(p2r[1]-p1r[1],p2r[0]-p1r[0]);
+    bkFlapC.style.transformOrigin='0 0';
+    bkFlapC.style.transform=`translate(${p1r[0]}px,${p1r[1]}px) rotate(${ang}rad)`;
+    let angG=Math.atan2(my-AC[1],mx-AC[0]);
+    bkFoldG.style.transform=`translate(${midx}px,${midy}px) rotate(${angG}rad)`;
+    bkFoldG.style.opacity=Math.sin(Math.abs(mx-AC[0])/W*Math.PI).toFixed(3);
+}
+
+// ── start drag ──
+function startDrag(side,corner,x,y){
+    bk.side=side;bk.corner=corner;bk.drag=true;
+    bkFlap.style.display='block';
+    if(side==='right'){
+        document.getElementById('bk-right-under').innerHTML=PAGES[bk.li+3]||'';
+        bkFlapC.innerHTML=PAGES[bk.li+2]||'';
+        bkFlapC.className='bk-flap-content is-left';
+    }else{
+        document.getElementById('bk-left-under').innerHTML=PAGES[bk.li-2]||'';
+        bkFlapC.innerHTML=PAGES[bk.li-1]||'';
+        bkFlapC.className='bk-flap-content is-right';
+    }
+    fold(x,y);
+}
+
+// ── pointer events ──
+book.addEventListener('pointerdown',e=>{
+    const r=book.getBoundingClientRect();
+    let x=e.clientX-r.left,y=e.clientY-r.top;
+    const{W,H,TH,li}=bk;
+    book.setPointerCapture(e.pointerId);
+    if(x>W-TH&&y<TH    &&li+1<PAGES.length-1) startDrag('right',[W,0],x,y);
+    else if(x>W-TH&&y>H-TH&&li+1<PAGES.length-1) startDrag('right',[W,H],x,y);
+    else if(x<TH&&y<TH &&li>0)                 startDrag('left',[0,0],x,y);
+    else if(x<TH&&y>H-TH&&li>0)                startDrag('left',[0,H],x,y);
+});
+book.addEventListener('pointermove',e=>{
+    if(!bk.drag)return;
+    const r=book.getBoundingClientRect();
+    fold(e.clientX-r.left,e.clientY-r.top);
+});
+book.addEventListener('pointerup',e=>{
+    if(!bk.drag)return;
+    bk.drag=false;
+    const r=book.getBoundingClientRect();
+    let x=e.clientX-r.left,y=e.clientY-r.top;
+    const done=(bk.side==='right'&&x<bk.W/2)||(bk.side==='left'&&x>bk.W/2);
+    const tX=done?(bk.side==='right'?0:bk.W):bk.corner[0];
+    const tY=bk.corner[1];
+    let sX=x,sY=y,t0=performance.now();
+    function anim(t){
+        let p=Math.min((t-t0)/280,1),ease=1-Math.pow(1-p,3);
+        fold(sX+(tX-sX)*ease,sY+(tY-sY)*ease);
+        if(p<1){requestAnimationFrame(anim);}
+        else{
+            bkFlap.style.display='none';
+            document.getElementById(`bk-${bk.side}-front`).style.clipPath='none';
+            if(done){bk.li+=bk.side==='right'?2:-2;bkRender();}
+            bk.side=null;
+        }
+    }
+    requestAnimationFrame(anim);
+});
+
+// ── button nav ──
+function bkNavNext(){if(bk.drag||bk.li+1>=PAGES.length-1)return;bkTurn('right');}
+function bkNavPrev(){if(bk.drag||bk.li<=0)return;bkTurn('left');}
+function bkTurn(side){
+    const{W,H}=bk;
+    const corner=side==='right'?[W,H]:[0,H];
+    startDrag(side,corner,corner[0],corner[1]);
+    const tX=side==='right'?0:W;
+    let sX=corner[0],t0=performance.now();
+    bk.drag=true;
+    function anim(t){
+        let p=Math.min((t-t0)/400,1),ease=1-Math.pow(1-p,3);
+        fold(sX+(tX-sX)*ease,H*.5);
+        if(p<1){requestAnimationFrame(anim);}
+        else{
+            bk.drag=false;
+            bkFlap.style.display='none';
+            document.getElementById(`bk-${bk.side}-front`).style.clipPath='none';
+            bk.li+=side==='right'?2:-2;
+            bk.side=null;
+            bkRender();
+        }
+    }
+    requestAnimationFrame(anim);
+}
+
+// ── Chapter jump animation (quick sweep) ──
+function bkAnimChapter(forward, cb){
+    const{W,H}=bk;
+    const side=forward?'right':'left';
+    const corner=forward?[W,H]:[0,H];
+    const tX=forward?0:W;
+    bkFlap.style.display='block';
+    // show next chapter's first page on flap
+    const nextLi = forward ? Math.min(bk.li+2,PAGES.length-2) : Math.max(bk.li-2,0);
+    bkFlapC.innerHTML = PAGES[forward?nextLi:nextLi+1]||'';
+    bkFlapC.className = forward?'bk-flap-content is-left':'bk-flap-content is-right';
+    bk.side=side; bk.corner=corner;
+    let sX=corner[0], t0=performance.now();
+    function anim(t){
+        let p=Math.min((t-t0)/420,1),ease=1-Math.pow(1-p,3);
+        const mx=sX+(tX-sX)*ease,my=H*.5;
+        const fp=document.getElementById(`bk-${side}-front`);
+        const PW=bk.PW;
+        let a=corner[0]-mx,b=corner[1]-my,midx=(corner[0]+mx)/2,midy=(corner[1]+my)/2,c=-(a*midx+b*midy);
+        let base,p1f,p2f,shX;
+        if(side==='right'){base=[[PW,0],[PW,H],[W,H],[W,0]];p1f=[W,0];p2f=[PW,0];shX=PW;}
+        else{base=[[0,0],[0,H],[PW,H],[PW,0]];p1f=[PW,0];p2f=[0,0];shX=0;}
+        fp.style.clipPath=toCP(clipPoly(base,a,b,c,true).map(q=>[q[0]-shX,q[1]]));
+        bkFlap.style.clipPath=toCP(clipPoly(base,a,b,c,false).map(q=>refPt(q,a,b,c)));
+        let p1r=refPt(p1f,a,b,c),p2r=refPt(p2f,a,b,c);
+        let ang=Math.atan2(p2r[1]-p1r[1],p2r[0]-p1r[0]);
+        bkFlapC.style.transformOrigin='0 0';
+        bkFlapC.style.transform=`translate(${p1r[0]}px,${p1r[1]}px) rotate(${ang}rad)`;
+        let angG=Math.atan2(my-corner[1],mx-corner[0]);
+        bkFoldG.style.transform=`translate(${midx}px,${midy}px) rotate(${angG}rad)`;
+        bkFoldG.style.opacity=Math.sin(Math.abs(mx-corner[0])/W*Math.PI).toFixed(3);
+        if(p<1){requestAnimationFrame(anim);}
+        else{
+            bkFlap.style.display='none';
+            fp.style.clipPath='none';
+            bk.side=null;
+            cb();
+        }
+    }
+    requestAnimationFrame(anim);
+}
+
+// ══════════════════════════════════════════════════════════════
+// 5. SERVICE MODAL (unchanged)
+// ══════════════════════════════════════════════════════════════
+function openServiceModal(serviceId,name,desc,price,duration){
+    document.getElementById('modalServiceName').textContent=name;
+    document.getElementById('modalServiceDesc').textContent=desc;
+    document.getElementById('modalPrice').textContent=price;
+    document.getElementById('modalDuration').textContent=duration;
+    document.getElementById('modalBookBtn').href="{% url 'booking' %}?service="+serviceId;
+    const el=document.getElementById('expertsList');
+    el.innerHTML='<div class="text-center py-4"><div class="spinner-border spinner-border-sm" style="color:var(--rose-gold);"></div><span class="ms-2">Loading experts...</span></div>';
+    fetch(`{% url 'ajax_employees' %}?service_id=${serviceId}`)
+        .then(r=>r.json())
+        .then(data=>{
+            if(!data.employees.length){
+                el.innerHTML='<p style="color:var(--text-mid);font-size:.88rem;padding:12px 0;">All our team members are trained for this service.</p>';
+                return;
+            }
+            el.innerHTML=data.employees.map(emp=>`
+                <div class="expert-card">
+                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&q=80" class="expert-avatar" alt="${emp.name}">
+                    <div><div class="expert-name">${emp.name}</div><span class="expert-badge">${emp.expertise} Expert</span></div>
+                    <div class="expert-price">₹${emp.price}</div>
+                </div>`).join('');
+        })
+        .catch(()=>{el.innerHTML='<p style="color:var(--text-mid);font-size:.88rem;">Could not load expert details.</p>';});
+    new bootstrap.Modal(document.getElementById('serviceModal')).show();
+}
+</script>
+{% endblock %}

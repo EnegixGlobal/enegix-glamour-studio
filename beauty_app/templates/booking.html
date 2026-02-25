@@ -1,0 +1,1256 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Appointment — Glamour Studio{% endblock %}
+{% block nav_booking %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ================================================================
+   BASE LAYOUT
+   ================================================================ */
+.booking-section {
+    min-height: 100vh;
+    background: url('https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=80') center/cover no-repeat fixed;
+    position: relative;
+    padding: 130px 0 80px;
+    display: flex;
+    align-items: flex-start;
+}
+.booking-glass {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(247,231,206,0.15);
+    padding: 50px 50px;
+    max-width: 700px;
+    width: 100%;
+}
+.booking-glass-title {
+    font-family: var(--font-deco);
+    font-size: 2rem;
+    color: var(--champagne);
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+}
+.booking-glass-sub {
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--rose-gold);
+    margin-bottom: 36px;
+    display: block;
+}
+
+/* ================================================================
+   FOR WHOM TOGGLE
+   ================================================================ */
+.for-whom-toggle {
+    display: flex;
+    margin-bottom: 28px;
+    border: 1px solid rgba(247,231,206,0.2);
+}
+.for-whom-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: rgba(247,231,206,0.55);
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 14px 10px;
+    cursor: pointer;
+    transition: all 0.35s;
+}
+.for-whom-btn i { display: block; font-size: 1.3rem; margin-bottom: 6px; color: rgba(196,139,159,0.5); transition: color 0.3s; }
+.for-whom-btn.active { background: rgba(196,139,159,0.18); color: var(--champagne); }
+.for-whom-btn.active i { color: var(--rose-gold); }
+.for-whom-btn:not(:last-child) { border-right: 1px solid rgba(247,231,206,0.15); }
+
+/* ================================================================
+   SOMEONE TYPE TOGGLE
+   ================================================================ */
+.someone-type-row {
+    display: none;
+    margin-bottom: 24px;
+    border: 1px solid rgba(247,231,206,0.15);
+}
+.someone-type-row.visible { display: flex; }
+.someone-type-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: rgba(247,231,206,0.5);
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 12px 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.someone-type-btn.active { background: rgba(247,231,206,0.1); color: var(--champagne); }
+.someone-type-btn:not(:last-child) { border-right: 1px solid rgba(247,231,206,0.1); }
+
+/* ================================================================
+   CUSTOMER SEARCH
+   ================================================================ */
+.customer-search-box { display: none; margin-bottom: 22px; }
+.customer-search-box.visible { display: block; }
+.search-input-row { display: flex; gap: 10px; }
+.search-result-card {
+    display: none;
+    background: rgba(196,139,159,0.12);
+    border: 1px solid rgba(196,139,159,0.3);
+    padding: 14px 16px;
+    margin-top: 10px;
+    animation: fadeSlideIn 0.3s ease;
+}
+.search-result-card.visible { display: flex; align-items: center; gap: 14px; }
+.search-result-avatar {
+    width: 42px; height: 42px;
+    background: rgba(196,139,159,0.2);
+    border: 1px solid var(--rose-gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--champagne);
+    flex-shrink: 0;
+}
+.search-result-name { font-family: var(--font-serif); font-size: 1rem; color: var(--champagne); }
+.search-result-sub  { font-size: 0.72rem; color: rgba(247,231,206,0.55); margin-top: 2px; }
+.search-result-clear {
+    margin-left: auto;
+    background: none; border: none;
+    color: rgba(247,231,206,0.4);
+    font-size: 1rem; cursor: pointer;
+    transition: color 0.2s; flex-shrink: 0;
+}
+.search-result-clear:hover { color: var(--rose-gold); }
+.search-not-found { display: none; font-size: 0.82rem; color: #f1a1a1; padding: 10px 0 0 2px; }
+.search-not-found.visible { display: block; }
+
+/* ================================================================
+   CUSTOMER INFO
+   ================================================================ */
+.customer-info-section { margin-bottom: 4px; }
+.autofilled-banner {
+    display: none;
+    background: rgba(76,175,80,0.12);
+    border: 1px solid rgba(76,175,80,0.3);
+    padding: 10px 14px;
+    margin-bottom: 18px;
+    font-size: 0.8rem;
+    color: rgba(200,255,200,0.8);
+    align-items: center; gap: 8px;
+}
+.autofilled-banner.visible { display: flex; }
+.autofilled-banner i { color: #66bb6a; flex-shrink: 0; }
+
+/* ================================================================
+   FORM BASE
+   ================================================================ */
+.form-section-divider {
+    border: none;
+    border-top: 1px solid rgba(247,231,206,0.1);
+    margin: 24px 0;
+    position: relative;
+}
+.form-section-divider::after {
+    content: attr(data-label);
+    position: absolute;
+    top: -9px; left: 0;
+    font-family: var(--font-sans);
+    font-size: 0.62rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(196,139,159,0.7);
+    background: transparent;
+    padding-right: 12px;
+}
+.form-group-glamour { margin-bottom: 22px; }
+.form-label-glamour {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(247,231,206,0.7);
+    display: block;
+    margin-bottom: 8px;
+}
+.form-control-glamour {
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(247,231,206,0.2);
+    color: var(--champagne);
+    padding: 12px 16px;
+    font-family: var(--font-sans);
+    font-size: 0.88rem;
+    outline: none;
+    transition: var(--transition);
+    border-radius: 0;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.form-control-glamour::placeholder { color: rgba(247,231,206,0.35); }
+.form-control-glamour:focus {
+    border-color: var(--rose-gold);
+    background: rgba(255,255,255,0.1);
+    box-shadow: 0 0 0 3px rgba(196,139,159,0.15);
+}
+.form-control-glamour option { background: var(--plum-dark); color: var(--champagne); }
+.form-control-glamour:disabled { opacity: 0.45; cursor: not-allowed; }
+.form-control-glamour[readonly] { opacity: 0.7; border-color: rgba(196,139,159,0.25); cursor: default; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* ================================================================
+   CATEGORY BLOCK  — core new UI
+   ================================================================ */
+.cat-block {
+    border: 1px solid rgba(247,231,206,0.13);
+    margin-bottom: 16px;
+    animation: fadeSlideIn 0.28s ease;
+    transition: opacity 0.2s, transform 0.2s;
+}
+.cat-block-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(247,231,206,0.08);
+    padding: 9px 14px;
+}
+.cat-block-num {
+    width: 21px; height: 21px;
+    border-radius: 50%;
+    border: 1px solid rgba(196,139,159,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem;
+    color: var(--rose-gold);
+    flex-shrink: 0;
+}
+.cat-block-lbl {
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(247,231,206,0.45);
+    flex: 1;
+}
+.cat-block-remove {
+    background: none; border: none;
+    color: rgba(247,231,206,0.28);
+    font-size: 0.9rem; cursor: pointer;
+    padding: 2px 4px;
+    transition: color 0.2s;
+    line-height: 1;
+}
+.cat-block-remove:hover { color: #f1a1a1; }
+.cat-block-body { padding: 14px 14px 12px; }
+
+/* Category select arrow */
+.cat-sel {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c48b9f' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 38px;
+    cursor: pointer;
+    margin-bottom: 14px;
+}
+
+/* Service cards grid */
+.svc-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin-bottom: 6px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+.svc-cards-grid::-webkit-scrollbar { width: 3px; }
+.svc-cards-grid::-webkit-scrollbar-thumb { background: rgba(196,139,159,0.35); }
+
+.svc-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(247,231,206,0.1);
+    padding: 11px 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    user-select: none;
+}
+.svc-card:hover { background: rgba(196,139,159,0.09); border-color: rgba(196,139,159,0.3); }
+.svc-card.selected { background: rgba(196,139,159,0.18); border-color: var(--rose-gold); }
+.svc-card-check {
+    position: absolute; top: 9px; right: 9px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(247,231,206,0.22);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.58rem; color: transparent;
+    transition: all 0.18s;
+}
+.svc-card.selected .svc-card-check { background: var(--rose-gold); border-color: var(--rose-gold); color: #fff; }
+.svc-card-name {
+    font-family: var(--font-serif);
+    font-size: 0.86rem;
+    color: var(--champagne);
+    margin-bottom: 5px;
+    padding-right: 18px;
+    line-height: 1.3;
+}
+.svc-card-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.svc-card-price { font-size: 0.76rem; color: var(--rose-gold); font-family: var(--font-serif); }
+.svc-card-dur   { font-size: 0.68rem; color: rgba(247,231,206,0.42); display: flex; align-items: center; gap: 3px; }
+.svc-empty { grid-column: 1/-1; text-align: center; padding: 20px 0; font-size: 0.78rem; color: rgba(247,231,206,0.3); }
+
+.svc-pill {
+    display: none;
+    font-size: 0.63rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--rose-gold); padding: 4px 0 10px;
+}
+.svc-pill.visible { display: block; }
+
+/* Per-service employee row inside cat-block */
+.emp-section-label {
+    font-family: var(--font-sans);
+    font-size: 0.63rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(247,231,206,0.55);
+    margin: 12px 0 8px;
+    display: block;
+}
+.emp-row {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(247,231,206,0.08);
+    padding: 11px 13px;
+    margin-bottom: 9px;
+    animation: fadeSlideIn 0.22s ease;
+}
+.emp-row-label {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 8px;
+}
+.emp-row-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--rose-gold); flex-shrink: 0; }
+.emp-row-svcname { font-family: var(--font-serif); font-size: 0.84rem; color: var(--champagne); flex: 1; }
+.emp-row-price { font-size: 0.73rem; color: var(--rose-gold); font-family: var(--font-serif); }
+
+/* ================================================================
+   ADD CATEGORY BUTTON
+   ================================================================ */
+.btn-add-category {
+    width: 100%;
+    background: transparent;
+    border: 1px dashed rgba(196,139,159,0.32);
+    color: rgba(196,139,159,0.65);
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-bottom: 22px;
+}
+.btn-add-category:hover {
+    border-color: var(--rose-gold);
+    color: var(--rose-gold);
+    background: rgba(196,139,159,0.05);
+}
+
+/* ================================================================
+   GRAND SUMMARY
+   ================================================================ */
+.grand-summary {
+    display: none;
+    border: 1px solid rgba(196,139,159,0.18);
+    margin-bottom: 22px;
+}
+.grand-summary.visible { display: block; }
+.grand-summary-hdr {
+    padding: 8px 15px;
+    font-size: 0.58rem; letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(247,231,206,0.42);
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(247,231,206,0.07);
+}
+.gs-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 15px;
+    border-bottom: 1px solid rgba(247,231,206,0.05);
+    font-size: 0.82rem;
+}
+.gs-row:last-of-type { border-bottom: none; }
+.gs-name  { color: rgba(247,231,206,0.75); }
+.gs-sub   { font-size: 0.68rem; color: rgba(247,231,206,0.38); margin-top: 1px; }
+.gs-price { font-family: var(--font-serif); color: var(--rose-gold); }
+.grand-total-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 15px;
+    background: rgba(196,139,159,0.09);
+    border-top: 1px solid rgba(196,139,159,0.22);
+}
+.gt-label { font-size: 0.62rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(247,231,206,0.55); }
+.gt-dur   { font-size: 0.68rem; color: rgba(247,231,206,0.38); margin-top: 2px; }
+.gt-amount { font-family: var(--font-serif); font-size: 1.5rem; color: var(--rose-gold); }
+
+/* ================================================================
+   MISC BUTTONS
+   ================================================================ */
+.btn-search-glamour {
+    background: rgba(196,139,159,0.2);
+    border: 1px solid rgba(196,139,159,0.4);
+    color: var(--rose-gold);
+    padding: 12px 18px;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap; flex-shrink: 0;
+}
+.btn-search-glamour:hover { background: rgba(196,139,159,0.35); }
+.btn-search-glamour:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ================================================================
+   INFO PANEL
+   ================================================================ */
+.booking-info-panel { padding-left: 50px; }
+.info-card { background: rgba(247,231,206,0.06); border: 1px solid rgba(247,231,206,0.12); padding: 28px 30px; margin-bottom: 20px; }
+.info-card-title { font-family: var(--font-serif); font-size: 1.1rem; color: var(--champagne); margin-bottom: 16px; }
+.info-point { display: flex; gap: 14px; margin-bottom: 14px; align-items: flex-start; }
+.info-point i { color: var(--rose-gold); margin-top: 2px; flex-shrink: 0; }
+.info-point span { font-size: 0.85rem; color: rgba(247,231,206,0.65); line-height: 1.7; }
+.info-hrs { font-size: 0.85rem; color: rgba(247,231,206,0.65); line-height: 1.9; }
+
+/* ================================================================
+   SUCCESS MODAL
+   ================================================================ */
+.success-modal .modal-dialog { max-width: 520px; }
+.success-modal .modal-content { border: none; border-radius: 0; background: transparent; backdrop-filter: blur(20px); }
+.success-modal-inner {
+    background: linear-gradient(135deg, rgba(38,10,29,0.97) 0%, rgba(55,15,42,0.97) 100%);
+    border: 1px solid rgba(196,139,159,0.25);
+    padding: 48px 40px 40px;
+    position: relative; overflow: hidden;
+}
+.success-modal-inner::before {
+    content: '';
+    position: absolute; top: -60px; right: -60px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,139,159,0.12) 0%, transparent 70%);
+    pointer-events: none;
+}
+.success-check-wrap { display: flex; justify-content: center; margin-bottom: 28px; }
+.success-check-ring {
+    width: 80px; height: 80px; border-radius: 50%;
+    border: 2px solid var(--rose-gold);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; animation: ringPulse 2s ease infinite;
+}
+.success-check-ring::before {
+    content: ''; position: absolute; inset: -8px; border-radius: 50%;
+    border: 1px solid rgba(196,139,159,0.2);
+    animation: ringExpand 2s ease infinite;
+}
+.success-check-ring i { font-size: 2rem; color: var(--rose-gold); }
+@keyframes ringPulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(196,139,159,0.3); }
+    50%      { box-shadow: 0 0 0 10px rgba(196,139,159,0); }
+}
+@keyframes ringExpand {
+    0%   { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1.3); opacity: 0; }
+}
+.success-modal-title { font-family: var(--font-deco); font-size: 1.7rem; color: var(--champagne); letter-spacing: 3px; text-align: center; margin-bottom: 6px; }
+.success-modal-sub   { text-align: center; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--rose-gold); margin-bottom: 28px; }
+.success-apt-id { text-align: center; background: rgba(196,139,159,0.1); border: 1px solid rgba(196,139,159,0.2); padding: 10px 16px; margin-bottom: 24px; }
+.success-apt-id .label { font-size: 0.62rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(247,231,206,0.5); display: block; margin-bottom: 4px; }
+.success-apt-id .apt-id-val { font-family: var(--font-serif); font-size: 1.2rem; color: var(--champagne); }
+.success-services-summary { border: 1px solid rgba(247,231,206,0.1); margin-bottom: 24px; }
+.success-services-summary .ssh { background: rgba(247,231,206,0.05); padding: 8px 14px; font-size: 0.62rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(247,231,206,0.5); border-bottom: 1px solid rgba(247,231,206,0.08); }
+.ss-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid rgba(247,231,206,0.06); }
+.ss-item:last-child { border-bottom: none; }
+.ss-item-name  { font-size: 0.85rem; color: rgba(247,231,206,0.8); }
+.ss-item-emp   { font-size: 0.75rem; color: rgba(196,139,159,0.7); margin-top: 2px; }
+.ss-item-price { font-family: var(--font-serif); font-size: 0.95rem; color: var(--rose-gold); }
+.success-total-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: rgba(196,139,159,0.08); border: 1px solid rgba(196,139,159,0.15); margin-bottom: 24px; }
+.success-total-row .stl { font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(247,231,206,0.6); }
+.success-total-row .stv { font-family: var(--font-serif); font-size: 1.4rem; color: var(--rose-gold); }
+.success-note { text-align: center; font-size: 0.8rem; color: rgba(247,231,206,0.5); line-height: 1.7; margin-bottom: 28px; }
+
+/* ================================================================
+   ANIMATIONS + RESPONSIVE
+   ================================================================ */
+@keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to   { opacity: 1; transform: none; }
+}
+@media (max-width: 991px) { .booking-info-panel { padding-left: 0; margin-top: 10px; } }
+@media (max-width: 768px) {
+    .booking-section { padding: 110px 0 60px; background-attachment: scroll !important; }
+    .booking-glass { padding: 30px 24px; }
+    .booking-glass-title { font-size: 1.5rem; }
+    .form-row, .svc-cards-grid { grid-template-columns: 1fr; }
+    .for-whom-btn { padding: 12px 6px; font-size: 0.64rem; }
+    .search-input-row { flex-direction: column; }
+    .success-modal-inner { padding: 36px 24px 30px; }
+}
+@media (max-width: 480px) {
+    .booking-glass { padding: 24px 16px; }
+    .booking-glass-title { font-size: 1.3rem; letter-spacing: 2px; }
+    .form-control-glamour { padding: 10px 12px; font-size: 0.84rem; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="booking-section">
+    <div class="overlay" style="background:rgba(38,10,29,0.82);"></div>
+    <div class="container" style="position:relative; z-index:2;">
+        <div class="row g-5">
+
+            <!-- ===================== FORM ===================== -->
+            <div class="col-lg-7">
+                <div class="booking-glass" data-aos="fade-right">
+                    <div class="booking-glass-title">Book Your Visit</div>
+                    <span class="booking-glass-sub">Schedule Your Luxury Experience</span>
+
+                    <form id="bookingForm" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="customer_id"   id="hiddenCustomerId">
+                        <input type="hidden" name="booking_for"   id="hiddenBookingFor"   value="myself">
+                        <input type="hidden" name="customer_type" id="hiddenCustomerType" value="existing">
+
+                        <!-- FOR WHOM -->
+                        <div class="for-whom-toggle">
+                            <button type="button" class="for-whom-btn active" id="btnMyself" onclick="setBookingFor('myself')">
+                                <i class="bi bi-person-fill"></i>For Myself
+                            </button>
+                            <button type="button" class="for-whom-btn" id="btnSomeone" onclick="setBookingFor('someone')">
+                                <i class="bi bi-people-fill"></i>For Someone Else
+                            </button>
+                        </div>
+
+                        <!-- SOMEONE TYPE -->
+                        <div class="someone-type-row" id="someoneTypeRow">
+                            <button type="button" class="someone-type-btn active" id="btnExisting" onclick="setSomeoneType('existing')">
+                                <i class="bi bi-person-check me-1"></i> Existing Customer
+                            </button>
+                            <button type="button" class="someone-type-btn" id="btnNew" onclick="setSomeoneType('new')">
+                                <i class="bi bi-person-plus me-1"></i> New Person
+                            </button>
+                        </div>
+
+                        <!-- CUSTOMER SEARCH -->
+                        <div class="customer-search-box" id="existingSearchBox">
+                            <label class="form-label-glamour">Search by Mobile Number</label>
+                            <div class="search-input-row">
+                                <input type="tel" id="searchMobileInput" class="form-control-glamour" placeholder="Enter 10-digit mobile number" maxlength="10">
+                                <button type="button" class="btn-search-glamour" id="searchBtn" onclick="searchCustomer()">
+                                    <i class="bi bi-search me-1"></i> Find
+                                </button>
+                            </div>
+                            <div class="search-result-card" id="searchResultCard">
+                                <div class="search-result-avatar" id="searchResultAvatar">?</div>
+                                <div>
+                                    <div class="search-result-name" id="searchResultName">—</div>
+                                    <div class="search-result-sub"  id="searchResultSub">—</div>
+                                </div>
+                                <button type="button" class="search-result-clear" onclick="clearCustomerSearch()">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </div>
+                            <div class="search-not-found" id="searchNotFound"></div>
+                        </div>
+
+                        <!-- CUSTOMER FIELDS -->
+                        <div class="customer-info-section">
+                            <div class="autofilled-banner" id="autofilledBanner">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span id="autofilledMsg">Details filled from your profile.</span>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group-glamour">
+                                    <label class="form-label-glamour">Full Name *</label>
+                                    <input type="text" name="full_name" id="fieldFullName" class="form-control-glamour" placeholder="Full name" required>
+                                </div>
+                                <div class="form-group-glamour">
+                                    <label class="form-label-glamour">Mobile Number *</label>
+                                    <input type="tel" name="mobile" id="fieldMobile" class="form-control-glamour" placeholder="10-digit mobile" maxlength="10" required>
+                                </div>
+                            </div>
+                            <div class="form-group-glamour">
+                                <label class="form-label-glamour">Email Address <span style="color:var(--rose-gold);font-size:0.8em;">(optional)</span></label>
+                                <input type="email" name="email" id="fieldEmail" class="form-control-glamour" placeholder="your@email.com">
+                            </div>
+                        </div>
+
+                        <!-- SERVICE SECTION -->
+                        <hr class="form-section-divider" data-label="Service Details">
+
+                        <!-- Category blocks injected here -->
+                        <div id="categoryBlocksWrap"></div>
+
+                        <!-- Add category button -->
+                        <button type="button" class="btn-add-category" onclick="addCatBlock()">
+                            <i class="bi bi-plus-circle"></i> Add Another Category
+                        </button>
+
+                        <!-- Grand total summary -->
+                        <div class="grand-summary" id="grandSummary">
+                            <div class="grand-summary-hdr">All Selected Services</div>
+                            <div id="grandSummaryRows"></div>
+                            <div class="grand-total-bar">
+                                <div>
+                                    <div class="gt-label">Total Amount</div>
+                                    <div class="gt-dur" id="gtDur"></div>
+                                </div>
+                                <div class="gt-amount">₹<span id="gtAmt">0</span></div>
+                            </div>
+                        </div>
+
+                        <!-- APPOINTMENT DETAILS -->
+                        <hr class="form-section-divider" data-label="Appointment Details">
+
+                        <div class="form-row">
+                            <div class="form-group-glamour">
+                                <label class="form-label-glamour">Preferred Date *</label>
+                                <input type="date" name="appointment_date" id="appointmentDate" class="form-control-glamour" required>
+                            </div>
+                            <div class="form-group-glamour">
+                                <label class="form-label-glamour">Preferred Time *</label>
+                                <input type="time" name="appointment_time" id="appointmentTime" class="form-control-glamour" min="10:00" max="20:00" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group-glamour">
+                            <label class="form-label-glamour">Advance Payment (₹)</label>
+                            <input type="number" name="advance_paid" class="form-control-glamour" placeholder="Optional advance amount" min="0">
+                        </div>
+
+                        <div class="form-group-glamour">
+                            <label class="form-label-glamour">Special Notes</label>
+                            <textarea name="special_notes" class="form-control-glamour" rows="3" placeholder="Any special requests or preferences..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-glamour-primary w-100" style="justify-content:center;">
+                            <span>Confirm My Appointment</span>
+                        </button>
+
+                        <div id="formErrorMsg" class="mt-3" style="display:none; color:#f1a1a1; font-size:0.85rem; text-align:center;"></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ===================== INFO PANEL ===================== -->
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="booking-info-panel">
+                    <span class="section-label" style="color:var(--rose-gold);">Information</span>
+                    <h2 class="section-title light" style="margin-bottom:36px;">What to<br>Expect</h2>
+                    <div class="info-card">
+                        <div class="info-card-title">Booking Process</div>
+                        <div class="info-point"><i class="bi bi-1-circle"></i><span>Choose a service category and select one or more services.</span></div>
+                        <div class="info-point"><i class="bi bi-2-circle"></i><span>Add more categories for services from different departments.</span></div>
+                        <div class="info-point"><i class="bi bi-3-circle"></i><span>Assign a preferred expert for each selected service.</span></div>
+                        <div class="info-point"><i class="bi bi-4-circle"></i><span>Pick date & time — our team confirms within 2 hours.</span></div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-title">Salon Hours</div>
+                        <div class="info-hrs">
+                            <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>Monday — Friday</span><span style="color:var(--rose-gold);">10:00 AM — 8:00 PM</span></div>
+                            <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>Saturday</span><span style="color:var(--rose-gold);">9:00 AM — 9:00 PM</span></div>
+                            <div style="display:flex;justify-content:space-between;"><span>Sunday</span><span style="color:var(--rose-gold);">11:00 AM — 6:00 PM</span></div>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-title">Contact Us</div>
+                        <div class="info-point"><i class="bi bi-telephone"></i><span>+91 98765 43210</span></div>
+                        <div class="info-point"><i class="fab fa-whatsapp"></i><span>WhatsApp: +91 98765 43210</span></div>
+                        <div class="info-point"><i class="bi bi-envelope"></i><span>hello@glamourstudio.in</span></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- SUCCESS MODAL -->
+<div class="modal fade success-modal" id="successModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="success-modal-inner">
+                <div class="success-check-wrap">
+                    <div class="success-check-ring"><i class="bi bi-check-lg"></i></div>
+                </div>
+                <div class="success-modal-title">Appointment Booked!</div>
+                <div class="success-modal-sub">Glamour Studio — Confirmation</div>
+                <div class="success-apt-id">
+                    <span class="label">Appointment ID</span>
+                    <span class="apt-id-val" id="aptIdDisplay">—</span>
+                </div>
+                <div class="success-services-summary">
+                    <div class="ssh">Services Booked</div>
+                    <div id="successServicesBody"></div>
+                </div>
+                <div class="success-total-row">
+                    <span class="stl">Total Amount</span>
+                    <span class="stv">₹<span id="successTotalAmt">0</span></span>
+                </div>
+                <p class="success-note">Thank you for choosing Glamour Studio.<br>Our team will contact you within 2 hours to confirm.</p>
+                <button onclick="location.href='{% url 'home' %}'" class="btn-glamour-outline mx-auto" style="display:block;text-align:center;">Back to Home</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ================================================================
+// DJANGO DATA
+// ================================================================
+const AJAX_EMP_URL  = "{% url 'ajax_employees' %}";
+const AJAX_SRCH_URL = "{% url 'ajax_customer_search' %}";
+
+// All categories + services from Django
+const CATEGORIES = [
+    {% regroup services by get_category_display as grouped %}
+    {% for group in grouped %}
+    {
+        key: "{{ group.grouper }}",
+        services: [
+            {% for svc in group.list %}
+            { id: {{ svc.id }}, name: "{{ svc.service_name|escapejs }}", price: {{ svc.base_price }}, duration: {{ svc.duration_minutes }} },
+            {% endfor %}
+        ]
+    },
+    {% endfor %}
+];
+// Quick lookup map
+const CAT_MAP = {};
+CATEGORIES.forEach(c => { CAT_MAP[c.key] = c.services; });
+
+const LOGGED_CUSTOMER = {
+    id:     "{{ customer.id|default:'' }}",
+    name:   "{{ customer.full_name|default:''|escapejs }}",
+    mobile: "{{ customer.mobile|default:'' }}",
+    email:  "{{ customer.email|default:'' }}",
+};
+
+// ================================================================
+// GLOBAL STATE
+// ================================================================
+let bookingFor    = 'myself';
+let someoneType   = 'existing';
+let foundCustomer = null;
+let blockCounter  = 0;
+
+// Map: blockId → { catKey, selectedSvcs: Map<svcId,svc>, empCache: Map<svcId,[]> }
+const catBlocks = new Map();
+
+document.getElementById('appointmentDate').min = new Date().toISOString().split('T')[0];
+
+// ── INIT ─────────────────────────────────────────────────────────
+(function init() {
+    setBookingFor('myself');
+    addCatBlock();          // first block on load
+})();
+
+// ================================================================
+// FOR WHOM
+// ================================================================
+function setBookingFor(val) {
+    bookingFor = val;
+    document.getElementById('hiddenBookingFor').value = val;
+    document.getElementById('btnMyself').classList.toggle('active',  val === 'myself');
+    document.getElementById('btnSomeone').classList.toggle('active', val === 'someone');
+    if (val === 'myself') {
+        document.getElementById('someoneTypeRow').classList.remove('visible');
+        document.getElementById('existingSearchBox').classList.remove('visible');
+        autoFillMyself();
+    } else {
+        document.getElementById('someoneTypeRow').classList.add('visible');
+        clearCustFields(); clearAutoBanner();
+        setSomeoneType(someoneType);
+    }
+}
+
+function setSomeoneType(t) {
+    someoneType = t;
+    document.getElementById('hiddenCustomerType').value = t;
+    document.getElementById('btnExisting').classList.toggle('active', t === 'existing');
+    document.getElementById('btnNew').classList.toggle('active',      t === 'new');
+    if (t === 'existing') {
+        document.getElementById('existingSearchBox').classList.add('visible');
+        clearCustFields(); clearAutoBanner(); foundCustomer = null; setRO(true);
+    } else {
+        document.getElementById('existingSearchBox').classList.remove('visible');
+        clearCustFields(); clearAutoBanner(); foundCustomer = null; setRO(false);
+    }
+}
+
+function autoFillMyself() {
+    if (LOGGED_CUSTOMER.id) {
+        document.getElementById('fieldFullName').value    = LOGGED_CUSTOMER.name;
+        document.getElementById('fieldMobile').value      = LOGGED_CUSTOMER.mobile;
+        document.getElementById('fieldEmail').value       = LOGGED_CUSTOMER.email;
+        document.getElementById('hiddenCustomerId').value = LOGGED_CUSTOMER.id;
+        setRO(true);
+        showBanner('Details filled from your profile.');
+    } else { setRO(false); }
+}
+
+// ================================================================
+// CUSTOMER SEARCH
+// ================================================================
+function searchCustomer() {
+    const mobile = document.getElementById('searchMobileInput').value.trim();
+    const card   = document.getElementById('searchResultCard');
+    const nf     = document.getElementById('searchNotFound');
+    card.classList.remove('visible'); nf.classList.remove('visible');
+
+    if (!/^\d{10}$/.test(mobile)) {
+        nf.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i> Please enter a valid 10-digit mobile number.';
+        nf.classList.add('visible'); return;
+    }
+    const btn = document.getElementById('searchBtn');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+    fetch(`${AJAX_SRCH_URL}?mobile=${mobile}`)
+        .then(r => r.json())
+        .then(data => {
+            btn.disabled = false; btn.innerHTML = '<i class="bi bi-search me-1"></i> Find';
+            if (data.found) {
+                foundCustomer = data.customer;
+                document.getElementById('hiddenCustomerId').value = data.customer.id;
+                document.getElementById('fieldFullName').value    = data.customer.name;
+                document.getElementById('fieldMobile').value      = data.customer.mobile;
+                document.getElementById('fieldEmail').value       = data.customer.email || '';
+                setRO(true);
+                document.getElementById('searchResultAvatar').textContent = data.customer.name.charAt(0).toUpperCase();
+                document.getElementById('searchResultName').textContent   = data.customer.name;
+                document.getElementById('searchResultSub').textContent    = data.customer.mobile + (data.customer.email ? ' · ' + data.customer.email : '');
+                card.classList.add('visible');
+                showBanner('Customer found and details filled automatically.');
+            } else {
+                foundCustomer = null;
+                nf.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i> No customer found. Switch to "New Person" to add them.';
+                nf.classList.add('visible'); clearCustFields(); clearAutoBanner();
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.innerHTML = '<i class="bi bi-search me-1"></i> Find';
+            nf.innerHTML = '<i class="bi bi-wifi-off me-1"></i> Network error. Please try again.';
+            nf.classList.add('visible');
+        });
+}
+
+document.getElementById('searchMobileInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); searchCustomer(); }
+});
+
+function clearCustomerSearch() {
+    foundCustomer = null;
+    document.getElementById('hiddenCustomerId').value = '';
+    document.getElementById('searchResultCard').classList.remove('visible');
+    document.getElementById('searchNotFound').classList.remove('visible');
+    document.getElementById('searchMobileInput').value = '';
+    clearCustFields(); clearAutoBanner();
+}
+
+function clearCustFields() {
+    ['fieldFullName','fieldMobile','fieldEmail'].forEach(id => { document.getElementById(id).value = ''; });
+    document.getElementById('hiddenCustomerId').value = '';
+}
+function setRO(ro) {
+    ['fieldFullName','fieldMobile','fieldEmail'].forEach(id => {
+        const el = document.getElementById(id);
+        ro ? el.setAttribute('readonly', true) : el.removeAttribute('readonly');
+    });
+}
+function showBanner(msg) {
+    document.getElementById('autofilledMsg').textContent = msg;
+    document.getElementById('autofilledBanner').classList.add('visible');
+}
+function clearAutoBanner() {
+    document.getElementById('autofilledBanner').classList.remove('visible');
+}
+
+// ================================================================
+// ADD CATEGORY BLOCK
+// ================================================================
+function addCatBlock() {
+    const bid = ++blockCounter;
+    catBlocks.set(bid, { catKey: null, selectedSvcs: new Map(), empCache: new Map() });
+
+    // Build category <option> list
+    let opts = '<option value="">— Choose a Category —</option>';
+    CATEGORIES.forEach(c => { opts += `<option value="${c.key}">${c.key}</option>`; });
+
+    const wrap = document.getElementById('categoryBlocksWrap');
+    const el   = document.createElement('div');
+    el.className    = 'cat-block';
+    el.dataset.bid  = bid;
+    el.innerHTML = `
+        <div class="cat-block-header">
+            <div class="cat-block-num" id="cbn_${bid}">${bid}</div>
+            <span class="cat-block-lbl" id="cbl_${bid}">Category ${bid}</span>
+            ${bid > 1 ? `<button type="button" class="cat-block-remove" onclick="removeCatBlock(${bid})"><i class="bi bi-x-lg"></i></button>` : ''}
+        </div>
+        <div class="cat-block-body">
+            <!-- Category dropdown -->
+            <select class="form-control-glamour cat-sel" id="catSel_${bid}" onchange="onCatChange(${bid}, this.value)">
+                ${opts}
+            </select>
+            <!-- Service cards (hidden until cat selected) -->
+            <div id="svcWrap_${bid}" style="display:none;">
+                <div class="form-label-glamour" style="margin-bottom:8px;">
+                    Select Services
+                    <span style="color:rgba(247,231,206,0.38);font-size:0.6rem;letter-spacing:1px;">(multiple allowed)</span>
+                </div>
+                <div class="svc-cards-grid" id="svcGrid_${bid}"></div>
+                <div class="svc-pill" id="svcPill_${bid}"></div>
+            </div>
+            <!-- Employee rows (shown when services selected) -->
+            <div id="empWrap_${bid}" style="display:none;">
+                <span class="emp-section-label">Assign Expert Per Service</span>
+                <div id="empRows_${bid}"></div>
+            </div>
+        </div>
+    `;
+    wrap.appendChild(el);
+    renumberBlocks();
+}
+
+// ================================================================
+// REMOVE CATEGORY BLOCK
+// ================================================================
+function removeCatBlock(bid) {
+    catBlocks.delete(bid);
+    const el = document.querySelector(`.cat-block[data-bid="${bid}"]`);
+    if (el) {
+        el.style.opacity = '0'; el.style.transform = 'translateY(-4px)';
+        setTimeout(() => { el.remove(); renumberBlocks(); updateGrandSummary(); }, 200);
+    }
+}
+
+function renumberBlocks() {
+    document.querySelectorAll('.cat-block').forEach((el, i) => {
+        const bid = el.dataset.bid;
+        const num = document.getElementById(`cbn_${bid}`);
+        const lbl = document.getElementById(`cbl_${bid}`);
+        if (num) num.textContent = i + 1;
+        if (lbl) lbl.textContent = `Category ${i + 1}`;
+    });
+}
+
+// ================================================================
+// CATEGORY CHANGE → render service cards
+// ================================================================
+function onCatChange(bid, catKey) {
+    const state = catBlocks.get(bid);
+    if (!state) return;
+
+    // Reset block
+    state.catKey = catKey;
+    state.selectedSvcs.clear();
+    state.empCache.clear();
+
+    const svcWrap = document.getElementById(`svcWrap_${bid}`);
+    const empWrap = document.getElementById(`empWrap_${bid}`);
+    const svcGrid = document.getElementById(`svcGrid_${bid}`);
+    const empRows = document.getElementById(`empRows_${bid}`);
+    const pill    = document.getElementById(`svcPill_${bid}`);
+
+    empRows.innerHTML = ''; empWrap.style.display = 'none';
+    pill.classList.remove('visible');
+
+    if (!catKey) { svcWrap.style.display = 'none'; updateGrandSummary(); return; }
+
+    const svcs = CAT_MAP[catKey] || [];
+    svcGrid.innerHTML = '';
+    svcWrap.style.display = 'block';
+
+    if (svcs.length === 0) {
+        svcGrid.innerHTML = '<div class="svc-empty"><i class="bi bi-slash-circle me-2"></i>No services in this category</div>';
+        updateGrandSummary(); return;
+    }
+
+    svcs.forEach(svc => {
+        const card = document.createElement('div');
+        card.className = 'svc-card';
+        card.innerHTML = `
+            <div class="svc-card-check"><i class="bi bi-check"></i></div>
+            <div class="svc-card-name">${svc.name}</div>
+            <div class="svc-card-meta">
+                <span class="svc-card-price">₹${svc.price}</span>
+                <span class="svc-card-dur"><i class="bi bi-clock"></i>${svc.duration} min</span>
+            </div>
+        `;
+        card.addEventListener('click', () => toggleSvc(bid, card, svc));
+        svcGrid.appendChild(card);
+    });
+
+    updateGrandSummary();
+}
+
+// ================================================================
+// TOGGLE SERVICE CARD
+// ================================================================
+function toggleSvc(bid, card, svc) {
+    const state = catBlocks.get(bid);
+    if (!state) return;
+
+    if (state.selectedSvcs.has(svc.id)) {
+        state.selectedSvcs.delete(svc.id);
+        card.classList.remove('selected');
+        // Remove emp row
+        const r = document.getElementById(`er_${bid}_${svc.id}`);
+        if (r) r.remove();
+    } else {
+        state.selectedSvcs.set(svc.id, svc);
+        card.classList.add('selected');
+        addEmpRow(bid, svc);
+    }
+
+    const empWrap = document.getElementById(`empWrap_${bid}`);
+    empWrap.style.display = state.selectedSvcs.size > 0 ? 'block' : 'none';
+
+    updatePill(bid);
+    updateGrandSummary();
+}
+
+// ================================================================
+// EMP ROW
+// ================================================================
+function addEmpRow(bid, svc) {
+    const empRows = document.getElementById(`empRows_${bid}`);
+    const rowId   = `er_${bid}_${svc.id}`;
+    if (document.getElementById(rowId)) return;
+
+    const row = document.createElement('div');
+    row.className = 'emp-row'; row.id = rowId;
+    row.innerHTML = `
+        <div class="emp-row-label">
+            <div class="emp-row-dot"></div>
+            <span class="emp-row-svcname">${svc.name}</span>
+            <span class="emp-row-price" id="erp_${bid}_${svc.id}">₹${svc.price}</span>
+        </div>
+        <select class="form-control-glamour" id="es_${bid}_${svc.id}" onchange="onEmpChange(${bid},${svc.id})" disabled>
+            <option value="">Loading experts…</option>
+        </select>
+        <div id="esl_${bid}_${svc.id}" style="display:none;font-size:0.75rem;color:var(--rose-gold);margin-top:5px;">
+            <span class="spinner-border spinner-border-sm me-1"></span> Loading…
+        </div>
+    `;
+    empRows.appendChild(row);
+    loadEmps(bid, svc.id, svc.price);
+}
+
+function loadEmps(bid, svcId, basePrice) {
+    const state = catBlocks.get(bid);
+    if (!state) return;
+    if (state.empCache.has(svcId)) { fillEmpSel(bid, svcId, state.empCache.get(svcId)); return; }
+
+    const loader = document.getElementById(`esl_${bid}_${svcId}`);
+    if (loader) loader.style.display = 'block';
+
+    fetch(`${AJAX_EMP_URL}?service_id=${svcId}`)
+        .then(r => r.json())
+        .then(data => {
+            if (loader) loader.style.display = 'none';
+            const emps = data.employees || [];
+            state.empCache.set(svcId, emps);
+            fillEmpSel(bid, svcId, emps);
+        })
+        .catch(() => {
+            if (loader) loader.style.display = 'none';
+            const sel = document.getElementById(`es_${bid}_${svcId}`);
+            if (sel) sel.innerHTML = '<option value="">Could not load experts</option>';
+        });
+}
+
+function fillEmpSel(bid, svcId, emps) {
+    const sel = document.getElementById(`es_${bid}_${svcId}`);
+    if (!sel) return;
+    if (emps.length === 0) { sel.innerHTML = '<option value="">Any available expert</option>'; sel.disabled = true; return; }
+    sel.innerHTML = '<option value="">— Select an Expert —</option>';
+    emps.forEach(emp => {
+        const o = document.createElement('option');
+        o.value = emp.id; o.dataset.price = emp.price; o.dataset.name = emp.name;
+        o.textContent = `${emp.name} — ${emp.expertise} (₹${emp.price})`;
+        sel.appendChild(o);
+    });
+    sel.disabled = false;
+}
+
+function onEmpChange(bid, svcId) {
+    const sel = document.getElementById(`es_${bid}_${svcId}`);
+    const opt = sel.options[sel.selectedIndex];
+    if (opt && opt.dataset.price) {
+        const tag = document.getElementById(`erp_${bid}_${svcId}`);
+        if (tag) tag.textContent = `₹${opt.dataset.price}`;
+    }
+    updateGrandSummary();
+}
+
+function updatePill(bid) {
+    const state = catBlocks.get(bid);
+    const pill  = document.getElementById(`svcPill_${bid}`);
+    if (!state || !pill) return;
+    const n = state.selectedSvcs.size;
+    if (n === 0) { pill.classList.remove('visible'); return; }
+    pill.textContent = n === 1 ? '1 service selected' : `${n} services selected`;
+    pill.classList.add('visible');
+}
+
+// ================================================================
+// GRAND SUMMARY
+// ================================================================
+function updateGrandSummary() {
+    const summary = document.getElementById('grandSummary');
+    const rowsEl  = document.getElementById('grandSummaryRows');
+    const amtEl   = document.getElementById('gtAmt');
+    const durEl   = document.getElementById('gtDur');
+
+    let total = 0, dur = 0, html = '', any = false;
+
+    catBlocks.forEach((state, bid) => {
+        state.selectedSvcs.forEach((svc, svcId) => {
+            any = true;
+            const sel = document.getElementById(`es_${bid}_${svcId}`);
+            let price = parseFloat(svc.price), emp = '—';
+            if (sel) {
+                const o = sel.options[sel.selectedIndex];
+                if (o && o.dataset.price) price = parseFloat(o.dataset.price);
+                if (o && o.dataset.name)  emp   = o.dataset.name;
+            }
+            total += price; dur += svc.duration;
+            html += `
+                <div class="gs-row">
+                    <div>
+                        <div class="gs-name">${svc.name}</div>
+                        <div class="gs-sub"><i class="bi bi-clock me-1"></i>${svc.duration} min · ${emp}</div>
+                    </div>
+                    <div class="gs-price">₹${price}</div>
+                </div>`;
+        });
+    });
+
+    if (!any) { summary.classList.remove('visible'); return; }
+    rowsEl.innerHTML = html;
+    amtEl.textContent = total;
+    durEl.textContent = `Est. ${dur} min total`;
+    summary.classList.add('visible');
+}
+
+// ================================================================
+// FORM SUBMIT
+// ================================================================
+document.getElementById('bookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const err = document.getElementById('formErrorMsg');
+    err.style.display = 'none';
+    const fd = new FormData(this);
+
+    // Customer checks
+    if (!fd.get('full_name') || !fd.get('mobile')) {
+        err.textContent = 'Customer name and mobile number are required.';
+        err.style.display = 'block'; return;
+    }
+    if (!/^\d{10}$/.test(fd.get('mobile'))) {
+        err.textContent = 'Please enter a valid 10-digit mobile number.';
+        err.style.display = 'block'; return;
+    }
+    if (bookingFor === 'someone' && someoneType === 'existing' && !foundCustomer) {
+        err.textContent = 'Please search and select an existing customer first.';
+        err.style.display = 'block'; return;
+    }
+
+    // Collect services
+    let totalSvcs = 0, missingEmp = false;
+    catBlocks.forEach((state, bid) => {
+        state.selectedSvcs.forEach((svc, svcId) => {
+            totalSvcs++;
+            const sel = document.getElementById(`es_${bid}_${svcId}`);
+            if (sel && !sel.disabled && !sel.value) missingEmp = true;
+            fd.append('service_ids[]',  svcId);
+            fd.append('employee_ids[]', sel ? (sel.value || '') : '');
+        });
+    });
+
+    if (totalSvcs === 0) {
+        err.textContent = 'Please select at least one service.';
+        err.style.display = 'block'; return;
+    }
+    if (missingEmp) {
+        err.textContent = 'Please select an expert for each service.';
+        err.style.display = 'block'; return;
+    }
+    if (!fd.get('appointment_date') || !fd.get('appointment_time')) {
+        err.textContent = 'Please select appointment date and time.';
+        err.style.display = 'block'; return;
+    }
+
+    const btn = this.querySelector('button[type="submit"]');
+    btn.innerHTML = '<span><span class="spinner-border spinner-border-sm me-2"></span>Booking...</span>';
+    btn.disabled  = true;
+
+    fetch("{% url 'booking' %}", {
+        method: 'POST', body: fd,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    })
+    .then(r => r.json())
+    .then(resp => {
+        if (resp.success) {
+            populateSuccessModal(resp.appointment_id);
+            new bootstrap.Modal(document.getElementById('successModal')).show();
+        } else if (resp.login_required) {
+            window.location.href = '/?login_required=1';
+        } else {
+            err.textContent = resp.error || 'Something went wrong. Please try again.';
+            err.style.display = 'block';
+            btn.innerHTML = '<span>Confirm My Appointment</span>'; btn.disabled = false;
+        }
+    })
+    .catch(() => {
+        err.textContent = 'Network error. Please try again.';
+        err.style.display = 'block';
+        btn.innerHTML = '<span>Confirm My Appointment</span>'; btn.disabled = false;
+    });
+});
+
+// ================================================================
+// SUCCESS MODAL
+// ================================================================
+function populateSuccessModal(aptId) {
+    document.getElementById('aptIdDisplay').textContent = aptId;
+    let total = 0, html = '';
+    catBlocks.forEach((state, bid) => {
+        state.selectedSvcs.forEach((svc, svcId) => {
+            const sel = document.getElementById(`es_${bid}_${svcId}`);
+            let price = parseFloat(svc.price), emp = 'Any available expert';
+            if (sel) {
+                const o = sel.options[sel.selectedIndex];
+                if (o && o.dataset.price) price = parseFloat(o.dataset.price);
+                if (o && o.value && o.dataset.name) emp = o.dataset.name;
+            }
+            total += price;
+            html += `
+                <div class="ss-item">
+                    <div><div class="ss-item-name">${svc.name}</div><div class="ss-item-emp"><i class="bi bi-person me-1"></i>${emp}</div></div>
+                    <div class="ss-item-price">₹${price}</div>
+                </div>`;
+        });
+    });
+    document.getElementById('successServicesBody').innerHTML = html;
+    document.getElementById('successTotalAmt').textContent   = total;
+}
+</script>
+{% endblock %}

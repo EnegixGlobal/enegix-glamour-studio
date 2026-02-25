@@ -1,0 +1,770 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block content %}
+
+<div class="ribbon-header d-flex justify-content-between align-items-center px-4 pb-5 mb-3" style="color: black">
+  <div class="d-flex align-items-center">
+    <i class="fas fa-calendar-alt me-3 fs-2" style="color: #ff4f6e;"></i>
+    <div class="fw-bold fs-3">Appointment Details - {{ appointment.appointment_id }}</div>
+  </div>
+  <div class="breadcrumb-text text-end">
+    <span class="text-black"><i class="fas fa-home me-1"></i>HOME</span>
+    <span class="mx-2 text-black">/</span>
+    <a href="{% url 'appointment_list' %}" class="text-black">Appointments</a>
+    <span class="mx-2 text-black">/</span>
+    <span class="text-black-50">View Details</span>
+  </div>
+</div>
+
+<div class="container-fluid mt-2">
+  <!-- Appointment Status and Actions -->
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-header table-title-bar d-flex justify-content-between align-items-center">
+      <span class="fw-bold text-white">
+        <i class="fas fa-info-circle me-2"></i>Appointment Status
+      </span>
+      <div>
+        {% if appointment.status == 'pending' %}
+          <span class="badge badge-warning-lg">
+            <i class="fas fa-clock me-1"></i>Pending
+          </span>
+        {% elif appointment.status == 'confirmed' %}
+          <span class="badge badge-success-lg">
+            <i class="fas fa-check-circle me-1"></i>Confirmed
+          </span>
+        {% elif appointment.status == 'in_progress' %}
+          <span class="badge badge-info-lg">
+            <i class="fas fa-spinner me-1"></i>In Progress
+          </span>
+        {% elif appointment.status == 'completed' %}
+          <span class="badge badge-primary-lg">
+            <i class="fas fa-check-double me-1"></i>Completed
+          </span>
+        {% elif appointment.status == 'cancelled' %}
+          <span class="badge badge-danger-lg">
+            <i class="fas fa-times-circle me-1"></i>Cancelled
+          </span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="card-body p-4">
+      <div class="row">
+        <!-- Customer Information -->
+        <div class="col-md-6 mb-4">
+          <div class="info-section">
+            <h6 class="section-title"><i class="fas fa-user me-2"></i>Customer Details</h6>
+            <div class="customer-detail-box">
+              <div class="d-flex align-items-center mb-3">
+                {% if appointment.customer.profile_pic %}
+                  <img src="{{ appointment.customer.profile_pic.url }}" class="customer-avatar-large me-3" alt="{{ appointment.customer.full_name }}">
+                {% else %}
+                  <div class="customer-avatar-large-placeholder me-3">
+                    {{ appointment.customer.full_name|first|upper }}
+                  </div>
+                {% endif %}
+                <div>
+                  <h5 class="mb-1">{{ appointment.customer.full_name }}</h5>
+                  <p class="text-muted mb-0">{{ appointment.customer.customer_id }}</p>
+                </div>
+              </div>
+              
+              <div class="info-grid-detail">
+                <div class="info-item-detail">
+                  <i class="fas fa-mobile-alt text-primary"></i>
+                  <div>
+                    <div class="info-label">Mobile</div>
+                    <div class="info-value">{{ appointment.customer.mobile }}</div>
+                  </div>
+                </div>
+                
+                <div class="info-item-detail">
+                  <i class="fas fa-envelope text-primary"></i>
+                  <div>
+                    <div class="info-label">Email</div>
+                    <div class="info-value">{{ appointment.customer.email|default:"Not Provided" }}</div>
+                  </div>
+                </div>
+
+                {% if appointment.customer.gender %}
+                <div class="info-item-detail">
+                  <i class="fas fa-venus-mars text-primary"></i>
+                  <div>
+                    <div class="info-label">Gender</div>
+                    <div class="info-value">{{ appointment.customer.get_gender_display }}</div>
+                  </div>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appointment Information -->
+        <div class="col-md-6 mb-4">
+          <div class="info-section">
+            <h6 class="section-title"><i class="fas fa-calendar-check me-2"></i>Appointment Information</h6>
+            <div class="info-grid-detail">
+              <div class="info-item-detail">
+                <i class="fas fa-calendar text-primary"></i>
+                <div>
+                  <div class="info-label">Date</div>
+                  <div class="info-value">{{ appointment.appointment_date|date:"d M, Y" }}</div>
+                </div>
+              </div>
+
+              <div class="info-item-detail">
+                <i class="fas fa-clock text-primary"></i>
+                <div>
+                  <div class="info-label">Time</div>
+                  <div class="info-value">{{ appointment.appointment_time }}</div>
+                </div>
+              </div>
+
+              <div class="info-item-detail">
+                <i class="fas fa-tag text-primary"></i>
+                <div>
+                  <div class="info-label">Booking Type</div>
+                  <div class="info-value">
+                    {% if appointment.booking_type == 'online' %}
+                      <span class="badge modern-badge badge-info">
+                        <i class="fas fa-globe me-1"></i>Online
+                      </span>
+                    {% else %}
+                      <span class="badge modern-badge badge-secondary">
+                        <i class="fas fa-store me-1"></i>Offline
+                      </span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+
+              <div class="info-item-detail">
+                <i class="fas fa-calendar-plus text-primary"></i>
+                <div>
+                  <div class="info-label">Created On</div>
+                  <div class="info-value">{{ appointment.created_at|date:"d M, Y - h:i A" }}</div>
+                </div>
+              </div>
+
+              {% if appointment.created_by %}
+              <div class="info-item-detail">
+                <i class="fas fa-user-tie text-primary"></i>
+                <div>
+                  <div class="info-label">Created By</div>
+                  <div class="info-value">{{ appointment.created_by.full_name }}</div>
+                </div>
+              </div>
+              {% endif %}
+
+              {% if appointment.special_notes %}
+              <div class="info-item-detail full-width">
+                <i class="fas fa-sticky-note text-primary"></i>
+                <div>
+                  <div class="info-label">Special Notes</div>
+                  <div class="info-value">{{ appointment.special_notes }}</div>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Initial Services -->
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-header table-title-bar fw-bold text-white">
+      <i class="fas fa-cut me-2"></i>Initial Services
+    </div>
+    <div class="card-body p-0">
+      {% if initial_services %}
+      <div class="table-responsive">
+        <table class="table table-hover modern-table mb-0">
+          <thead>
+            <tr>
+              <th><i class="fas fa-hashtag me-2"></i>S.No</th>
+              <th><i class="fas fa-scissors me-2"></i>Service Name</th>
+              <th><i class="fas fa-user-tie me-2"></i>Stylist/Employee</th>
+              <th><i class="fas fa-rupee-sign me-2"></i>Price</th>
+              <th><i class="fas fa-info-circle me-2"></i>Status</th>
+              <th><i class="fas fa-calendar-alt me-2"></i>Added At</th>
+              {% if request.session.role == 'super_admin' or request.session.role == 'salon_manager' %}
+              <th class="text-center"><i class="fas fa-flask me-2"></i>Products Used</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for service in initial_services %}
+            <tr>
+              <td><span class="serial-number">{{ forloop.counter }}</span></td>
+              <td><strong>{{ service.service.service_name }}</strong></td>
+              <td>
+                <div class="d-flex align-items-center">
+                  {% if service.employee.profile_pic %}
+                    <img src="{{ service.employee.profile_pic.url }}" class="employee-avatar me-2" alt="{{ service.employee.full_name }}">
+                  {% else %}
+                    <div class="employee-avatar-placeholder me-2">
+                      {{ service.employee.full_name|first|upper }}
+                    </div>
+                  {% endif %}
+                  <div>
+                    {{ service.employee.full_name }}
+                    <br>
+                    <small class="text-muted">{{ service.employee.employee_id }}</small>
+                  </div>
+                </div>
+              </td>
+              <td><strong class="text-success">₹{{ service.service_price|floatformat:2 }}</strong></td>
+              <td>
+                {% if service.service_status == 'pending' %}
+                  <span class="badge modern-badge badge-warning">
+                    <i class="fas fa-clock me-1"></i>Pending
+                  </span>
+                {% elif service.service_status == 'in_progress' %}
+                  <span class="badge modern-badge badge-info">
+                    <i class="fas fa-spinner me-1"></i>In Progress
+                  </span>
+                {% elif service.service_status == 'completed' %}
+                  <span class="badge modern-badge badge-success">
+                    <i class="fas fa-check-circle me-1"></i>Completed
+                  </span>
+                {% endif %}
+              </td>
+              <td>{{ service.added_at|date:"d M, Y - h:i A" }}</td>
+              {% if request.session.role == 'super_admin' or request.session.role == 'salon_manager' %}
+              <td class="text-center">
+                {% if service.service_status == 'completed' %}
+                  <a href="{% url 'view_product_usage' service_id=service.id %}"
+                     class="btn btn-sm btn-info text-white fw-bold"
+                     style="border-radius:8px; white-space:nowrap;">
+                    <i class="fas fa-flask me-1"></i>View Products
+                  </a>
+                {% else %}
+                  <span class="text-muted small">—</span>
+                {% endif %}
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <i class="fas fa-cut fa-3x text-muted mb-3"></i>
+        <p class="text-muted">No services found</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Additional Services -->
+  {% if additional_services %}
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-header table-title-bar fw-bold text-white">
+      <i class="fas fa-plus-circle me-2"></i>Additional Services
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover modern-table mb-0">
+          <thead>
+            <tr>
+              <th><i class="fas fa-hashtag me-2"></i>S.No</th>
+              <th><i class="fas fa-scissors me-2"></i>Service Name</th>
+              <th><i class="fas fa-user-tie me-2"></i>Stylist/Employee</th>
+              <th><i class="fas fa-rupee-sign me-2"></i>Price</th>
+              <th><i class="fas fa-info-circle me-2"></i>Status</th>
+              <th><i class="fas fa-calendar-alt me-2"></i>Added At</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for service in additional_services %}
+            <tr class="additional-service-row">
+              <td><span class="serial-number">{{ forloop.counter }}</span></td>
+              <td>
+                <strong>{{ service.service.service_name }}</strong>
+                <span class="badge badge-sm badge-additional ms-2">Additional</span>
+              </td>
+              <td>
+                <div class="d-flex align-items-center">
+                  {% if service.employee.profile_pic %}
+                    <img src="{{ service.employee.profile_pic.url }}" class="employee-avatar me-2" alt="{{ service.employee.full_name }}">
+                  {% else %}
+                    <div class="employee-avatar-placeholder me-2">
+                      {{ service.employee.full_name|first|upper }}
+                    </div>
+                  {% endif %}
+                  <div>
+                    {{ service.employee.full_name }}
+                    <br>
+                    <small class="text-muted">{{ service.employee.employee_id }}</small>
+                  </div>
+                </div>
+              </td>
+              <td><strong class="text-success">₹{{ service.service_price|floatformat:2 }}</strong></td>
+              <td>
+                {% if service.service_status == 'pending' %}
+                  <span class="badge modern-badge badge-warning">
+                    <i class="fas fa-clock me-1"></i>Pending
+                  </span>
+                {% elif service.service_status == 'in_progress' %}
+                  <span class="badge modern-badge badge-info">
+                    <i class="fas fa-spinner me-1"></i>In Progress
+                  </span>
+                {% elif service.service_status == 'completed' %}
+                  <span class="badge modern-badge badge-success">
+                    <i class="fas fa-check-circle me-1"></i>Completed
+                  </span>
+                {% endif %}
+              </td>
+              <td>{{ service.added_at|date:"d M, Y - h:i A" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Financial Summary -->
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-header table-title-bar fw-bold text-white">
+      <i class="fas fa-rupee-sign me-2"></i>Financial Summary
+    </div>
+    <div class="card-body p-4">
+      <div class="financial-summary">
+        <div class="summary-row">
+          <div class="summary-label">
+            <i class="fas fa-calculator me-2 text-primary"></i>Total Amount:
+          </div>
+          <div class="summary-value text-success">₹{{ appointment.total_amount|floatformat:2 }}</div>
+        </div>
+
+        <div class="summary-row">
+          <div class="summary-label">
+            <i class="fas fa-money-bill-wave me-2 text-primary"></i>Advance Paid:
+          </div>
+          <div class="summary-value text-info">₹{{ appointment.advance_paid|floatformat:2 }}</div>
+        </div>
+
+        <div class="summary-row-divider"></div>
+
+        <div class="summary-row total-row">
+          <div class="summary-label">
+            <i class="fas fa-wallet me-2 text-primary"></i>Balance Amount:
+          </div>
+          <div class="summary-value text-danger">₹{{ appointment.balance_amount|floatformat:2 }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between flex-wrap gap-3">
+        <a href="{% url 'appointment_list' %}" class="btn btn-secondary btn-action-lg">
+          <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+
+        <div class="d-flex gap-3 flex-wrap">
+          {% if appointment.status != 'completed' and appointment.status != 'cancelled' %}
+          <a href="{% url 'add_additional_service' appointment.id %}" class="btn btn-info btn-action-lg">
+            <i class="fas fa-plus-circle me-2"></i>Add Service
+          </a>
+
+          <a href="{% url 'edit_appointment' appointment.id %}" class="btn btn-warning btn-action-lg">
+            <i class="fas fa-edit me-2"></i>Edit Appointment
+          </a>
+
+          <a href="{% url 'cancel_appointment' appointment.id %}" class="btn btn-danger btn-action-lg"
+             onclick="return confirm('Are you sure you want to cancel this appointment?')">
+            <i class="fas fa-ban me-2"></i>Cancel Appointment
+          </a>
+          {% endif %}
+
+          <a href="{% url 'view_customer' appointment.customer.id %}" class="btn btn-primary btn-action-lg">
+            <i class="fas fa-user me-2"></i>View Customer
+          </a>
+
+          {% if request.session.role == 'super_admin' or request.session.role == 'salon_manager' or request.session.role == 'receptionist' %}
+            {% with existing_bill=appointment.bills.first %}
+            {% if appointment.status == 'completed' and not existing_bill %}
+            <a href="{% url 'generate_bill' appointment_id=appointment.id %}"
+               class="btn btn-success btn-action-lg"
+               style="background: linear-gradient(135deg, #28a745 0%, #48c774 100%); border:none; font-size:16px;">
+              <i class="fas fa-file-invoice-dollar me-2"></i>Generate Bill
+            </a>
+            {% elif existing_bill %}
+            <a href="{% url 'view_bill' id=existing_bill.id %}"
+               class="btn btn-success btn-action-lg"
+               style="background: linear-gradient(135deg, #17a2b8 0%, #3dbdd1 100%); border:none;">
+              <i class="fas fa-receipt me-2"></i>View Bill
+            </a>
+            {% endif %}
+            {% endwith %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Modern Card Styles */
+.modern-card {
+  border-radius: 15px;
+  border: none;
+  overflow: hidden;
+}
+
+.card-header.table-title-bar {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  padding: 20px;
+  font-size: 18px;
+  border-bottom: 3px solid rgba(255,255,255,0.2);
+}
+
+/* Badge Styles */
+.badge-success-lg,
+.badge-danger-lg,
+.badge-warning-lg,
+.badge-info-lg,
+.badge-primary-lg {
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.badge-success-lg {
+  background: linear-gradient(135deg, #28a745 0%, #48c774 100%);
+}
+
+.badge-danger-lg {
+  background: linear-gradient(135deg, #dc3545 0%, #e4606d 100%);
+}
+
+.badge-warning-lg {
+  background: linear-gradient(135deg, #ffc107 0%, #ffd454 100%);
+  color: #333;
+}
+
+.badge-info-lg {
+  background: linear-gradient(135deg, #17a2b8 0%, #3dbdd1 100%);
+}
+
+.badge-primary-lg {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+}
+
+/* Info Section Styles */
+.info-section {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-weight: 700;
+  color: #ff4f6e;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ffe9ed;
+  font-size: 16px;
+}
+
+.customer-detail-box {
+  padding: 20px;
+  background: #fff5f7;
+  border-radius: 12px;
+  border: 2px solid #ffe9ed;
+}
+
+.info-grid-detail {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.info-item-detail {
+  display: flex;
+  align-items: start;
+  gap: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.info-item-detail:hover {
+  background: #ffe9ed;
+  transform: translateX(5px);
+  border-color: #ff4f6e;
+}
+
+.info-item-detail.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-item-detail i {
+  font-size: 24px;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #555;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.info-value {
+  color: #333;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Customer Avatar */
+.customer-avatar-large {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ff4f6e;
+  box-shadow: 0 4px 15px rgba(255, 79, 110, 0.3);
+}
+
+.customer-avatar-large-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 32px;
+  box-shadow: 0 4px 15px rgba(255, 79, 110, 0.3);
+}
+
+.employee-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #17a2b8;
+}
+
+.employee-avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #17a2b8 0%, #3dbdd1 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* Badge Styles */
+.modern-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.badge-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #ffd454 100%);
+  color: #333;
+}
+
+.badge-success {
+  background: linear-gradient(135deg, #28a745 0%, #48c774 100%);
+  color: white;
+}
+
+.badge-info {
+  background: linear-gradient(135deg, #17a2b8 0%, #3dbdd1 100%);
+  color: white;
+}
+
+.badge-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+  color: white;
+}
+
+.badge-additional {
+  background: linear-gradient(135deg, #6f42c1 0%, #9b59b6 100%);
+  color: white;
+  padding: 4px 10px;
+  font-size: 11px;
+}
+
+/* Table Styles */
+.modern-table {
+  margin-bottom: 0;
+}
+
+.modern-table thead {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+}
+
+.modern-table thead th {
+  color: #333;
+  font-weight: 700;
+  padding: 15px;
+  border: none;
+  font-size: 14px;
+}
+
+.modern-table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.modern-table tbody tr:hover {
+  background: #fff5f7;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(255, 79, 110, 0.1);
+}
+
+.modern-table tbody tr.additional-service-row:hover {
+  background: #f3e5ff;
+}
+
+.modern-table tbody td {
+  padding: 15px;
+  vertical-align: middle;
+  color: #333;
+  font-size: 14px;
+}
+
+.serial-number {
+  font-weight: 600;
+  color: #666;
+}
+
+/* Financial Summary */
+.financial-summary {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  margin-bottom: 10px;
+  background: #fff5f7;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.summary-row:hover {
+  background: #ffe9ed;
+  transform: translateX(5px);
+}
+
+.summary-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.summary-value {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.summary-row-divider {
+  height: 2px;
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  margin: 20px 0;
+}
+
+.total-row {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border: 2px solid #ff4f6e;
+  padding: 20px;
+}
+
+.total-row .summary-label {
+  font-size: 18px;
+}
+
+.total-row .summary-value {
+  font-size: 24px;
+}
+
+/* Action Buttons */
+.btn-action-lg {
+  padding: 12px 30px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-action-lg:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #e63956 0%, #ff6b9d 100%);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #e4606d 100%);
+  border: none;
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #c82333 0%, #dc3545 100%);
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #ffd454 100%);
+  border: none;
+  color: #333;
+}
+
+.btn-warning:hover {
+  background: linear-gradient(135deg, #e0a800 0%, #ffc107 100%);
+}
+
+.btn-info {
+  background: linear-gradient(135deg, #17a2b8 0%, #3dbdd1 100%);
+  border: none;
+}
+
+.btn-info:hover {
+  background: linear-gradient(135deg, #138496 0%, #17a2b8 100%);
+}
+
+.ribbon-header {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+}
+
+.text-primary {
+  color: #ff4f6e !important;
+}
+</style>
+
+{% endblock %}

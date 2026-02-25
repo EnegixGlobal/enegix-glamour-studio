@@ -1,0 +1,485 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block content %}
+
+<div class="ribbon-header d-flex justify-content-between align-items-center px-4 pb-5 mb-3" style="color: black">
+  <div class="d-flex align-items-center">
+    <i class="fas fa-calendar-plus me-3 fs-2" style="color: #ff4f6e;"></i>
+    <div class="fw-bold fs-3">Create New Appointment</div>
+  </div>
+  <div class="breadcrumb-text text-end">
+    <span class="text-black"><i class="fas fa-home me-1"></i>HOME</span>
+    <span class="mx-2 text-black">/</span>
+    <a href="{% url 'appointment_list' %}" class="text-black">Appointments</a>
+    <span class="mx-2 text-black">/</span>
+    <span class="text-black-50">Create</span>
+  </div>
+</div>
+
+<div class="container-fluid mt-2">
+  <form method="POST" id="appointmentForm">
+    {% csrf_token %}
+
+    <!-- Customer Selection -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header table-title-bar fw-bold text-white">
+        <i class="fas fa-user me-2"></i>Select Customer
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <div class="col-md-8 mb-3">
+            <label class="form-label"><i class="fas fa-user me-2 text-primary"></i>Customer <span class="text-danger">*</span></label>
+            <select name="customer_id" id="customerSelect" class="form-control modern-input" required>
+              <option value="">-- Select Customer --</option>
+              {% for customer in customers %}
+                <option value="{{ customer.id }}"
+                  {% if selected_customer and selected_customer.id == customer.id %}selected{% endif %}>
+                  {{ customer.customer_id }} - {{ customer.full_name }} ({{ customer.mobile }})
+                </option>
+              {% endfor %}
+            </select>
+            <small class="text-muted">
+              <i class="fas fa-info-circle me-1"></i>Don't see the customer?
+              <a href="{% url 'add_customer' %}" target="_blank" class="text-primary">Add new customer</a>
+            </small>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label"><i class="fas fa-search me-2 text-primary"></i>Quick Search</label>
+            <input type="text" id="customerSearch" class="form-control modern-input" placeholder="Type name or mobile...">
+          </div>
+        </div>
+        <div id="selectedCustomerInfo" class="customer-info-box mt-3" style="display:none;">
+          <div class="d-flex align-items-center">
+            <div class="customer-info-icon"><i class="fas fa-user-check"></i></div>
+            <div class="flex-grow-1 ms-3">
+              <h6 class="mb-1 text-success">Customer Selected</h6>
+              <div id="customerDetails" class="fw-bold"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appointment Details -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header table-title-bar fw-bold text-white">
+        <i class="fas fa-calendar-alt me-2"></i>Appointment Details
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="form-label"><i class="fas fa-calendar me-2 text-primary"></i>Appointment Date <span class="text-danger">*</span></label>
+            <input type="date" name="appointment_date" id="appointmentDate" class="form-control modern-input" required>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label"><i class="fas fa-clock me-2 text-primary"></i>Appointment Time <span class="text-danger">*</span></label>
+            <input type="time" name="appointment_time" class="form-control modern-input" required>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label"><i class="fas fa-rupee-sign me-2 text-primary"></i>Advance Payment</label>
+            <input type="number" name="advance_paid" class="form-control modern-input" placeholder="0" min="0" step="0.01" value="0">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <label class="form-label"><i class="fas fa-sticky-note me-2 text-primary"></i>Special Notes (Optional)</label>
+            <textarea name="special_notes" class="form-control modern-input" rows="2" placeholder="Any special requests..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Services Selection - NEW FLOW: Category → Service → Employee -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-header table-title-bar fw-bold text-white d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-cut me-2"></i>Select Services</span>
+        <button type="button" class="btn btn-light btn-sm fw-bold" onclick="addServiceRow()">
+          <i class="fas fa-plus me-2"></i>Add Another Service
+        </button>
+      </div>
+      <div class="card-body p-4">
+        <div id="servicesContainer">
+          <!-- Service Row 1 (default) -->
+          <div class="service-row mb-4 p-3 service-row-box" id="row-1">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="mb-0 text-primary"><i class="fas fa-spa me-2"></i>Service #1</h6>
+              <button type="button" class="btn btn-sm btn-danger btn-remove" onclick="removeServiceRow(this)" disabled>
+                <i class="fas fa-trash-alt me-1"></i>Remove
+              </button>
+            </div>
+            <div class="row">
+              <!-- Step 1: Category -->
+              <div class="col-md-4 mb-3">
+                <label class="form-label"><i class="fas fa-list me-2 text-primary"></i>Category <span class="text-danger">*</span></label>
+                <select class="form-control modern-input category-select" onchange="loadServicesByCategory(this)">
+                  <option value="">-- Select Category --</option>
+                  {% for value, label in categories %}
+                    <option value="{{ value }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <!-- Step 2: Service -->
+              <div class="col-md-4 mb-3">
+                <label class="form-label"><i class="fas fa-scissors me-2 text-primary"></i>Service <span class="text-danger">*</span></label>
+                <select name="service_ids[]" class="form-control modern-input service-select" required onchange="loadEmployeesForRow(this)" disabled>
+                  <option value="">-- First select category --</option>
+                </select>
+              </div>
+              <!-- Step 3: Employee -->
+              <div class="col-md-4 mb-3">
+                <label class="form-label"><i class="fas fa-user-tie me-2 text-primary"></i>Stylist/Employee <span class="text-danger">*</span></label>
+                <select name="employee_ids[]" class="form-control modern-input employee-select" required disabled onchange="calculateTotal()">
+                  <option value="">-- First select service --</option>
+                </select>
+              </div>
+            </div>
+            <!-- Price Info Row -->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="service-price-info" style="display:none;">
+                  <i class="fas fa-tag me-2 text-success"></i>
+                  Service Price: <strong class="text-success service-price-display">₹0.00</strong>
+                  &nbsp;&nbsp;
+                  <i class="fas fa-clock me-2 text-primary"></i>
+                  Duration: <strong class="text-primary service-duration-display">0 min</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Amount -->
+        <div class="total-amount-box mt-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Total Amount:</h5>
+            <h4 class="mb-0 text-success" id="totalAmount">₹0.00</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="card shadow-lg mb-4 modern-card">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between">
+          <a href="{% url 'appointment_list' %}" class="btn btn-secondary btn-action-lg">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+          </a>
+          <button type="submit" class="btn btn-success btn-action-lg">
+            <i class="fas fa-check-circle me-2"></i>Create Appointment
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<style>
+.modern-card { border-radius: 15px; border: none; overflow: hidden; }
+.modern-input {
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 10px; padding: 12px 15px;
+  transition: all 0.3s ease; color: #000;
+}
+.modern-input:focus {
+  border-color: #ff4f6e !important;
+  background-color: #fff5f7 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255,79,110,0.15);
+  transform: translateY(-2px);
+}
+.modern-input:disabled { background-color: #f0f0f0; cursor: not-allowed; }
+.form-label { font-weight: 600; color: #333; margin-bottom: 8px; }
+.card-header.table-title-bar {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  padding: 20px; font-size: 18px;
+  border-bottom: 3px solid rgba(255,255,255,0.2);
+}
+.service-row-box {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 12px;
+  border: 2px solid #ffd4dc;
+}
+.service-price-info {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px 15px;
+  font-size: 14px;
+  display: inline-block;
+}
+.total-amount-box {
+  background: linear-gradient(135deg, #e7f9f0 0%, #d4f4dd 100%);
+  border-radius: 12px; border: 2px solid #28a745;
+  padding: 20px;
+}
+.customer-info-box {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 10px; padding: 15px;
+  border: 2px solid #ff4f6e;
+}
+.customer-info-icon {
+  width: 45px; height: 45px; border-radius: 50%;
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 20px;
+}
+.btn-action-lg {
+  padding: 12px 30px; border-radius: 10px;
+  font-weight: 600; transition: all 0.3s ease;
+}
+.btn-action-lg:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.btn-primary { background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%); border: none; }
+.btn-success { background: linear-gradient(135deg, #28a745 0%, #48c774 100%); border: none; }
+.btn-remove { border-radius: 8px; }
+.ribbon-header {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px; padding: 20px; margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(255,79,110,0.05);
+}
+.text-primary { color: #ff4f6e !important; }
+label .text-danger { font-weight: normal; }
+</style>
+
+<script>
+let rowCount = 1;
+
+// Set min date to today
+document.addEventListener('DOMContentLoaded', function() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('appointmentDate').setAttribute('min', today);
+  document.getElementById('appointmentDate').value = today;
+  {% if selected_customer %}showCustomerInfo();{% endif %}
+});
+
+// Customer search filter
+document.getElementById('customerSearch').addEventListener('input', function() {
+  const searchText = this.value.toLowerCase();
+  const select = document.getElementById('customerSelect');
+  for (let i = 1; i < select.options.length; i++) {
+    select.options[i].style.display = select.options[i].text.toLowerCase().includes(searchText) ? '' : 'none';
+  }
+});
+
+document.getElementById('customerSelect').addEventListener('change', function() {
+  this.value ? showCustomerInfo() : (document.getElementById('selectedCustomerInfo').style.display = 'none');
+});
+
+function showCustomerInfo() {
+  const select = document.getElementById('customerSelect');
+  const opt = select.options[select.selectedIndex];
+  if (opt.value) {
+    document.getElementById('customerDetails').textContent = opt.text;
+    document.getElementById('selectedCustomerInfo').style.display = 'block';
+  }
+}
+
+// Add new service row
+function addServiceRow() {
+  rowCount++;
+  const container = document.getElementById('servicesContainer');
+  const categoriesHtml = `{% for value, label in categories %}<option value="{{ value }}">{{ label }}</option>{% endfor %}`;
+
+  const newRow = document.createElement('div');
+  newRow.className = 'service-row mb-4 p-3 service-row-box';
+  newRow.id = `row-${rowCount}`;
+  newRow.innerHTML = `
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="mb-0 text-primary"><i class="fas fa-spa me-2"></i>Service #${rowCount}</h6>
+      <button type="button" class="btn btn-sm btn-danger btn-remove" onclick="removeServiceRow(this)">
+        <i class="fas fa-trash-alt me-1"></i>Remove
+      </button>
+    </div>
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label"><i class="fas fa-list me-2 text-primary"></i>Category <span class="text-danger">*</span></label>
+        <select class="form-control modern-input category-select" onchange="loadServicesByCategory(this)">
+          <option value="">-- Select Category --</option>
+          ${categoriesHtml}
+        </select>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label"><i class="fas fa-scissors me-2 text-primary"></i>Service <span class="text-danger">*</span></label>
+        <select name="service_ids[]" class="form-control modern-input service-select" required onchange="loadEmployeesForRow(this)" disabled>
+          <option value="">-- First select category --</option>
+        </select>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label"><i class="fas fa-user-tie me-2 text-primary"></i>Stylist/Employee <span class="text-danger">*</span></label>
+        <select name="employee_ids[]" class="form-control modern-input employee-select" required disabled onchange="calculateTotal()">
+          <option value="">-- First select service --</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="service-price-info" style="display:none;">
+          <i class="fas fa-tag me-2 text-success"></i>
+          Service Price: <strong class="text-success service-price-display">₹0.00</strong>
+          &nbsp;&nbsp;
+          <i class="fas fa-clock me-2 text-primary"></i>
+          Duration: <strong class="text-primary service-duration-display">0 min</strong>
+        </div>
+      </div>
+    </div>
+  `;
+  container.appendChild(newRow);
+
+  // Enable remove on first row if >1
+  const firstRemoveBtn = document.querySelector('.service-row .btn-remove');
+  if (firstRemoveBtn) firstRemoveBtn.disabled = false;
+}
+
+// Remove service row
+function removeServiceRow(btn) {
+  const row = btn.closest('.service-row');
+  row.remove();
+  rowCount--;
+  // Renumber
+  document.querySelectorAll('.service-row').forEach((r, idx) => {
+    const h6 = r.querySelector('h6');
+    if (h6) h6.innerHTML = `<i class="fas fa-spa me-2"></i>Service #${idx + 1}`;
+  });
+  // Disable remove if only 1 row left
+  const rows = document.querySelectorAll('.service-row');
+  if (rows.length === 1) {
+    rows[0].querySelector('.btn-remove').disabled = true;
+  }
+  calculateTotal();
+}
+
+// AJAX: Load services for selected category
+function loadServicesByCategory(categorySelect) {
+  const category = categorySelect.value;
+  const row = categorySelect.closest('.service-row');
+  const serviceSelect = row.querySelector('.service-select');
+  const employeeSelect = row.querySelector('.employee-select');
+  const priceInfo = row.querySelector('.service-price-info');
+
+  // Reset downstream dropdowns
+  serviceSelect.innerHTML = '<option value="">-- Select Service --</option>';
+  serviceSelect.disabled = true;
+  employeeSelect.innerHTML = '<option value="">-- First select service --</option>';
+  employeeSelect.disabled = true;
+  priceInfo.style.display = 'none';
+  calculateTotal();
+
+  if (!category) return;
+
+  fetch(`{% url 'get_services_by_category' %}?category=${category}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.services && data.services.length > 0) {
+        data.services.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.id;
+          opt.textContent = `${s.service_name} — ₹${s.base_price} (${s.duration_minutes} min)`;
+          opt.dataset.price = s.base_price;
+          opt.dataset.duration = s.duration_minutes;
+          serviceSelect.appendChild(opt);
+        });
+        serviceSelect.disabled = false;
+      } else {
+        serviceSelect.innerHTML = '<option value="">No services in this category</option>';
+      }
+    })
+    .catch(() => {
+      serviceSelect.innerHTML = '<option value="">Error loading services</option>';
+    });
+}
+
+// AJAX: Load employees for selected service
+function loadEmployeesForRow(serviceSelect) {
+  const serviceId = serviceSelect.value;
+  const row = serviceSelect.closest('.service-row');
+  const employeeSelect = row.querySelector('.employee-select');
+  const priceInfo = row.querySelector('.service-price-info');
+  const selectedOpt = serviceSelect.options[serviceSelect.selectedIndex];
+
+  employeeSelect.innerHTML = '<option value="">-- Loading employees... --</option>';
+  employeeSelect.disabled = true;
+  priceInfo.style.display = 'none';
+  calculateTotal();
+
+  if (!serviceId) {
+    employeeSelect.innerHTML = '<option value="">-- First select service --</option>';
+    return;
+  }
+
+  fetch("{% url 'get_employees_for_service' %}?service_id=" + serviceId)
+    .then(r => r.json())
+    .then(data => {
+      employeeSelect.innerHTML = '<option value="">-- Select Stylist/Employee --</option>';
+      if (data.employees && data.employees.length > 0) {
+        data.employees.forEach(emp => {
+          const opt = document.createElement('option');
+          opt.value = emp.id;
+          opt.textContent = `${emp.full_name} (${emp.expertise}) — ₹${emp.price}`;
+          opt.dataset.price = emp.price;
+          employeeSelect.appendChild(opt);
+        });
+        employeeSelect.disabled = false;
+        // Show service duration info
+        if (selectedOpt.dataset.duration) {
+          row.querySelector('.service-duration-display').textContent = selectedOpt.dataset.duration + ' min';
+          priceInfo.style.display = 'inline-block';
+        }
+      } else {
+        employeeSelect.innerHTML = '<option value="">No employees assigned to this service</option>';
+      }
+    })
+    .catch(() => {
+      employeeSelect.innerHTML = '<option value="">Error loading employees</option>';
+    });
+}
+
+// Employee changed: update price display & total
+document.addEventListener('change', function(e) {
+  if (e.target.classList.contains('employee-select')) {
+    const row = e.target.closest('.service-row');
+    const priceInfo = row.querySelector('.service-price-info');
+    const priceDisplay = row.querySelector('.service-price-display');
+    const selectedOpt = e.target.options[e.target.selectedIndex];
+    if (selectedOpt.value && selectedOpt.dataset.price) {
+      priceDisplay.textContent = '₹' + parseFloat(selectedOpt.dataset.price).toFixed(2);
+      priceInfo.style.display = 'inline-block';
+    }
+    calculateTotal();
+  }
+});
+
+function calculateTotal() {
+  let total = 0;
+  document.querySelectorAll('.employee-select').forEach(sel => {
+    const opt = sel.options[sel.selectedIndex];
+    if (opt && opt.value && opt.dataset.price) {
+      total += parseFloat(opt.dataset.price);
+    }
+  });
+  document.getElementById('totalAmount').textContent = '₹' + total.toFixed(2);
+}
+
+// Form validation
+document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+  const serviceSelects = document.querySelectorAll('select[name="service_ids[]"]');
+  const employeeSelects = document.querySelectorAll('select[name="employee_ids[]"]');
+  let valid = true;
+
+  if (!document.getElementById('customerSelect').value) {
+    alert('Please select a customer!');
+    e.preventDefault(); return false;
+  }
+
+  serviceSelects.forEach((s, i) => {
+    if (!s.value) {
+      alert(`Please select a service for row ${i + 1}!`);
+      valid = false;
+    } else if (!employeeSelects[i].value) {
+      alert(`Please select an employee for service ${i + 1}!`);
+      valid = false;
+    }
+  });
+
+  if (!valid) { e.preventDefault(); return false; }
+});
+</script>
+{% endblock %}

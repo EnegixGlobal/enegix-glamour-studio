@@ -1,0 +1,796 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block content %}
+
+<div class="ribbon-header d-flex justify-content-between align-items-center px-4 pb-5 mb-3" style="color: black">
+  <div class="d-flex align-items-center">
+    <i class="fas fa-calendar-check me-3 fs-2" style="color: #ff4f6e;"></i>
+    <div class="fw-bold fs-3">Appointment Management</div>
+  </div>
+  <div class="breadcrumb-text text-end">
+    <span class="text-black"><i class="fas fa-home me-1"></i>HOME</span>
+    <span class="mx-2 text-black">/</span>
+    <span class="text-black-50">Appointment List</span>
+  </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="container-fluid mt-2">
+  <div class="row mb-4">
+    <div class="col-md-4 mb-3">
+      <div class="stat-card stat-card-primary">
+        <div class="stat-icon">
+          <i class="fas fa-calendar-day"></i>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ today_appointments }}</div>
+          <div class="stat-label">Today's Appointments</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="stat-card stat-card-warning">
+        <div class="stat-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ pending_appointments }}</div>
+          <div class="stat-label">Pending Appointments</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="stat-card stat-card-success">
+        <div class="stat-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ confirmed_appointments }}</div>
+          <div class="stat-label">Confirmed Appointments</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-header table-title-bar d-flex justify-content-between align-items-center">
+      <span class="fw-bold text-white"><i class="fas fa-list-ul me-2"></i>All Appointments</span>
+      <a href="{% url 'create_appointment' %}" class="btn btn-light btn-add-new">
+        <i class="fas fa-plus me-2"></i>Create New Appointment
+      </a>
+    </div>
+    <div class="card-body p-4">
+      <!-- Enhanced Search and Filter -->
+      <form method="GET" action="{% url 'appointment_list' %}">
+        <div class="filter-section mb-4 p-3">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="search" class="form-control modern-input ps-5" 
+                       placeholder="Search by appointment ID, customer name, or mobile..." 
+                       value="{{ search_query|default:'' }}">
+              </div>
+            </div>
+            
+            <div class="col-md-2">
+              <div class="filter-box">
+                <i class="fas fa-info-circle filter-icon"></i>
+                <select name="status" class="form-control modern-input ps-5">
+                  <option value="">All Statuses</option>
+                  {% for status_value, status_label in statuses %}
+                    <option value="{{ status_value }}" {% if selected_status == status_value %}selected{% endif %}>
+                      {{ status_label }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-2">
+              <div class="filter-box">
+                <i class="fas fa-filter filter-icon"></i>
+                <select name="booking_type" class="form-control modern-input ps-5">
+                  <option value="">All Types</option>
+                  {% for type_value, type_label in booking_types %}
+                    <option value="{{ type_value }}" {% if selected_booking_type == type_value %}selected{% endif %}>
+                      {{ type_label }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-2">
+              <div class="filter-box">
+                <i class="fas fa-calendar-alt filter-icon"></i>
+                <input type="date" name="date" class="form-control modern-input ps-5" 
+                       value="{{ selected_date|default:'' }}">
+              </div>
+            </div>
+            
+            <div class="col-md-1">
+              <button type="submit" class="btn btn-primary w-100 btn-filter">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+            
+            <div class="col-md-1">
+              <a href="{% url 'appointment_list' %}" class="btn btn-secondary w-100 btn-filter">
+                <i class="fas fa-redo"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- Appointment Count Info -->
+      <div class="mb-3 d-flex justify-content-between align-items-center">
+        <div class="text-muted">
+          <i class="fas fa-info-circle me-2"></i>
+          Showing {{ appointments.start_index }} to {{ appointments.end_index }} of {{ appointments.paginator.count }} appointments
+        </div>
+      </div>
+
+      <!-- Enhanced Appointment Table -->
+      <div class="table-responsive">
+        <table class="table table-hover modern-table">
+          <thead>
+            <tr>
+              <th><i class="fas fa-hashtag me-2"></i>S.No</th>
+              <th><i class="fas fa-id-badge me-2"></i>Appt. ID</th>
+              <th><i class="fas fa-user me-2"></i>Customer</th>
+              <th><i class="fas fa-mobile-alt me-2"></i>Mobile</th>
+              <th><i class="fas fa-calendar me-2"></i>Date & Time</th>
+              <th><i class="fas fa-tag me-2"></i>Type</th>
+              <th><i class="fas fa-info-circle me-2"></i>Status</th>
+              <th><i class="fas fa-rupee-sign me-2"></i>Amount</th>
+              <th><i class="fas fa-rupee-sign me-2"></i>Advance</th>
+              <th><i class="fas fa-cogs me-2"></i>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for appointment in appointments %}
+            <tr class="table-row-hover">
+              <td><span class="serial-number">{{ appointments.start_index|add:forloop.counter0 }}</span></td>
+              <td><span class="appointment-id-badge">{{ appointment.appointment_id }}</span></td>
+              <td>
+                <div class="d-flex align-items-center">
+                  {% if appointment.customer.profile_pic %}
+                    <img src="{{ appointment.customer.profile_pic.url }}" class="customer-avatar me-2" alt="{{ appointment.customer.full_name }}">
+                  {% else %}
+                    <div class="customer-avatar-placeholder me-2">
+                      {{ appointment.customer.full_name|first|upper }}
+                    </div>
+                  {% endif %}
+                  <div>
+                    <strong>{{ appointment.customer.full_name }}</strong>
+                    <br>
+                    <small class="text-muted">{{ appointment.customer.customer_id }}</small>
+                  </div>
+                </div>
+              </td>
+              <td>{{ appointment.customer.mobile }}</td>
+              <td>
+                <div><strong>{{ appointment.appointment_date|date:"d M, Y" }}</strong></div>
+                <small class="text-muted"><i class="fas fa-clock me-1"></i>{{ appointment.appointment_time }}</small>
+              </td>
+              <td>
+                {% if appointment.booking_type == 'online' %}
+                  <span class="badge modern-badge badge-info">
+                    <i class="fas fa-globe me-1"></i>Online
+                  </span>
+                {% else %}
+                  <span class="badge modern-badge badge-secondary">
+                    <i class="fas fa-store me-1"></i>Offline
+                  </span>
+                {% endif %}
+              </td>
+              <td>
+                {% if appointment.status == 'pending' %}
+                  <span class="badge modern-badge badge-warning">
+                    <i class="fas fa-clock me-1"></i>Pending
+                  </span>
+                {% elif appointment.status == 'confirmed' %}
+                  <span class="badge modern-badge badge-success">
+                    <i class="fas fa-check-circle me-1"></i>Confirmed
+                  </span>
+                {% elif appointment.status == 'in_progress' %}
+                  <span class="badge modern-badge badge-info">
+                    <i class="fas fa-spinner me-1"></i>In Progress
+                  </span>
+                {% elif appointment.status == 'completed' %}
+                  <span class="badge modern-badge badge-primary">
+                    <i class="fas fa-check-double me-1"></i>Completed
+                  </span>
+                {% elif appointment.status == 'cancelled' %}
+                  <span class="badge modern-badge badge-danger">
+                    <i class="fas fa-times-circle me-1"></i>Cancelled
+                  </span>
+                {% endif %}
+              </td>
+              <td><strong class="text-success">₹{{ appointment.total_amount|floatformat:2 }}</strong></td>
+              <td>
+                {% if appointment.advance_paid > 0 %}
+                  <span class="text-primary">₹{{ appointment.advance_paid|floatformat:2 }}</span>
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <!-- View Details -->
+                  <a href="{% url 'view_appointment' appointment.id %}" class="btn btn-action btn-info" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </a>
+
+                  <!-- Edit -->
+                  {% if appointment.status != 'completed' and appointment.status != 'cancelled' %}
+                  <a href="{% url 'edit_appointment' appointment.id %}" class="btn btn-action btn-warning" title="Edit">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  {% endif %}
+
+                  <!-- Cancel -->
+                  {% if appointment.status != 'completed' and appointment.status != 'cancelled' %}
+                  <a href="{% url 'cancel_appointment' appointment.id %}" class="btn btn-action btn-danger" 
+                     onclick="return confirm('Are you sure you want to cancel this appointment?')" 
+                     title="Cancel">
+                    <i class="fas fa-ban"></i>
+                  </a>
+                  {% endif %}
+
+                  <!-- Quick Status Update -->
+                  {% if appointment.status == 'pending' %}
+                  <a href="{% url 'update_appointment_status' appointment.id %}?status=confirmed" 
+                     class="btn btn-action btn-success" 
+                     title="Confirm Appointment">
+                    <i class="fas fa-check"></i>
+                  </a>
+                  {% elif appointment.status == 'confirmed' %}
+                  <a href="{% url 'update_appointment_status' appointment.id %}?status=in_progress" 
+                     class="btn btn-action btn-info" 
+                     title="Start Service">
+                    <i class="fas fa-play"></i>
+                  </a>
+                  {% endif %}
+
+                  <!-- Generate Bill / View Bill (completed appointments) -->
+                  {% if request.session.role == 'super_admin' or request.session.role == 'salon_manager' or request.session.role == 'receptionist' %}
+                  {% if appointment.status == 'completed' %}
+                    {% with existing_bill=appointment.bills.first %}
+                    {% if existing_bill %}
+                    <a href="{% url 'view_bill' id=existing_bill.id %}"
+                       class="btn btn-action"
+                       style="background:linear-gradient(135deg,#17a2b8,#3dbdd1);color:white;"
+                       title="View Bill">
+                      <i class="fas fa-receipt"></i>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'generate_bill' appointment_id=appointment.id %}"
+                       class="btn btn-action"
+                       style="background:linear-gradient(135deg,#28a745,#48c774);color:white;"
+                       title="Generate Bill">
+                      <i class="fas fa-file-invoice-dollar"></i>
+                    </a>
+                    {% endif %}
+                    {% endwith %}
+                  {% endif %}
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="10" class="text-center py-5">
+                <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">No Appointments Found</h5>
+                <p class="text-muted">
+                  {% if search_query %}
+                    No appointments match your search criteria "{{ search_query }}"
+                  {% else %}
+                    Start by creating your first appointment
+                  {% endif %}
+                </p>
+                <a href="{% url 'create_appointment' %}" class="btn btn-primary mt-3">
+                  <i class="fas fa-plus me-2"></i>Create New Appointment
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      {% if appointments.has_other_pages %}
+      <div class="pagination-wrapper mt-4">
+        <div class="page-info">
+          <span class="text-muted">
+            Page {{ appointments.number }} of {{ appointments.paginator.num_pages }}
+          </span>
+        </div>
+        <nav aria-label="Appointment pagination">
+          <ul class="pagination modern-pagination mb-0">
+            <!-- First Page -->
+            {% if appointments.has_previous %}
+              <li class="page-item">
+                <a class="page-link page-link-first" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_booking_type %}&booking_type={{ selected_booking_type }}{% endif %}{% if selected_date %}&date={{ selected_date }}{% endif %}" title="First Page">
+                  <i class="fas fa-angle-double-left"></i>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link page-link-first">
+                  <i class="fas fa-angle-double-left"></i>
+                </span>
+              </li>
+            {% endif %}
+
+            <!-- Previous Page -->
+            {% if appointments.has_previous %}
+              <li class="page-item">
+                <a class="page-link page-link-prev" href="?page={{ appointments.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_booking_type %}&booking_type={{ selected_booking_type }}{% endif %}{% if selected_date %}&date={{ selected_date }}{% endif %}" title="Previous">
+                  <i class="fas fa-angle-left"></i>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link page-link-prev">
+                  <i class="fas fa-angle-left"></i>
+                </span>
+              </li>
+            {% endif %}
+
+            <!-- Page Numbers -->
+            {% for num in appointments.paginator.page_range %}
+              {% if appointments.number == num %}
+                <li class="page-item active">
+                  <span class="page-link">{{ num }}</span>
+                </li>
+              {% elif num > appointments.number|add:'-3' and num < appointments.number|add:'3' %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_booking_type %}&booking_type={{ selected_booking_type }}{% endif %}{% if selected_date %}&date={{ selected_date }}{% endif %}">{{ num }}</a>
+                </li>
+              {% endif %}
+            {% endfor %}
+
+            <!-- Next Page -->
+            {% if appointments.has_next %}
+              <li class="page-item">
+                <a class="page-link page-link-next" href="?page={{ appointments.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_booking_type %}&booking_type={{ selected_booking_type }}{% endif %}{% if selected_date %}&date={{ selected_date }}{% endif %}" title="Next">
+                  <i class="fas fa-angle-right"></i>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link page-link-next">
+                  <i class="fas fa-angle-right"></i>
+                </span>
+              </li>
+            {% endif %}
+
+            <!-- Last Page -->
+            {% if appointments.has_next %}
+              <li class="page-item">
+                <a class="page-link page-link-last" href="?page={{ appointments.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_booking_type %}&booking_type={{ selected_booking_type }}{% endif %}{% if selected_date %}&date={{ selected_date }}{% endif %}" title="Last Page">
+                  <i class="fas fa-angle-double-right"></i>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link page-link-last">
+                  <i class="fas fa-angle-double-right"></i>
+                </span>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+<style>
+/* Statistics Cards */
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 25px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border-left: 5px solid;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.stat-card-primary {
+  border-color: #ff4f6e;
+}
+
+.stat-card-primary .stat-icon {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+}
+
+.stat-card-warning {
+  border-color: #ffc107;
+}
+
+.stat-card-warning .stat-icon {
+  background: linear-gradient(135deg, #ffc107 0%, #ffd454 100%);
+}
+
+.stat-card-success {
+  border-color: #28a745;
+}
+
+.stat-card-success .stat-icon {
+  background: linear-gradient(135deg, #28a745 0%, #48c774 100%);
+}
+
+.stat-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon i {
+  font-size: 32px;
+  color: white;
+}
+
+.stat-details {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Modern Card Styles */
+.modern-card {
+  border-radius: 15px;
+  border: none;
+  overflow: hidden;
+}
+
+/* Filter Section */
+.filter-section {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px;
+  border: 2px solid rgba(255, 79, 110, 0.1);
+}
+
+.search-box,
+.filter-box {
+  position: relative;
+}
+
+.search-icon,
+.filter-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ff4f6e;
+  z-index: 10;
+  font-size: 16px;
+}
+
+.modern-input {
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 10px;
+  padding: 12px 15px;
+  transition: all 0.3s ease;
+  color: #000;
+  background: white;
+}
+
+.modern-input:focus {
+  border-color: #ff4f6e !important;
+  background-color: #fff5f7 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 79, 110, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Table Styles */
+.modern-table {
+  margin-bottom: 0;
+}
+
+.modern-table thead {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+}
+
+.modern-table thead th {
+  color: #333;
+  font-weight: 700;
+  padding: 15px;
+  border: none;
+  font-size: 14px;
+}
+
+.modern-table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.modern-table tbody tr:hover {
+  background: #fff5f7;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(255, 79, 110, 0.1);
+}
+
+.modern-table tbody td {
+  padding: 15px;
+  vertical-align: middle;
+  color: #333;
+  font-size: 14px;
+}
+
+.serial-number {
+  font-weight: 600;
+  color: #666;
+}
+
+.appointment-id-badge {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+  display: inline-block;
+}
+
+/* Customer Avatar */
+.customer-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ff4f6e;
+}
+
+.customer-avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* Badge Styles */
+.modern-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.badge-primary {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  color: white;
+}
+
+.badge-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #ffd454 100%);
+  color: #333;
+}
+
+.badge-success {
+  background: linear-gradient(135deg, #28a745 0%, #48c774 100%);
+  color: white;
+}
+
+.badge-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #e4606d 100%);
+  color: white;
+}
+
+.badge-info {
+  background: linear-gradient(135deg, #17a2b8 0%, #3dbdd1 100%);
+  color: white;
+}
+
+.badge-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+  color: white;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-action.btn-info {
+  background: linear-gradient(135deg, #17a2b8 0%, #3dbdd1 100%);
+  color: white;
+}
+
+.btn-action.btn-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #ffd454 100%);
+  color: #333;
+}
+
+.btn-action.btn-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #e4606d 100%);
+  color: white;
+}
+
+.btn-action.btn-success {
+  background: linear-gradient(135deg, #28a745 0%, #48c774 100%);
+  color: white;
+}
+
+.btn-add-new {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 2px solid #fff;
+}
+
+.btn-add-new:hover {
+  background: white;
+  color: #ff4f6e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.btn-filter {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  border: none;
+  padding: 12px;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.btn-filter:hover {
+  background: linear-gradient(135deg, #e63956 0%, #ff6b9d 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 79, 110, 0.3);
+}
+
+.btn-secondary.btn-filter {
+  background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+}
+
+.btn-secondary.btn-filter:hover {
+  background: linear-gradient(135deg, #5a6268 0%, #6c757d 100%);
+}
+
+.card-header.table-title-bar {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  padding: 20px;
+  font-size: 18px;
+  border-bottom: 3px solid rgba(255,255,255,0.2);
+}
+
+.ribbon-header {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+}
+
+.text-primary {
+  color: #ff4f6e !important;
+}
+
+/* Pagination Styles */
+.pagination-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+}
+
+.modern-pagination {
+  margin: 0;
+  gap: 5px;
+  display: flex;
+}
+
+.modern-pagination .page-link {
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 10px 15px;
+  color: #ff4f6e;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  background: white;
+  margin: 0 2px;
+}
+
+.modern-pagination .page-link:hover {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  color: white;
+  border-color: #ff4f6e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 79, 110, 0.3);
+}
+
+.modern-pagination .page-item.active .page-link {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  border-color: #ff4f6e;
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 79, 110, 0.3);
+}
+
+.modern-pagination .page-item.disabled .page-link {
+  background: #fff5f7;
+  border-color: #e0e0e0;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+.page-link-first,
+.page-link-last,
+.page-link-prev,
+.page-link-next {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+}
+
+.page-info {
+  font-weight: 600;
+  color: #333;
+}
+</style>
+
+{% endblock %}

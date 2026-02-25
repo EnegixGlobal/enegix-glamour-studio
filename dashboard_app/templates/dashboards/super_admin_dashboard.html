@@ -1,0 +1,482 @@
+{% extends 'base2.html' %}
+{% load static %}
+{% block title %}Super Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --accent-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  }
+
+  .welcome-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    color: #fff;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .welcome-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: sparkle 8s linear infinite;
+  }
+
+  @keyframes sparkle {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+  }
+
+  .welcome-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+  }
+
+  .welcome-icon {
+    font-size: 70px;
+    color: #ffd700;
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+    filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.5));
+  }
+
+  .welcome-card h4 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: #ffffff;
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .welcome-card p {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    font-weight: 500;
+  }
+
+  .welcome-card p strong {
+    color: #ffd700;
+    font-weight: 700;
+  }
+
+  .stat-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    border: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+  }
+
+  .stat-card.purple::before {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .stat-card.blue::before {
+    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+  }
+
+  .stat-card.pink::before {
+    background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+  }
+
+  .stat-card.orange::before {
+    background: linear-gradient(90deg, #fa709a 0%, #fee140 100%);
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.2);
+  }
+
+  .stat-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    color: white;
+    font-size: 32px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-card.purple .stat-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .stat-card.blue .stat-icon {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  }
+
+  .stat-card.pink .stat-icon {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+
+  .stat-card.orange .stat-icon {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    color: #666;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+  }
+
+  .service-card {
+    background: #ffffff;
+    border-radius: 18px;
+    border: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.2);
+  }
+
+  .service-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    color: white;
+    font-size: 30px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .service-card:hover .service-icon {
+    transform: scale(1.1) rotate(5deg);
+  }
+
+  .service-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .service-desc {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+
+  .action-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .action-btn:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    color: white;
+    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.05); }
+  }
+
+  .recent-table {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  }
+
+  .recent-table .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+  <!-- Welcome Section -->
+  <div class="row mt-4">
+    <div class="col-md-12 mb-4">
+      <div class="card welcome-card text-center p-4">
+        <div class="card-body position-relative">
+          <div class="welcome-icon">
+            <i class="fas fa-crown"></i>
+          </div>
+          <h4>Welcome, Super Admin {{ user.full_name }}</h4>
+          <p>You have <strong>complete control</strong> over the system. Manage <strong>Employees</strong>, <strong>Monitor Performance</strong>, and <strong>Configure Settings</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="row mb-4">
+    <div class="col-md-3 col-6 mb-3">
+      <div class="stat-card purple">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <span class="stat-number">{{ total_staff }}</span>
+        <span class="stat-label">Total Staff</span>
+      </div>
+    </div>
+    <div class="col-md-3 col-6 mb-3">
+      <div class="stat-card blue">
+        <div class="stat-icon">
+          <i class="fas fa-user-check"></i>
+        </div>
+        <span class="stat-number">{{ active_employees }}</span>
+        <span class="stat-label">Active Employees</span>
+      </div>
+    </div>
+    <div class="col-md-3 col-6 mb-3">
+      <div class="stat-card pink">
+        <div class="stat-icon">
+          <i class="fas fa-user-lock"></i>
+        </div>
+        <span class="stat-number">{{ blocked_employees }}</span>
+        <span class="stat-label">Blocked</span>
+      </div>
+    </div>
+    <div class="col-md-3 col-6 mb-3">
+      <div class="stat-card orange">
+        <div class="stat-icon">
+          <i class="fas fa-rupee-sign"></i>
+        </div>
+        <span class="stat-number">₹{{ total_monthly_salary|floatformat:0 }}</span>
+        <span class="stat-label">Monthly Payroll</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Service Cards -->
+  <div class="row">
+    <div class="col-md-3 mb-4">
+      <a href="{% url 'employee_list' %}" class="text-decoration-none">
+        <div class="card service-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="service-icon">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <h5 class="service-title">Employees</h5>
+            <p class="service-desc">Manage employee records and roles.</p>
+            <button class="action-btn">Manage</button>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3 mb-4">
+      <a href="{% url 'service_list' %}" class="text-decoration-none">
+        <div class="card service-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="service-icon">
+              <i class="fas fa-concierge-bell"></i>
+            </div>
+            <h5 class="service-title">Services</h5>
+            <p class="service-desc">Manage salon services and pricing.</p>
+            <button class="action-btn">Manage</button>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3 mb-4">
+      <a href="{% url 'appointment_list' %}" class="text-decoration-none">
+        <div class="card service-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="service-icon">
+              <i class="fas fa-calendar-alt"></i>
+            </div>
+            <h5 class="service-title">Appointments</h5>
+            <p class="service-desc">View all bookings and schedules.</p>
+            <button class="action-btn">View</button>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3 mb-4">
+      <a href="{% url 'bill_list' %}" class="text-decoration-none">
+        <div class="card service-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="service-icon">
+              <i class="fas fa-file-invoice-dollar"></i>
+            </div>
+            <h5 class="service-title">Billing</h5>
+            <p class="service-desc">Track revenue and payments.</p>
+            <button class="action-btn">View</button>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3 mb-4">
+      <a href="{% url 'customer_list' %}" class="text-decoration-none">
+        <div class="card service-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="service-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h5 class="service-title">Customers</h5>
+            <p class="service-desc">Manage customer database.</p>
+            <button class="action-btn">View</button>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3 mb-4">
+      <a href="{% url 'product_list' %}" class="text-decoration-none">
+        <div class="card service-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="service-icon">
+              <i class="fas fa-box"></i>
+            </div>
+            <h5 class="service-title">Products</h5>
+            <p class="service-desc">Manage product inventory.</p>
+            <button class="action-btn">View</button>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3 mb-4">
+      <a href="{% url 'vendor_list' %}" class="text-decoration-none">
+        <div class="card service-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="service-icon">
+              <i class="fas fa-truck"></i>
+            </div>
+            <h5 class="service-title">Vendors</h5>
+            <p class="service-desc">Manage supplier records.</p>
+            <button class="action-btn">View</button>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3 mb-4">
+      <a href="{% url 'stock_dashboard' %}" class="text-decoration-none">
+        <div class="card service-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="service-icon">
+              <i class="fas fa-warehouse"></i>
+            </div>
+            <h5 class="service-title">Stock</h5>
+            <p class="service-desc">Monitor inventory levels.</p>
+            <button class="action-btn">View</button>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Recent Employees Table -->
+  {% if recent_employees %}
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <div class="card recent-table">
+        <div class="card-header text-white">
+          <h5 class="mb-0"><i class="fas fa-user-plus"></i> Recently Added Employees</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Employee ID</th>
+                  <th>Name</th>
+                  <th>Role</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Added On</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for emp in recent_employees %}
+                <tr>
+                  <td><strong>{{ emp.employee_id }}</strong></td>
+                  <td>{{ emp.full_name }}</td>
+                  <td><span class="badge bg-info">{{ emp.get_role_display }}</span></td>
+                  <td>{{ emp.email }}</td>
+                  <td>
+                    {% if emp.is_active %}
+                    <span class="badge bg-success">Active</span>
+                    {% else %}
+                    <span class="badge bg-danger">Inactive</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ emp.created_at|date:"d M, Y" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

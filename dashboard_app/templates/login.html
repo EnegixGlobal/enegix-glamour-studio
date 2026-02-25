@@ -1,0 +1,871 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login | Beauty Bliss Salon</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body,
+      html {
+        height: 100%;
+        overflow-x: hidden;
+      }
+
+      body {
+        background: linear-gradient(135deg, #fff5f8 0%, #ffe5f0 25%, #ffd4e5 50%, #ffe5f0 75%, #fff5f8 100%);
+        background-size: 400% 400%;
+        animation: gradientShift 20s ease infinite;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 20px;
+        position: relative;
+      }
+
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      /* Floating Beauty Icons Background */
+      .beauty-float {
+        position: fixed;
+        font-size: 28px;
+        animation: floatAround 30s linear infinite;
+        z-index: 0;
+        opacity: 0.08;
+      }
+
+      .beauty-float:nth-child(1) {
+        top: 10%;
+        left: 8%;
+        color: #ff6b9d;
+        animation-delay: 0s;
+      }
+
+      .beauty-float:nth-child(2) {
+        top: 20%;
+        right: 12%;
+        color: #c770cf;
+        animation-delay: 5s;
+      }
+
+      .beauty-float:nth-child(3) {
+        bottom: 30%;
+        left: 15%;
+        color: #e384c2;
+        animation-delay: 10s;
+      }
+
+      .beauty-float:nth-child(4) {
+        bottom: 20%;
+        right: 18%;
+        color: #ff9ec4;
+        animation-delay: 15s;
+      }
+
+      .beauty-float:nth-child(5) {
+        top: 50%;
+        left: 5%;
+        color: #ffb3d9;
+        animation-delay: 7s;
+      }
+
+      .beauty-float:nth-child(6) {
+        bottom: 45%;
+        right: 8%;
+        color: #ff80ab;
+        animation-delay: 12s;
+      }
+
+      .beauty-float:nth-child(7) {
+        top: 35%;
+        left: 25%;
+        color: #ea80fc;
+        animation-delay: 3s;
+      }
+
+      @keyframes floatAround {
+        0%, 100% { 
+          transform: translate(0, 0) rotate(0deg);
+          opacity: 0.08;
+        }
+        25% { 
+          transform: translate(30px, -30px) rotate(90deg);
+          opacity: 0.12;
+        }
+        50% { 
+          transform: translate(-20px, -40px) rotate(180deg);
+          opacity: 0.1;
+        }
+        75% { 
+          transform: translate(40px, -20px) rotate(270deg);
+          opacity: 0.08;
+        }
+      }
+
+      /* Sparkle Effect */
+      .sparkle {
+        position: fixed;
+        width: 6px;
+        height: 6px;
+        background: radial-gradient(circle, #ff6b9d, transparent);
+        border-radius: 50%;
+        animation: sparkleFloat 8s ease-in-out infinite;
+        opacity: 0;
+        z-index: 0;
+      }
+
+      .sparkle:nth-child(8) { top: 15%; left: 20%; animation-delay: 0s; }
+      .sparkle:nth-child(9) { top: 60%; right: 25%; animation-delay: 2s; }
+      .sparkle:nth-child(10) { bottom: 25%; left: 30%; animation-delay: 4s; }
+      .sparkle:nth-child(11) { top: 40%; right: 15%; animation-delay: 6s; }
+
+      @keyframes sparkleFloat {
+        0%, 100% { 
+          opacity: 0;
+          transform: translateY(0) scale(1);
+        }
+        50% { 
+          opacity: 1;
+          transform: translateY(-50px) scale(1.5);
+        }
+      }
+
+      .login-container {
+        display: flex;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(30px);
+        border: 2px solid rgba(255, 182, 193, 0.3);
+        border-radius: 30px;
+        box-shadow: 
+          0 40px 80px rgba(255, 107, 157, 0.2),
+          inset 0 1px 0 rgba(255, 255, 255, 1);
+        overflow: hidden;
+        max-width: 1100px;
+        width: 100%;
+        min-height: 650px;
+        position: relative;
+        z-index: 1;
+        animation: slideUp 1.2s ease;
+      }
+
+      .form-section {
+        flex: 1;
+        padding: 60px 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 249, 252, 0.98) 100%);
+        position: relative;
+      }
+
+      .illustration-section {
+        flex: 1;
+        background: linear-gradient(135deg, #ff6b9d 0%, #e384c2 30%, #c770cf 70%, #ff6b9d 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Animated Background Shapes */
+      .bg-shape {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
+        animation: floatShapes 20s ease-in-out infinite;
+      }
+
+      .bg-shape:nth-child(1) {
+        width: 300px;
+        height: 300px;
+        top: -50px;
+        right: -50px;
+        animation-delay: 0s;
+      }
+
+      .bg-shape:nth-child(2) {
+        width: 200px;
+        height: 200px;
+        bottom: -30px;
+        left: -30px;
+        animation-delay: 3s;
+      }
+
+      .bg-shape:nth-child(3) {
+        width: 150px;
+        height: 150px;
+        top: 40%;
+        left: 20%;
+        animation-delay: 6s;
+      }
+
+      @keyframes floatShapes {
+        0%, 100% { 
+          transform: translate(0, 0) scale(1);
+          opacity: 0.3;
+        }
+        50% { 
+          transform: translate(30px, 30px) scale(1.2);
+          opacity: 0.5;
+        }
+      }
+
+      .brand-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 35px;
+      }
+
+      .brand-logo i {
+        font-size: 45px;
+        background: linear-gradient(135deg, #ff6b9d 0%, #c770cf 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-right: 15px;
+        animation: pulse 3s ease-in-out infinite;
+        filter: drop-shadow(0 2px 8px rgba(255, 107, 157, 0.3));
+      }
+
+      .brand-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .brand-name {
+        font-family: "Playfair Display", serif;
+        font-size: 32px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ff6b9d 0%, #c770cf 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -1px;
+        margin-bottom: 2px;
+      }
+
+      .brand-subtitle {
+        font-size: 11px;
+        color: #c770cf;
+        font-weight: 600;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+      }
+
+      .form-title {
+        color: #2d2d2d;
+        font-family: "Playfair Display", serif;
+        font-size: 38px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        letter-spacing: -1px;
+        text-align: center;
+      }
+
+      .form-subtitle {
+        color: #7b7b7b;
+        font-size: 15px;
+        margin-bottom: 35px;
+        font-weight: 400;
+        line-height: 1.6;
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 22px;
+        position: relative;
+      }
+
+      .form-label {
+        display: block;
+        color: #2d2d2d;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .input-wrapper {
+        position: relative;
+      }
+
+      .input-icon {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ff6b9d;
+        font-size: 16px;
+        z-index: 2;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 16px 20px 16px 50px;
+        border: 2px solid #ffd4e5;
+        border-radius: 15px;
+        font-size: 15px;
+        background: #ffffff;
+        color: #2d2d2d;
+        transition: all 0.3s ease;
+        outline: none;
+        font-weight: 400;
+      }
+
+      .form-control:focus {
+        border-color: #ff6b9d;
+        background: #fff9fc;
+        box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.12);
+        transform: translateY(-1px);
+      }
+
+      .form-control::placeholder {
+        color: #b4b4b4;
+        font-weight: 400;
+      }
+
+      .btn-login {
+        width: 100%;
+        padding: 18px;
+        background: linear-gradient(135deg, #ff6b9d 0%, #c770cf 100%);
+        border: none;
+        border-radius: 15px;
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(255, 107, 157, 0.3);
+      }
+
+      .btn-login::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.6s;
+      }
+
+      .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(255, 107, 157, 0.4);
+        background: linear-gradient(135deg, #e384c2 0%, #b966d6 100%);
+      }
+
+      .btn-login:hover::before {
+        left: 100%;
+      }
+
+      /* Beauty Services Showcase */
+      .services-showcase {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+
+      .main-icon {
+        width: 110px;
+        height: 110px;
+        background: rgba(255, 255, 255, 0.3);
+        border: 3px solid rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 45px;
+        color: #ffffff;
+        margin-bottom: 40px;
+        animation: pulse 4s ease-in-out infinite;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .services-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-top: 30px;
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .service-card {
+        background: rgba(255, 255, 255, 0.25);
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        border-radius: 22px;
+        padding: 22px 16px;
+        text-align: center;
+        transition: all 0.4s ease;
+        backdrop-filter: blur(25px);
+        animation: fadeInUp 1.2s ease;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+      }
+
+      .service-card::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.5));
+        border-radius: 22px;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: -1;
+      }
+
+      .service-card:nth-child(1) { animation-delay: 0.2s; }
+      .service-card:nth-child(2) { animation-delay: 0.4s; }
+      .service-card:nth-child(3) { animation-delay: 0.6s; }
+
+      .service-card:hover {
+        transform: translateY(-10px) scale(1.03);
+        background: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.6);
+      }
+
+      .service-card:hover::before {
+        opacity: 1;
+      }
+
+      .service-icon-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+      }
+
+      .service-icon {
+        font-size: 35px;
+        color: #ffffff;
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        z-index: 2;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .icon-glow {
+        position: absolute;
+        width: 65px;
+        height: 65px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 1;
+      }
+
+      .service-card:hover .icon-glow {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.3);
+      }
+
+      .service-card:hover .service-icon {
+        transform: scale(1.15) rotate(5deg);
+        text-shadow: 0 0 25px rgba(255, 255, 255, 0.7);
+      }
+
+      .service-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        font-family: "Playfair Display", serif;
+      }
+
+      .service-desc {
+        font-size: 10.5px;
+        color: rgba(255, 255, 255, 0.95);
+        line-height: 1.5;
+        font-weight: 400;
+        margin-bottom: 10px;
+      }
+
+      .service-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 15px;
+        padding: 4px 10px;
+        font-size: 9px;
+        color: #ffffff;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+      }
+
+      .service-card:hover .service-badge {
+        background: rgba(255, 255, 255, 0.5);
+        border-color: rgba(255, 255, 255, 0.7);
+        transform: scale(1.08);
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0%, 100% { 
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% { 
+          opacity: 0.9;
+          transform: scale(1.05);
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(40px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .alert {
+        border: none;
+        border-radius: 15px;
+        background: rgba(220, 38, 38, 0.08);
+        color: #dc2626;
+        font-weight: 500;
+        border: 2px solid rgba(220, 38, 38, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 14px 18px;
+        font-size: 14px;
+        margin-bottom: 25px;
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 768px) {
+        body {
+          padding: 15px;
+        }
+
+        .login-container {
+          flex-direction: column;
+          border-radius: 25px;
+          min-height: auto;
+        }
+
+        .illustration-section {
+          order: -1;
+          min-height: 300px;
+          max-height: 300px;
+        }
+
+        .form-section {
+          padding: 35px 25px;
+        }
+
+        .brand-logo {
+          margin-bottom: 25px;
+        }
+
+        .brand-logo i {
+          font-size: 36px;
+        }
+
+        .brand-name {
+          font-size: 26px;
+        }
+
+        .form-title {
+          font-size: 30px;
+        }
+
+        .form-subtitle {
+          font-size: 14px;
+          margin-bottom: 25px;
+        }
+
+        .main-icon {
+          width: 85px;
+          height: 85px;
+          font-size: 36px;
+          margin-bottom: 30px;
+        }
+
+        .services-grid {
+          max-width: 300px;
+          gap: 15px;
+        }
+
+        .service-card {
+          padding: 18px 12px;
+        }
+
+        .service-icon {
+          font-size: 28px;
+        }
+
+        .beauty-float {
+          font-size: 22px;
+          opacity: 0.06;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .form-section {
+          padding: 25px 20px;
+        }
+
+        .brand-name {
+          font-size: 24px;
+        }
+
+        .form-title {
+          font-size: 26px;
+        }
+
+        .form-control {
+          padding: 14px 18px 14px 45px;
+          font-size: 14px;
+        }
+
+        .btn-login {
+          padding: 16px;
+          font-size: 14px;
+        }
+
+        .services-grid {
+          max-width: 260px;
+          gap: 12px;
+        }
+
+        .service-card {
+          padding: 15px 10px;
+        }
+
+        .service-icon {
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Floating beauty icons background -->
+    <div class="beauty-float"><i class="fas fa-spa"></i></div>
+    <div class="beauty-float"><i class="fas fa-cut"></i></div>
+    <div class="beauty-float"><i class="fas fa-paint-brush"></i></div>
+    <div class="beauty-float"><i class="fas fa-heart"></i></div>
+    <div class="beauty-float"><i class="fas fa-star"></i></div>
+    <div class="beauty-float"><i class="fas fa-magic"></i></div>
+    <div class="beauty-float"><i class="fas fa-gem"></i></div>
+
+    <!-- Sparkle effects -->
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+
+    <div class="login-container">
+      <!-- LEFT: Form Section -->
+      <div class="form-section">
+        <div class="brand-logo">
+          <i class="fas fa-spa"></i>
+          <div class="brand-info">
+            <div class="brand-name">Beauty Bliss</div>
+            <div class="brand-subtitle">Premier Salon & Spa</div>
+          </div>
+        </div>
+
+        <h1 class="form-title">Welcome Back</h1>
+        <p class="form-subtitle">Sign in to access your personalized beauty dashboard and manage your appointments</p>
+
+        {% if messages %}
+        <div class="alert text-center">
+          {% for message in messages %}
+           {{ message }} 
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <div class="input-wrapper">
+              <i class="fas fa-user input-icon"></i>
+              <input
+                type="text"
+                name="username"
+                class="form-control"
+                placeholder="Enter your username"
+                required
+                autocomplete="username"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-wrapper">
+              <i class="fas fa-lock input-icon"></i>
+              <input
+                type="password"
+                name="password"
+                class="form-control"
+                placeholder="Enter your password"
+                required
+                autocomplete="current-password"
+              />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-login">
+            <i class="fas fa-sign-in-alt" style="margin-right: 10px;"></i>
+            Sign In
+          </button>
+        </form>
+      </div>
+
+      <!-- RIGHT: Beauty Services Showcase -->
+      <div class="illustration-section">
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+
+        <div class="services-showcase">
+          <div class="main-icon">
+            <i class="fas fa-spa"></i>
+          </div>
+
+          <div class="services-grid">
+            <div class="service-card">
+              <div class="service-icon-container">
+                <div class="service-icon">
+                  <i class="fas fa-cut"></i>
+                </div>
+                <div class="icon-glow"></div>
+              </div>
+              <div class="service-title">Hair Styling</div>
+              <div class="service-desc">Expert cuts, colors, and treatments for your perfect look</div>
+              <div class="service-badge">Premium</div>
+            </div>
+
+            <div class="service-card">
+              <div class="service-icon-container">
+                <div class="service-icon">
+                  <i class="fas fa-paint-brush"></i>
+                </div>
+                <div class="icon-glow"></div>
+              </div>
+              <div class="service-title">Makeup Artistry</div>
+              <div class="service-desc">Bridal, party, and everyday makeup by professionals</div>
+              <div class="service-badge">Expert</div>
+            </div>
+
+            <div class="service-card">
+              <div class="service-icon-container">
+                <div class="service-icon">
+                  <i class="fas fa-leaf"></i>
+                </div>
+                <div class="icon-glow"></div>
+              </div>
+              <div class="service-title">Spa & Wellness</div>
+              <div class="service-desc">Relaxing treatments for your body and mind</div>
+              <div class="service-badge">Luxury</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Enhanced form interaction
+      const loginForm = document.querySelector('form[method="POST"]');
+      
+      if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+          const button = this.querySelector('.btn-login');
+          const username = this.querySelector('input[name="username"]').value;
+          const password = this.querySelector('input[name="password"]').value;
+          
+          if (username && password) {
+            // Show loading state
+            button.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 10px;"></i>Signing In...';
+            button.disabled = true;
+            
+            // Let the form submit normally to Django backend
+          }
+        });
+      }
+
+      // Add focus animation to input fields
+      const inputs = document.querySelectorAll('.form-control');
+      inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+          this.parentElement.querySelector('.input-icon').style.transform = 'translateY(-50%) scale(1.1)';
+        });
+        input.addEventListener('blur', function() {
+          this.parentElement.querySelector('.input-icon').style.transform = 'translateY(-50%) scale(1)';
+        });
+      });
+    </script>
+  </body>
+</html>

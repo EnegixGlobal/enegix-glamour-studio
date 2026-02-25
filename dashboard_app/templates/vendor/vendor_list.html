@@ -1,0 +1,722 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block content %}
+
+<div class="ribbon-header d-flex justify-content-between align-items-center px-4 pb-5 mb-3" style="color: black">
+  <div class="d-flex align-items-center">
+    <i class="fas fa-truck me-3 fs-2" style="color: #ff4f6e;"></i>
+    <div class="fw-bold fs-3">Vendor Management</div>
+  </div>
+  <div class="breadcrumb-text text-end">
+    <span class="text-black"><i class="fas fa-home me-1"></i>HOME</span>
+    <span class="mx-2 text-black">/</span>
+    <span class="text-black-50">Vendor List</span>
+  </div>
+</div>
+
+<div class="container-fluid mt-2">
+  <div class="card shadow-lg mb-4 modern-card">
+    <div class="card-header table-title-bar d-flex justify-content-between align-items-center">
+      <span class="fw-bold text-white"><i class="fas fa-list-ul me-2"></i>All Vendors</span>
+      <a href="{% url 'add_vendor' %}" class="btn btn-light btn-add-new">
+        <i class="fas fa-plus me-2"></i>Add New Vendor
+      </a>
+    </div>
+    <div class="card-body p-4">
+      <!-- Enhanced Search and Filter -->
+      <div class="filter-section mb-4 p-3">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="search-box">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" id="searchInput" class="form-control modern-input ps-5" placeholder="Search by company name, contact person, or vendor ID...">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="filter-box">
+              <i class="fas fa-toggle-on filter-icon"></i>
+              <select id="statusFilter" class="form-control modern-input ps-5">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary w-100 btn-filter" onclick="filterTable()">
+              <i class="fas fa-filter me-2"></i>Apply
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Vendor Table -->
+      <div class="table-responsive">
+        <table class="table table-hover modern-table" id="vendorTable">
+          <thead>
+            <tr>
+              <th><i class="fas fa-hashtag me-2"></i>S.No</th>
+              <th><i class="fas fa-id-badge me-2"></i>Vendor ID</th>
+              <th><i class="fas fa-building me-2"></i>Company Name</th>
+              <th><i class="fas fa-user me-2"></i>Contact Person</th>
+              <th><i class="fas fa-envelope me-2"></i>Email</th>
+              <th><i class="fas fa-mobile-alt me-2"></i>Mobile</th>
+              <th><i class="fas fa-map-marker-alt me-2"></i>City</th>
+              <th><i class="fas fa-file-invoice me-2"></i>GST Number</th>
+              <th><i class="fas fa-signal me-2"></i>Status</th>
+              <th><i class="fas fa-cogs me-2"></i>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for vendor in vendors %}
+            <tr class="table-row-hover" data-status="{% if vendor.is_active %}active{% else %}inactive{% endif %}">
+              <td><span class="serial-number">{{ vendors.start_index|add:forloop.counter0 }}</span></td>
+              <td><span class="vendor-id-badge">{{ vendor.vendor_id }}</span></td>
+              <td><strong class="searchable">{{ vendor.company_name }}</strong></td>
+              <td><span class="searchable">{{ vendor.contact_person }}</span></td>
+              <td><span class="text-muted searchable">{{ vendor.email }}</span></td>
+              <td>{{ vendor.mobile }}</td>
+              <td>{{ vendor.city }}</td>
+              <td>{{ vendor.gst_number|default:"N/A" }}</td>
+              <td>
+                {% if vendor.is_active %}
+                  <span class="badge modern-badge badge-active">
+                    <i class="fas fa-check-circle me-1"></i>Active
+                  </span>
+                {% else %}
+                  <span class="badge modern-badge badge-inactive">
+                    <i class="fas fa-minus-circle me-1"></i>Inactive
+                  </span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <!-- View Details -->
+                  <button class="btn btn-action btn-info" data-bs-toggle="modal" data-bs-target="#viewModal{{ vendor.id }}" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+
+                  <!-- Edit -->
+                  <a href="{% url 'edit_vendor' vendor.id %}" class="btn btn-action btn-warning" title="Edit">
+                    <i class="fas fa-edit"></i>
+                  </a>
+
+                  <!-- Toggle Active/Inactive -->
+                  <a href="{% url 'toggle_vendor_active' vendor.id %}" class="btn btn-action {% if vendor.is_active %}btn-secondary{% else %}btn-success{% endif %}" 
+                     title="{% if vendor.is_active %}Deactivate{% else %}Activate{% endif %}"
+                     onclick="return confirm('{% if vendor.is_active %}Are you sure you want to deactivate this vendor?{% else %}Are you sure you want to activate this vendor?{% endif %}')">
+                    <i class="fas {% if vendor.is_active %}fa-toggle-on{% else %}fa-toggle-off{% endif %}"></i>
+                  </a>
+
+                  <!-- Delete -->
+                  <button class="btn btn-action btn-danger" onclick="confirmDelete({{ vendor.id }})" title="Delete">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Enhanced View Modal -->
+            <div class="modal fade" id="viewModal{{ vendor.id }}" tabindex="-1" aria-labelledby="viewModalLabel{{ vendor.id }}" aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content modern-modal">
+                  <div class="modal-header bg-gradient-primary">
+                    <h5 class="modal-title text-white" id="viewModalLabel{{ vendor.id }}">
+                      <i class="fas fa-truck me-2"></i>Vendor Details - {{ vendor.vendor_id }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body p-4">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <h4 class="mb-3 text-primary">{{ vendor.company_name }}</h4>
+                        
+                        <!-- Company Information -->
+                        <div class="info-section mb-4">
+                          <h6 class="section-title"><i class="fas fa-building me-2"></i>Company Information</h6>
+                          <div class="info-grid">
+                            <div class="info-item">
+                              <i class="fas fa-id-badge text-primary"></i>
+                              <div>
+                                <div class="info-label">Vendor ID</div>
+                                <div class="info-value">{{ vendor.vendor_id }}</div>
+                              </div>
+                            </div>
+                            <div class="info-item">
+                              <i class="fas fa-user text-primary"></i>
+                              <div>
+                                <div class="info-label">Contact Person</div>
+                                <div class="info-value">{{ vendor.contact_person }}</div>
+                              </div>
+                            </div>
+                            <div class="info-item">
+                              <i class="fas fa-envelope text-primary"></i>
+                              <div>
+                                <div class="info-label">Email</div>
+                                <div class="info-value">{{ vendor.email }}</div>
+                              </div>
+                            </div>
+                            <div class="info-item">
+                              <i class="fas fa-mobile-alt text-primary"></i>
+                              <div>
+                                <div class="info-label">Mobile</div>
+                                <div class="info-value">{{ vendor.mobile }}</div>
+                              </div>
+                            </div>
+                            {% if vendor.alternate_mobile %}
+                            <div class="info-item">
+                              <i class="fas fa-phone text-primary"></i>
+                              <div>
+                                <div class="info-label">Alternate Mobile</div>
+                                <div class="info-value">{{ vendor.alternate_mobile }}</div>
+                              </div>
+                            </div>
+                            {% endif %}
+                          </div>
+                        </div>
+
+                        <!-- Address Information -->
+                        <div class="info-section mb-4">
+                          <h6 class="section-title"><i class="fas fa-map-marker-alt me-2"></i>Address Information</h6>
+                          <div class="info-grid">
+                            <div class="info-item full-width">
+                              <i class="fas fa-home text-primary"></i>
+                              <div>
+                                <div class="info-label">Address</div>
+                                <div class="info-value">{{ vendor.address_line }}</div>
+                              </div>
+                            </div>
+                            <div class="info-item">
+                              <i class="fas fa-city text-primary"></i>
+                              <div>
+                                <div class="info-label">City</div>
+                                <div class="info-value">{{ vendor.city }}</div>
+                              </div>
+                            </div>
+                            <div class="info-item">
+                              <i class="fas fa-flag text-primary"></i>
+                              <div>
+                                <div class="info-label">State</div>
+                                <div class="info-value">{{ vendor.state }}</div>
+                              </div>
+                            </div>
+                            <div class="info-item">
+                              <i class="fas fa-mail-bulk text-primary"></i>
+                              <div>
+                                <div class="info-label">Pincode</div>
+                                <div class="info-value">{{ vendor.pincode }}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Business Details -->
+                        <div class="info-section mb-4">
+                          <h6 class="section-title"><i class="fas fa-file-invoice me-2"></i>Business Details</h6>
+                          <div class="info-grid">
+                            <div class="info-item">
+                              <i class="fas fa-file-invoice-dollar text-primary"></i>
+                              <div>
+                                <div class="info-label">GST Number</div>
+                                <div class="info-value">{{ vendor.gst_number|default:"Not Provided" }}</div>
+                              </div>
+                            </div>
+                            <div class="info-item">
+                              <i class="fas fa-id-card text-primary"></i>
+                              <div>
+                                <div class="info-label">PAN Number</div>
+                                <div class="info-value">{{ vendor.pan_number|default:"Not Provided" }}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Bank Details -->
+                        {% if vendor.account_number %}
+                        <div class="info-section">
+                          <h6 class="section-title"><i class="fas fa-university me-2"></i>Bank Details</h6>
+                          <div class="info-grid">
+                            <div class="info-item">
+                              <i class="fas fa-credit-card text-primary"></i>
+                              <div>
+                                <div class="info-label">Account Number</div>
+                                <div class="info-value">{{ vendor.account_number }}</div>
+                              </div>
+                            </div>
+                            <div class="info-item">
+                              <i class="fas fa-code-branch text-primary"></i>
+                              <div>
+                                <div class="info-label">IFSC Code</div>
+                                <div class="info-value">{{ vendor.ifsc_code }}</div>
+                              </div>
+                            </div>
+                            <div class="info-item">
+                              <i class="fas fa-user-circle text-primary"></i>
+                              <div>
+                                <div class="info-label">Account Holder</div>
+                                <div class="info-value">{{ vendor.account_holder_name }}</div>
+                              </div>
+                            </div>
+                            <div class="info-item">
+                              <i class="fas fa-landmark text-primary"></i>
+                              <div>
+                                <div class="info-label">Bank Name</div>
+                                <div class="info-value">{{ vendor.bank_name }}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {% endif %}
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a href="{% url 'edit_vendor' vendor.id %}" class="btn btn-primary">Edit Vendor</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      {% if vendors.has_other_pages %}
+      <div class="pagination-wrapper mt-4">
+        <div class="pagination-info">
+          <span class="fw-bold text-primary">Showing {{ vendors.start_index }} to {{ vendors.end_index }} of {{ vendors.paginator.count }} vendors</span>
+        </div>
+        
+        <ul class="pagination modern-pagination mb-0">
+          {% if vendors.has_previous %}
+            <li class="page-item">
+              <a class="page-link page-link-first" href="?page=1" aria-label="First">
+                <i class="fas fa-angle-double-left"></i>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link page-link-prev" href="?page={{ vendors.previous_page_number }}" aria-label="Previous">
+                <i class="fas fa-angle-left"></i>
+              </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <span class="page-link page-link-first"><i class="fas fa-angle-double-left"></i></span>
+            </li>
+            <li class="page-item disabled">
+              <span class="page-link page-link-prev"><i class="fas fa-angle-left"></i></span>
+            </li>
+          {% endif %}
+
+          {% for num in vendors.paginator.page_range %}
+            {% if vendors.number == num %}
+              <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > vendors.number|add:'-3' and num < vendors.number|add:'3' %}
+              <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+          {% endfor %}
+
+          {% if vendors.has_next %}
+            <li class="page-item">
+              <a class="page-link page-link-next" href="?page={{ vendors.next_page_number }}" aria-label="Next">
+                <i class="fas fa-angle-right"></i>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link page-link-last" href="?page={{ vendors.paginator.num_pages }}" aria-label="Last">
+                <i class="fas fa-angle-double-right"></i>
+              </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <span class="page-link page-link-next"><i class="fas fa-angle-right"></i></span>
+            </li>
+            <li class="page-item disabled">
+              <span class="page-link page-link-last"><i class="fas fa-angle-double-right"></i></span>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+<script>
+// Search functionality
+function filterTable() {
+  const searchValue = document.getElementById('searchInput').value.toLowerCase();
+  const statusValue = document.getElementById('statusFilter').value.toLowerCase();
+  const table = document.getElementById('vendorTable');
+  const rows = table.getElementsByTagName('tr');
+
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    const searchableElements = row.getElementsByClassName('searchable');
+    const status = row.getAttribute('data-status');
+    
+    let searchMatch = false;
+    for (let element of searchableElements) {
+      if (element.textContent.toLowerCase().includes(searchValue)) {
+        searchMatch = true;
+        break;
+      }
+    }
+
+    const statusMatch = !statusValue || status === statusValue;
+
+    if (searchMatch && statusMatch) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  }
+}
+
+// Real-time search
+document.getElementById('searchInput').addEventListener('keyup', filterTable);
+
+// Delete confirmation
+function confirmDelete(vendorId) {
+  if (confirm('Are you sure you want to delete this vendor? This action cannot be undone!')) {
+    window.location.href = `/delete-vendor/${vendorId}/`;
+  }
+}
+</script>
+
+<style>
+/* Modern Card and Table Styles */
+.modern-card {
+  border-radius: 15px;
+  border: none;
+  overflow: hidden;
+}
+
+.modern-input {
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 10px;
+  padding: 12px 15px;
+  transition: all 0.3s ease;
+  color: #000;
+}
+
+.modern-input:focus {
+  border-color: #ff4f6e !important;
+  background-color: #fff5f7 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 79, 110, 0.15);
+}
+
+.filter-section {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+}
+
+.search-box, .filter-box {
+  position: relative;
+}
+
+.search-icon, .filter-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ff4f6e;
+  z-index: 10;
+}
+
+.modern-table {
+  margin-bottom: 0;
+}
+
+.modern-table thead {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+}
+
+.modern-table thead th {
+  border: none;
+  padding: 15px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}
+
+.modern-table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.modern-table tbody tr:hover {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  transform: translateX(5px);
+  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.1);
+}
+
+.modern-table tbody td {
+  padding: 15px;
+  vertical-align: middle;
+}
+
+.vendor-id-badge {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+  display: inline-block;
+}
+
+.serial-number {
+  font-weight: 600;
+  color: #666;
+}
+
+/* Badge Styles */
+.modern-badge {
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.badge-active {
+  background: linear-gradient(135deg, #28a745 0%, #48c774 100%);
+  color: white;
+}
+
+.badge-inactive {
+  background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+  color: white;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-action.btn-info {
+  background: linear-gradient(135deg, #17a2b8 0%, #3dbdd1 100%);
+  color: white;
+}
+
+.btn-action.btn-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #ffd454 100%);
+  color: #333;
+}
+
+.btn-action.btn-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #e4606d 100%);
+  color: white;
+}
+
+.btn-action.btn-success {
+  background: linear-gradient(135deg, #28a745 0%, #48c774 100%);
+  color: white;
+}
+
+.btn-action.btn-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+  color: white;
+}
+
+.btn-add-new {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 2px solid #fff;
+}
+
+.btn-add-new:hover {
+  background: white;
+  color: #ff4f6e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.btn-filter {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  border: none;
+  padding: 12px;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.btn-filter:hover {
+  background: linear-gradient(135deg, #e63956 0%, #ff6b9d 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 79, 110, 0.3);
+}
+
+/* Modal Styles */
+.modern-modal .modal-header {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  border: none;
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%) !important;
+}
+
+.info-section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-weight: 700;
+  color: #ff4f6e;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ffe9ed;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  align-items: start;
+  gap: 15px;
+  padding: 12px;
+  background: #fff5f7;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.info-item:hover {
+  background: #ffe9ed;
+  transform: translateX(5px);
+}
+
+.info-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-item i {
+  font-size: 24px;
+  margin-top: 3px;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #555;
+  font-size: 13px;
+}
+
+.info-value {
+  color: #333;
+  font-size: 14px;
+  margin-top: 3px;
+}
+
+.card-header.table-title-bar {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  padding: 20px;
+  font-size: 18px;
+  border-bottom: 3px solid rgba(255,255,255,0.2);
+}
+
+.ribbon-header {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+}
+
+.text-primary {
+  color: #ff4f6e !important;
+}
+
+/* Pagination Styles */
+.pagination-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+}
+
+.modern-pagination {
+  margin: 0;
+  gap: 5px;
+  display: flex;
+}
+
+.modern-pagination .page-link {
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 10px 15px;
+  color: #ff4f6e;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  background: white;
+  margin: 0 2px;
+}
+
+.modern-pagination .page-link:hover {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  color: white;
+  border-color: #ff4f6e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 79, 110, 0.3);
+}
+
+.modern-pagination .page-item.active .page-link {
+  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  border-color: #ff4f6e;
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 79, 110, 0.3);
+}
+
+.modern-pagination .page-item.disabled .page-link {
+  background: #fff5f7;
+  border-color: #e0e0e0;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+.page-link-first,
+.page-link-last,
+.page-link-prev,
+.page-link-next {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+}
+</style>
+
+{% endblock %}

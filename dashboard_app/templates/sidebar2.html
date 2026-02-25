@@ -1,0 +1,297 @@
+{% load static %}
+
+<div
+  id="sidebarMenu"
+  class="sidebar table-title-bar text-white position-fixed h-100"
+  style="top: 0; padding-top: 60px; width: 250px; transition: all 0.3s"
+>
+  <!-- Dashboard Link (All Roles) -->
+  <a href="{% url 'dashboard' %}" class="d-block py-2 px-3 text-white text-decoration-none">
+    <i class="fas fa-home me-2"></i> Dashboard
+  </a>
+
+  <!-- ==================== SUPER ADMIN ==================== -->
+  {% if request.session.role == 'super_admin' %}
+
+  <!-- Employee Management -->
+  <a class="d-block py-2 px-3 text-white text-decoration-none d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#employeeMenu" role="button" aria-expanded="false">
+    <span><i class="fas fa-users me-2"></i> Employee</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </a>
+  <div class="collapse" id="employeeMenu">
+    <a href="{% url 'employee_list' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-list me-2"></i> Manage Employees
+    </a>
+    <a href="{% url 'add_employee' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-user-plus me-2"></i> Add Employee
+    </a>
+  </div>
+
+  <!-- Vendor Management -->
+  <a class="d-block py-2 px-3 text-white text-decoration-none d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#vendorMenu" role="button" aria-expanded="false">
+    <span><i class="fas fa-truck me-2"></i> Vendor</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </a>
+  <div class="collapse" id="vendorMenu">
+    <a href="{% url 'vendor_list' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-list me-2"></i> Manage Vendors
+    </a>
+    <a href="{% url 'add_vendor' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-plus me-2"></i> Add Vendor
+    </a>
+  </div>
+
+  <!-- Product Management -->
+  <a class="d-block py-2 px-3 text-white text-decoration-none d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#productMenu" role="button" aria-expanded="false">
+    <span><i class="fas fa-box me-2"></i> Product</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </a>
+  <div class="collapse" id="productMenu">
+    <a href="{% url 'product_list' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-list me-2"></i> Manage Products
+    </a>
+    <a href="{% url 'add_product' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-plus me-2"></i> Add Product
+    </a>
+  </div>
+
+  <!-- Purchase / Stock -->
+  <a class="d-block py-2 px-3 text-white text-decoration-none d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#purchaseStockMenu" role="button" aria-expanded="false">
+    <span><i class="fas fa-shopping-cart me-2"></i> Purchase/Stock</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </a>
+  <div class="collapse" id="purchaseStockMenu">
+    <a href="{% url 'add_purchase' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-plus-circle me-2"></i> Add Purchase
+    </a>
+    <a href="{% url 'purchase_history' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-history me-2"></i> Purchase History
+    </a>
+    <a href="{% url 'stock_dashboard' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-chart-bar me-2"></i> Stock Dashboard
+    </a>
+  </div>
+
+  <!-- Services -->
+  <a class="d-block py-2 px-3 text-white text-decoration-none d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#serviceMenu" role="button" aria-expanded="false">
+    <span><i class="fas fa-concierge-bell me-2"></i> Services</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </a>
+  <div class="collapse" id="serviceMenu">
+    <a href="{% url 'service_list' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-list me-2"></i> Manage Services
+    </a>
+    <a href="{% url 'add_service' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-plus me-2"></i> Add Service
+    </a>
+  </div>
+
+  <!-- Customers -->
+  <a class="d-block py-2 px-3 text-white text-decoration-none d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#customerMenu" role="button" aria-expanded="false">
+    <span><i class="fas fa-user-friends me-2"></i> Customers</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </a>
+  <div class="collapse" id="customerMenu">
+    <a href="{% url 'customer_list' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-list me-2"></i> All Customers
+    </a>
+    <a href="{% url 'add_customer' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-user-plus me-2"></i> Add Customer
+    </a>
+  </div>
+
+  <!-- Appointments -->
+  <a class="d-block py-2 px-3 text-white text-decoration-none d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#appointmentMenu" role="button" aria-expanded="false">
+    <span><i class="fas fa-calendar-alt me-2"></i> Appointments</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </a>
+  <div class="collapse" id="appointmentMenu">
+    <a href="{% url 'appointment_list' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-list me-2"></i> All Appointments
+    </a>
+    <a href="{% url 'create_appointment' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-calendar-plus me-2"></i> Create Appointment
+    </a>
+  </div>
+
+  <!-- Billing -->
+  <a class="d-block py-2 px-3 text-white text-decoration-none d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#billingMenu" role="button" aria-expanded="false">
+    <span><i class="fas fa-file-invoice-dollar me-2"></i> Billing</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </a>
+  <div class="collapse" id="billingMenu">
+    <a href="{% url 'bill_list' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-list me-2"></i> All Bills
+    </a>
+  </div>
+
+
+  <!-- ==================== SALON MANAGER ==================== -->
+  {% elif request.session.role == 'salon_manager' %}
+
+  <!-- Customers -->
+  <a class="d-block py-2 px-3 text-white text-decoration-none d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#customerMenu" role="button" aria-expanded="false">
+    <span><i class="fas fa-user-friends me-2"></i> Customers</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </a>
+  <div class="collapse" id="customerMenu">
+    <a href="{% url 'customer_list' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-list me-2"></i> All Customers
+    </a>
+    <a href="{% url 'add_customer' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-user-plus me-2"></i> Add Customer
+    </a>
+  </div>
+
+  <!-- Appointments -->
+  <a class="d-block py-2 px-3 text-white text-decoration-none d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#appointmentMenu" role="button" aria-expanded="false">
+    <span><i class="fas fa-calendar-alt me-2"></i> Appointments</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </a>
+  <div class="collapse" id="appointmentMenu">
+    <a href="{% url 'appointment_list' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-list me-2"></i> All Appointments
+    </a>
+    <a href="{% url 'create_appointment' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-calendar-plus me-2"></i> Create Appointment
+    </a>
+  </div>
+
+  <!-- Billing -->
+  <a class="d-block py-2 px-3 text-white text-decoration-none d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#billingMenu" role="button" aria-expanded="false">
+    <span><i class="fas fa-file-invoice-dollar me-2"></i> Billing</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </a>
+  <div class="collapse" id="billingMenu">
+    <a href="{% url 'bill_list' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-list me-2"></i> All Bills
+    </a>
+  </div>
+
+  <!-- Stock Dashboard -->
+  <a href="{% url 'stock_dashboard' %}" class="d-block py-2 px-3 text-white text-decoration-none">
+    <i class="fas fa-warehouse me-2"></i> Stock Dashboard
+  </a>
+
+
+  <!-- ==================== RECEPTIONIST ==================== -->
+  {% elif request.session.role == 'receptionist' %}
+
+  <!-- Customers -->
+  <a class="d-block py-2 px-3 text-white text-decoration-none d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#customerMenu" role="button" aria-expanded="false">
+    <span><i class="fas fa-user-friends me-2"></i> Customers</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </a>
+  <div class="collapse" id="customerMenu">
+    <a href="{% url 'customer_list' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-list me-2"></i> All Customers
+    </a>
+    <a href="{% url 'add_customer' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-user-plus me-2"></i> Add Customer
+    </a>
+  </div>
+
+  <!-- Appointments -->
+  <a class="d-block py-2 px-3 text-white text-decoration-none d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#appointmentMenu" role="button" aria-expanded="false">
+    <span><i class="fas fa-calendar-alt me-2"></i> Appointments</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </a>
+  <div class="collapse" id="appointmentMenu">
+    <a href="{% url 'appointment_list' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-list me-2"></i> All Appointments
+    </a>
+    <a href="{% url 'create_appointment' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-calendar-plus me-2"></i> Create Appointment
+    </a>
+  </div>
+
+  <!-- Billing -->
+  <a class="d-block py-2 px-3 text-white text-decoration-none d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#billingMenu" role="button" aria-expanded="false">
+    <span><i class="fas fa-file-invoice-dollar me-2"></i> Billing</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </a>
+  <div class="collapse" id="billingMenu">
+    <a href="{% url 'bill_list' %}" class="d-block py-2 ps-5 pe-3 text-white text-decoration-none">
+      <i class="fas fa-list me-2"></i> All Bills
+    </a>
+  </div>
+
+
+  <!-- ==================== SERVICE EMPLOYEES ==================== -->
+  <!-- hair_stylist, senior_stylist, hair_colorist, beauty_therapist, makeup_artist, assistant -->
+  {% elif request.session.role == 'hair_stylist' or request.session.role == 'senior_stylist' or request.session.role == 'hair_colorist' or request.session.role == 'beauty_therapist' or request.session.role == 'makeup_artist' or request.session.role == 'assistant' %}
+
+  <!-- My Services -->
+  <a href="{% url 'my_services' %}" class="d-block py-2 px-3 text-white text-decoration-none">
+    <i class="fas fa-briefcase me-2"></i> My Services
+  </a>
+
+ 
+
+  {% endif %}
+
+  <!-- Common Links (All Roles) -->
+  <hr class="text-white-50 mx-3 mt-3">
+  <a href="#" class="d-block py-2 px-3 text-white text-decoration-none">
+    <i class="fas fa-user-circle me-2"></i> My Profile
+  </a>
+  <a href="{% url 'logout' %}" class="d-block py-2 px-3 text-white text-decoration-none">
+    <i class="fas fa-sign-out-alt me-2"></i> Logout
+  </a>
+
+</div>
+
+<style>
+  #sidebarMenu {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  }
+  #sidebarMenu::-webkit-scrollbar { width: 6px; }
+  #sidebarMenu::-webkit-scrollbar-track { background: transparent; }
+  #sidebarMenu::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.3); border-radius: 10px; }
+  #sidebarMenu::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.5); }
+  #sidebarMenu a:hover { background-color: rgba(255,255,255,0.15); transform: translateX(3px); transition: all 0.2s ease; }
+  #sidebarMenu a.active { background-color: rgba(255,255,255,0.2); border-left: 4px solid #69ffe4; }
+  #sidebarMenu a[data-bs-toggle="collapse"]:not(.collapsed) .fa-chevron-down { transform: rotate(180deg); transition: transform 0.3s ease; }
+  #sidebarMenu a[data-bs-toggle="collapse"] .fa-chevron-down { transition: transform 0.3s ease; }
+  #sidebarMenu .collapse a { font-size: 0.9rem; background-color: rgba(0,0,0,0.1); }
+  #sidebarMenu .collapse a:hover { background-color: rgba(255,255,255,0.2); }
+  #sidebarMenu a.router-link-active { background-color: rgba(255,255,255,0.25); border-left: 4px solid #69ffe4; font-weight: 600; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const currentPath = window.location.pathname;
+  const allLinks = document.querySelectorAll('#sidebarMenu a[href]');
+  allLinks.forEach(link => {
+    if (link.getAttribute('href') === currentPath) {
+      link.classList.add('router-link-active');
+      const parentCollapse = link.closest('.collapse');
+      if (parentCollapse) {
+        parentCollapse.classList.add('show');
+        const toggleButton = document.querySelector(`[href="#${parentCollapse.id}"]`);
+        if (toggleButton) {
+          toggleButton.classList.remove('collapsed');
+          toggleButton.setAttribute('aria-expanded', 'true');
+        }
+      }
+    }
+  });
+});
+</script>
