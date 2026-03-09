@@ -1,871 +1,865 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Login | Beauty Bliss Salon</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <title>Login | Beauty Bliss Salon</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet" />
 
-    <style>
-      * {
-        font-family: "Poppins", sans-serif;
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+  <style>
+    :root {
+      --plum:        #3b0f2b;
+      --plum-dark:   #260a1d;
+      --plum-light:  #6b2a4a;
+      --rose-gold:   #c48b9f;
+      --rose-light:  #d9a8b8;
+      --champagne:   #f7e7ce;
+      --champagne-d: #eedbb8;
+      --blush:       #e8c3b9;
+      --bg-warm:     #faf6f2;
+      --bg-panel:    #fdf9f6;
+      --white:       #ffffff;
+      --text-dark:   #2a1520;
+      --text-mid:    #6b4c5a;
+      --text-light:  #9a7a88;
+      --font-serif:  'Cormorant Garamond', Georgia, serif;
+      --font-sans:   'Jost', sans-serif;
+      --font-deco:   'Cinzel', serif;
+      --transition:  all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+      --shadow-soft: 0 8px 40px rgba(59,15,43,0.10);
+      --shadow-card: 0 4px 24px rgba(59,15,43,0.12);
+      --shadow-deep: 0 24px 80px rgba(59,15,43,0.18);
+    }
 
-      body,
-      html {
-        height: 100%;
-        overflow-x: hidden;
-      }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      body {
-        background: linear-gradient(135deg, #fff5f8 0%, #ffe5f0 25%, #ffd4e5 50%, #ffe5f0 75%, #fff5f8 100%);
-        background-size: 400% 400%;
-        animation: gradientShift 20s ease infinite;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        padding: 20px;
-        position: relative;
-      }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-warm);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
 
-      @keyframes gradientShift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
+    /* ── Background Texture ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 0%, rgba(196,139,159,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 100%, rgba(59,15,43,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(247,231,206,0.25) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-      /* Floating Beauty Icons Background */
-      .beauty-float {
-        position: fixed;
-        font-size: 28px;
-        animation: floatAround 30s linear infinite;
-        z-index: 0;
-        opacity: 0.08;
-      }
+    /* ── Subtle Grid Pattern ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(196,139,159,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(196,139,159,0.04) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-      .beauty-float:nth-child(1) {
-        top: 10%;
-        left: 8%;
-        color: #ff6b9d;
-        animation-delay: 0s;
-      }
+    /* ── Floating Orbs ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+      animation: orbDrift 20s ease-in-out infinite;
+    }
+    .orb-1 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(196,139,159,0.18), transparent 70%);
+      top: -100px; left: -100px;
+      animation-delay: 0s;
+    }
+    .orb-2 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(59,15,43,0.10), transparent 70%);
+      bottom: -80px; right: -80px;
+      animation-delay: -7s;
+    }
+    .orb-3 {
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(247,231,206,0.35), transparent 70%);
+      top: 50%; right: 25%;
+      transform: translateY(-50%);
+      animation-delay: -14s;
+    }
 
-      .beauty-float:nth-child(2) {
-        top: 20%;
-        right: 12%;
-        color: #c770cf;
-        animation-delay: 5s;
-      }
+    @keyframes orbDrift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33%       { transform: translate(30px, -40px) scale(1.05); }
+      66%       { transform: translate(-20px, 20px) scale(0.96); }
+    }
 
-      .beauty-float:nth-child(3) {
-        bottom: 30%;
-        left: 15%;
-        color: #e384c2;
-        animation-delay: 10s;
-      }
+    /* ── Decorative Lines ── */
+    .deco-line {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .deco-line-1 {
+      top: 0; left: 50%;
+      width: 1px; height: 100vh;
+      background: linear-gradient(to bottom, transparent, rgba(196,139,159,0.15) 30%, rgba(196,139,159,0.15) 70%, transparent);
+    }
+    .deco-line-2 {
+      top: 50%; left: 0;
+      height: 1px; width: 100vw;
+      background: linear-gradient(to right, transparent, rgba(196,139,159,0.10) 30%, rgba(196,139,159,0.10) 70%, transparent);
+    }
 
-      .beauty-float:nth-child(4) {
-        bottom: 20%;
-        right: 18%;
-        color: #ff9ec4;
-        animation-delay: 15s;
-      }
+    /* ══════════════════════════════════
+       MAIN CONTAINER
+    ══════════════════════════════════ */
+    .login-wrap {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1080px;
+      min-height: 620px;
+      display: flex;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: var(--shadow-deep), 0 1px 0 rgba(255,255,255,0.8) inset;
+      animation: wrapReveal 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+      margin: 24px;
+    }
 
-      .beauty-float:nth-child(5) {
-        top: 50%;
-        left: 5%;
-        color: #ffb3d9;
-        animation-delay: 7s;
-      }
+    @keyframes wrapReveal {
+      from { opacity: 0; transform: translateY(32px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
 
-      .beauty-float:nth-child(6) {
-        bottom: 45%;
-        right: 8%;
-        color: #ff80ab;
-        animation-delay: 12s;
-      }
+    /* ══════════════════════════════════
+       LEFT — PANEL (Form)
+    ══════════════════════════════════ */
+    .form-panel {
+      flex: 0 0 46%;
+      background: var(--white);
+      padding: 56px 52px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
 
-      .beauty-float:nth-child(7) {
-        top: 35%;
-        left: 25%;
-        color: #ea80fc;
-        animation-delay: 3s;
-      }
+    /* subtle inner texture */
+    .form-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, rgba(247,231,206,0.15) 0%, transparent 50%);
+      pointer-events: none;
+    }
 
-      @keyframes floatAround {
-        0%, 100% { 
-          transform: translate(0, 0) rotate(0deg);
-          opacity: 0.08;
-        }
-        25% { 
-          transform: translate(30px, -30px) rotate(90deg);
-          opacity: 0.12;
-        }
-        50% { 
-          transform: translate(-20px, -40px) rotate(180deg);
-          opacity: 0.1;
-        }
-        75% { 
-          transform: translate(40px, -20px) rotate(270deg);
-          opacity: 0.08;
-        }
-      }
+    /* ── Wordmark ── */
+    .wordmark {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 44px;
+      animation: fadeUp 0.8s 0.1s cubic-bezier(0.16,1,0.3,1) both;
+    }
 
-      /* Sparkle Effect */
-      .sparkle {
-        position: fixed;
-        width: 6px;
-        height: 6px;
-        background: radial-gradient(circle, #ff6b9d, transparent);
-        border-radius: 50%;
-        animation: sparkleFloat 8s ease-in-out infinite;
-        opacity: 0;
-        z-index: 0;
-      }
+    .wordmark-icon {
+      width: 46px; height: 46px;
+      background: linear-gradient(135deg, var(--plum) 0%, var(--plum-light) 100%);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--champagne);
+      font-size: 18px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(59,15,43,0.3);
+    }
 
-      .sparkle:nth-child(8) { top: 15%; left: 20%; animation-delay: 0s; }
-      .sparkle:nth-child(9) { top: 60%; right: 25%; animation-delay: 2s; }
-      .sparkle:nth-child(10) { bottom: 25%; left: 30%; animation-delay: 4s; }
-      .sparkle:nth-child(11) { top: 40%; right: 15%; animation-delay: 6s; }
+    .wordmark-text {
+      display: flex;
+      flex-direction: column;
+    }
 
-      @keyframes sparkleFloat {
-        0%, 100% { 
-          opacity: 0;
-          transform: translateY(0) scale(1);
-        }
-        50% { 
-          opacity: 1;
-          transform: translateY(-50px) scale(1.5);
-        }
-      }
+    .wordmark-name {
+      font-family: var(--font-deco);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--plum);
+      letter-spacing: 0.06em;
+      line-height: 1;
+    }
 
-      .login-container {
-        display: flex;
-        background: rgba(255, 255, 255, 0.98);
-        backdrop-filter: blur(30px);
-        border: 2px solid rgba(255, 182, 193, 0.3);
-        border-radius: 30px;
-        box-shadow: 
-          0 40px 80px rgba(255, 107, 157, 0.2),
-          inset 0 1px 0 rgba(255, 255, 255, 1);
-        overflow: hidden;
-        max-width: 1100px;
-        width: 100%;
-        min-height: 650px;
-        position: relative;
-        z-index: 1;
-        animation: slideUp 1.2s ease;
-      }
+    .wordmark-sub {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--text-light);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
 
-      .form-section {
-        flex: 1;
-        padding: 60px 50px;
-        display: flex;
+    /* ── Headline ── */
+    .form-headline {
+      animation: fadeUp 0.8s 0.2s cubic-bezier(0.16,1,0.3,1) both;
+      margin-bottom: 6px;
+    }
+
+    .form-headline h1 {
+      font-family: var(--font-serif);
+      font-size: 42px;
+      font-weight: 600;
+      color: var(--text-dark);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .form-headline h1 em {
+      font-style: italic;
+      color: var(--plum-light);
+    }
+
+    .form-tagline {
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      color: var(--text-light);
+      font-weight: 300;
+      line-height: 1.6;
+      margin-bottom: 36px;
+      animation: fadeUp 0.8s 0.3s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    /* ── Alert ── */
+    .alert-bliss {
+      background: rgba(59,15,43,0.06);
+      border: 1px solid rgba(196,139,159,0.35);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--plum);
+      font-weight: 400;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: fadeUp 0.6s 0.3s both;
+    }
+    .alert-bliss i { color: var(--rose-gold); font-size: 14px; flex-shrink: 0; }
+
+    /* ── Field ── */
+    .field-group {
+      margin-bottom: 20px;
+      animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    .field-group:nth-of-type(1) { animation-delay: 0.35s; }
+    .field-group:nth-of-type(2) { animation-delay: 0.42s; }
+
+    .field-label {
+      font-family: var(--font-sans);
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-mid);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 9px;
+      display: block;
+    }
+
+    .field-input-wrap {
+      position: relative;
+    }
+
+    .field-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--rose-gold);
+      font-size: 14px;
+      pointer-events: none;
+      transition: var(--transition);
+    }
+
+    .field-control {
+      width: 100%;
+      padding: 14px 18px 14px 46px;
+      background: var(--bg-warm);
+      border: 1.5px solid rgba(196,139,159,0.25);
+      border-radius: 12px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-dark);
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .field-control::placeholder {
+      color: var(--text-light);
+      font-weight: 300;
+    }
+
+    .field-control:focus {
+      background: var(--white);
+      border-color: var(--rose-gold);
+      box-shadow: 0 0 0 3px rgba(196,139,159,0.14);
+    }
+
+    .field-control:focus + .field-icon,
+    .field-input-wrap:focus-within .field-icon {
+      color: var(--plum-light);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    /* ── Submit Button ── */
+    .btn-submit {
+      width: 100%;
+      padding: 15px 24px;
+      background: linear-gradient(135deg, var(--plum) 0%, var(--plum-light) 100%);
+      border: none;
+      border-radius: 12px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--champagne);
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(59,15,43,0.28);
+      animation: fadeUp 0.8s 0.55s cubic-bezier(0.16,1,0.3,1) both;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-submit::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(247,231,206,0.12), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 36px rgba(59,15,43,0.35);
+    }
+    .btn-submit:hover::after { opacity: 1; }
+    .btn-submit:active { transform: translateY(0); }
+
+    /* shimmer sweep */
+    .btn-submit .shimmer {
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(247,231,206,0.2), transparent);
+      transform: skewX(-15deg);
+      transition: none;
+    }
+    .btn-submit:hover .shimmer {
+      left: 150%;
+      transition: left 0.55s ease;
+    }
+
+    /* ── Divider ── */
+    .form-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 28px 0 0;
+      animation: fadeUp 0.8s 0.6s both;
+    }
+    .form-divider::before, .form-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(196,139,159,0.3), transparent);
+    }
+    .form-divider span {
+      font-family: var(--font-serif);
+      font-size: 12px;
+      font-style: italic;
+      color: var(--text-light);
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    /* ══════════════════════════════════
+       RIGHT — VISUAL PANEL
+    ══════════════════════════════════ */
+    .visual-panel {
+      flex: 1;
+      background: linear-gradient(148deg, var(--plum-dark) 0%, var(--plum) 45%, #5c1a42 100%);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* inner depth layers */
+    .visual-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 30% 20%, rgba(196,139,159,0.22) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 70% at 80% 80%, rgba(247,231,206,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* noise texture overlay */
+    .visual-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    /* ── Geometric Accent Lines ── */
+    .geo-lines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .geo-lines svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.12;
+    }
+
+    /* ── Inner Content ── */
+    .visual-inner {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 52px 44px;
+      width: 100%;
+    }
+
+    /* ── Large Crest Icon ── */
+    .crest {
+      width: 96px; height: 96px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(247,231,206,0.25);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 28px;
+      position: relative;
+      animation: crестReveal 1.2s 0.4s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    @keyframes crестReveal {
+      from { opacity: 0; transform: scale(0.7) rotate(-10deg); }
+      to   { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+
+    .crest::before {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      border-radius: 50%;
+      border: 1px solid rgba(247,231,206,0.15);
+    }
+
+    .crest i {
+      font-size: 36px;
+      color: var(--champagne);
+      filter: drop-shadow(0 0 20px rgba(247,231,206,0.3));
+      animation: gentlePulse 4s ease-in-out infinite;
+    }
+
+    @keyframes gentlePulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.85; transform: scale(1.04); }
+    }
+
+    /* ── Visual Headline ── */
+    .visual-headline {
+      font-family: var(--font-deco);
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--champagne);
+      letter-spacing: 0.08em;
+      text-align: center;
+      line-height: 1.2;
+      margin-bottom: 8px;
+      animation: fadeUp 0.9s 0.5s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    .visual-sub {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      font-style: italic;
+      color: rgba(196,139,159,0.7);
+      text-align: center;
+      margin-bottom: 44px;
+      animation: fadeUp 0.9s 0.6s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    /* ── Divider ornament ── */
+    .ornament {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 320px;
+      margin-bottom: 36px;
+      animation: fadeUp 0.9s 0.65s both;
+    }
+    .ornament-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(196,139,159,0.4), transparent);
+    }
+    .ornament-diamond {
+      width: 6px; height: 6px;
+      background: var(--rose-gold);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    /* ── Services Pills ── */
+    .services-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 280px;
+    }
+
+    .service-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(247,231,206,0.12);
+      border-radius: 14px;
+      backdrop-filter: blur(12px);
+      transition: var(--transition);
+      animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) both;
+      cursor: default;
+    }
+
+    .service-row:nth-child(1) { animation-delay: 0.7s; }
+    .service-row:nth-child(2) { animation-delay: 0.82s; }
+    .service-row:nth-child(3) { animation-delay: 0.94s; }
+
+    .service-row:hover {
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(247,231,206,0.22);
+      transform: translateX(5px);
+    }
+
+    .svc-icon-wrap {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: rgba(196,139,159,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      color: var(--rose-light);
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .service-row:hover .svc-icon-wrap {
+      background: rgba(196,139,159,0.3);
+      color: var(--champagne);
+    }
+
+    .svc-text { flex: 1; }
+
+    .svc-name {
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--champagne);
+      letter-spacing: 0.04em;
+      margin-bottom: 2px;
+    }
+
+    .svc-desc {
+      font-family: var(--font-sans);
+      font-size: 10.5px;
+      color: rgba(196,139,159,0.65);
+      font-weight: 300;
+    }
+
+    .svc-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--rose-gold);
+      opacity: 0.5;
+      flex-shrink: 0;
+      animation: dotBlink 3s ease-in-out infinite;
+    }
+
+    .service-row:nth-child(2) .svc-dot { animation-delay: 1s; }
+    .service-row:nth-child(3) .svc-dot { animation-delay: 2s; }
+
+    @keyframes dotBlink {
+      0%,100% { opacity: 0.5; }
+      50%      { opacity: 1; }
+    }
+
+    /* ── Corner Ornaments on visual panel ── */
+    .corner {
+      position: absolute;
+      width: 50px; height: 50px;
+      border-color: rgba(196,139,159,0.2);
+      border-style: solid;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .corner-tl { top: 24px; left: 24px; border-width: 1.5px 0 0 1.5px; border-radius: 4px 0 0 0; }
+    .corner-tr { top: 24px; right: 24px; border-width: 1.5px 1.5px 0 0; border-radius: 0 4px 0 0; }
+    .corner-bl { bottom: 24px; left: 24px; border-width: 0 0 1.5px 1.5px; border-radius: 0 0 0 4px; }
+    .corner-br { bottom: 24px; right: 24px; border-width: 0 1.5px 1.5px 0; border-radius: 0 0 4px 0; }
+
+    /* ── Shared Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════ */
+    @media (max-width: 900px) {
+      .login-wrap {
         flex-direction: column;
-        justify-content: center;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 249, 252, 0.98) 100%);
-        position: relative;
+        max-width: 520px;
+        min-height: auto;
+        margin: 16px;
       }
-
-      .illustration-section {
-        flex: 1;
-        background: linear-gradient(135deg, #ff6b9d 0%, #e384c2 30%, #c770cf 70%, #ff6b9d 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-      }
-
-      /* Animated Background Shapes */
-      .bg-shape {
-        position: absolute;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
-        animation: floatShapes 20s ease-in-out infinite;
-      }
-
-      .bg-shape:nth-child(1) {
-        width: 300px;
-        height: 300px;
-        top: -50px;
-        right: -50px;
-        animation-delay: 0s;
-      }
-
-      .bg-shape:nth-child(2) {
-        width: 200px;
-        height: 200px;
-        bottom: -30px;
-        left: -30px;
-        animation-delay: 3s;
-      }
-
-      .bg-shape:nth-child(3) {
-        width: 150px;
-        height: 150px;
-        top: 40%;
-        left: 20%;
-        animation-delay: 6s;
-      }
-
-      @keyframes floatShapes {
-        0%, 100% { 
-          transform: translate(0, 0) scale(1);
-          opacity: 0.3;
-        }
-        50% { 
-          transform: translate(30px, 30px) scale(1.2);
-          opacity: 0.5;
-        }
-      }
-
-      .brand-logo {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 35px;
-      }
-
-      .brand-logo i {
-        font-size: 45px;
-        background: linear-gradient(135deg, #ff6b9d 0%, #c770cf 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-right: 15px;
-        animation: pulse 3s ease-in-out infinite;
-        filter: drop-shadow(0 2px 8px rgba(255, 107, 157, 0.3));
-      }
-
-      .brand-info {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .brand-name {
-        font-family: "Playfair Display", serif;
-        font-size: 32px;
-        font-weight: 700;
-        background: linear-gradient(135deg, #ff6b9d 0%, #c770cf 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        letter-spacing: -1px;
-        margin-bottom: 2px;
-      }
-
-      .brand-subtitle {
-        font-size: 11px;
-        color: #c770cf;
-        font-weight: 600;
-        letter-spacing: 2.5px;
-        text-transform: uppercase;
-      }
-
-      .form-title {
-        color: #2d2d2d;
-        font-family: "Playfair Display", serif;
-        font-size: 38px;
-        font-weight: 700;
-        margin-bottom: 10px;
-        letter-spacing: -1px;
-        text-align: center;
-      }
-
-      .form-subtitle {
-        color: #7b7b7b;
-        font-size: 15px;
-        margin-bottom: 35px;
-        font-weight: 400;
-        line-height: 1.6;
-        text-align: center;
-      }
-
-      .form-group {
-        margin-bottom: 22px;
-        position: relative;
-      }
-
-      .form-label {
-        display: block;
-        color: #2d2d2d;
-        font-size: 13px;
-        font-weight: 600;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-      }
-
-      .input-wrapper {
-        position: relative;
-      }
-
-      .input-icon {
-        position: absolute;
-        left: 18px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #ff6b9d;
-        font-size: 16px;
-        z-index: 2;
-      }
-
-      .form-control {
-        width: 100%;
-        padding: 16px 20px 16px 50px;
-        border: 2px solid #ffd4e5;
-        border-radius: 15px;
-        font-size: 15px;
-        background: #ffffff;
-        color: #2d2d2d;
-        transition: all 0.3s ease;
-        outline: none;
-        font-weight: 400;
-      }
-
-      .form-control:focus {
-        border-color: #ff6b9d;
-        background: #fff9fc;
-        box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.12);
-        transform: translateY(-1px);
-      }
-
-      .form-control::placeholder {
-        color: #b4b4b4;
-        font-weight: 400;
-      }
-
-      .btn-login {
-        width: 100%;
-        padding: 18px;
-        background: linear-gradient(135deg, #ff6b9d 0%, #c770cf 100%);
-        border: none;
-        border-radius: 15px;
-        color: #ffffff;
-        font-size: 15px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-top: 20px;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 8px 20px rgba(255, 107, 157, 0.3);
-      }
-
-      .btn-login::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-        transition: left 0.6s;
-      }
-
-      .btn-login:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 30px rgba(255, 107, 157, 0.4);
-        background: linear-gradient(135deg, #e384c2 0%, #b966d6 100%);
-      }
-
-      .btn-login:hover::before {
-        left: 100%;
-      }
-
-      /* Beauty Services Showcase */
-      .services-showcase {
-        position: relative;
-        z-index: 2;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-      }
-
-      .main-icon {
-        width: 110px;
-        height: 110px;
-        background: rgba(255, 255, 255, 0.3);
-        border: 3px solid rgba(255, 255, 255, 0.5);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 45px;
-        color: #ffffff;
-        margin-bottom: 40px;
-        animation: pulse 4s ease-in-out infinite;
-        backdrop-filter: blur(20px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-      }
-
-      .services-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 18px;
-        margin-top: 30px;
-        width: 100%;
-        max-width: 400px;
-      }
-
-      .service-card {
-        background: rgba(255, 255, 255, 0.25);
-        border: 2px solid rgba(255, 255, 255, 0.4);
-        border-radius: 22px;
-        padding: 22px 16px;
-        text-align: center;
-        transition: all 0.4s ease;
-        backdrop-filter: blur(25px);
-        animation: fadeInUp 1.2s ease;
-        position: relative;
-        overflow: hidden;
-        cursor: pointer;
-      }
-
-      .service-card::before {
-        content: '';
-        position: absolute;
-        top: -2px;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.5));
-        border-radius: 22px;
-        opacity: 0;
-        transition: opacity 0.4s ease;
-        z-index: -1;
-      }
-
-      .service-card:nth-child(1) { animation-delay: 0.2s; }
-      .service-card:nth-child(2) { animation-delay: 0.4s; }
-      .service-card:nth-child(3) { animation-delay: 0.6s; }
-
-      .service-card:hover {
-        transform: translateY(-10px) scale(1.03);
-        background: rgba(255, 255, 255, 0.4);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        border: 2px solid rgba(255, 255, 255, 0.6);
-      }
-
-      .service-card:hover::before {
-        opacity: 1;
-      }
-
-      .service-icon-container {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 15px;
-      }
-
-      .service-icon {
-        font-size: 35px;
-        color: #ffffff;
-        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-        z-index: 2;
-        position: relative;
-        transition: all 0.3s ease;
-      }
-
-      .icon-glow {
-        position: absolute;
-        width: 65px;
-        height: 65px;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
-        border-radius: 50%;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        opacity: 0;
-        transition: all 0.3s ease;
-        z-index: 1;
-      }
-
-      .service-card:hover .icon-glow {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1.3);
-      }
-
-      .service-card:hover .service-icon {
-        transform: scale(1.15) rotate(5deg);
-        text-shadow: 0 0 25px rgba(255, 255, 255, 0.7);
-      }
-
-      .service-title {
-        font-size: 13px;
-        font-weight: 700;
-        color: #ffffff;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 1.2px;
-        font-family: "Playfair Display", serif;
-      }
-
-      .service-desc {
-        font-size: 10.5px;
-        color: rgba(255, 255, 255, 0.95);
-        line-height: 1.5;
-        font-weight: 400;
-        margin-bottom: 10px;
-      }
-
-      .service-badge {
-        display: inline-block;
-        background: rgba(255, 255, 255, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        border-radius: 15px;
-        padding: 4px 10px;
-        font-size: 9px;
-        color: #ffffff;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
-      }
-
-      .service-card:hover .service-badge {
-        background: rgba(255, 255, 255, 0.5);
-        border-color: rgba(255, 255, 255, 0.7);
-        transform: scale(1.08);
-      }
-
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      @keyframes pulse {
-        0%, 100% { 
-          opacity: 1;
-          transform: scale(1);
-        }
-        50% { 
-          opacity: 0.9;
-          transform: scale(1.05);
-        }
-      }
-
-      @keyframes slideUp {
-        from {
-          opacity: 0;
-          transform: translateY(40px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .alert {
-        border: none;
-        border-radius: 15px;
-        background: rgba(220, 38, 38, 0.08);
-        color: #dc2626;
-        font-weight: 500;
-        border: 2px solid rgba(220, 38, 38, 0.2);
-        backdrop-filter: blur(10px);
-        padding: 14px 18px;
-        font-size: 14px;
-        margin-bottom: 25px;
-      }
-
-      /* Mobile Responsive */
-      @media (max-width: 768px) {
-        body {
-          padding: 15px;
-        }
-
-        .login-container {
-          flex-direction: column;
-          border-radius: 25px;
-          min-height: auto;
-        }
-
-        .illustration-section {
-          order: -1;
-          min-height: 300px;
-          max-height: 300px;
-        }
-
-        .form-section {
-          padding: 35px 25px;
-        }
-
-        .brand-logo {
-          margin-bottom: 25px;
-        }
-
-        .brand-logo i {
-          font-size: 36px;
-        }
-
-        .brand-name {
-          font-size: 26px;
-        }
-
-        .form-title {
-          font-size: 30px;
-        }
-
-        .form-subtitle {
-          font-size: 14px;
-          margin-bottom: 25px;
-        }
-
-        .main-icon {
-          width: 85px;
-          height: 85px;
-          font-size: 36px;
-          margin-bottom: 30px;
-        }
-
-        .services-grid {
-          max-width: 300px;
-          gap: 15px;
-        }
-
-        .service-card {
-          padding: 18px 12px;
-        }
-
-        .service-icon {
-          font-size: 28px;
-        }
-
-        .beauty-float {
-          font-size: 22px;
-          opacity: 0.06;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .form-section {
-          padding: 25px 20px;
-        }
-
-        .brand-name {
-          font-size: 24px;
-        }
-
-        .form-title {
-          font-size: 26px;
-        }
-
-        .form-control {
-          padding: 14px 18px 14px 45px;
-          font-size: 14px;
-        }
-
-        .btn-login {
-          padding: 16px;
-          font-size: 14px;
-        }
-
-        .services-grid {
-          max-width: 260px;
-          gap: 12px;
-        }
-
-        .service-card {
-          padding: 15px 10px;
-        }
-
-        .service-icon {
-          font-size: 24px;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <!-- Floating beauty icons background -->
-    <div class="beauty-float"><i class="fas fa-spa"></i></div>
-    <div class="beauty-float"><i class="fas fa-cut"></i></div>
-    <div class="beauty-float"><i class="fas fa-paint-brush"></i></div>
-    <div class="beauty-float"><i class="fas fa-heart"></i></div>
-    <div class="beauty-float"><i class="fas fa-star"></i></div>
-    <div class="beauty-float"><i class="fas fa-magic"></i></div>
-    <div class="beauty-float"><i class="fas fa-gem"></i></div>
-
-    <!-- Sparkle effects -->
-    <div class="sparkle"></div>
-    <div class="sparkle"></div>
-    <div class="sparkle"></div>
-    <div class="sparkle"></div>
-
-    <div class="login-container">
-      <!-- LEFT: Form Section -->
-      <div class="form-section">
-        <div class="brand-logo">
+      .visual-panel { min-height: 280px; }
+      .form-panel { padding: 44px 40px; }
+      .services-list { flex-direction: row; max-width: 100%; }
+      .service-row { flex: 1; flex-direction: column; align-items: flex-start; gap: 8px; }
+      .svc-dot { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .form-panel { padding: 36px 28px; }
+      .form-headline h1 { font-size: 34px; }
+      .services-list { flex-direction: column; }
+      .visual-inner { padding: 36px 28px; }
+      .visual-headline { font-size: 22px; }
+      .service-row { flex-direction: row; }
+      .svc-dot { display: block; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Background elements -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="deco-line deco-line-1"></div>
+  <div class="deco-line deco-line-2"></div>
+
+  <div class="login-wrap">
+
+    <!-- ══ LEFT: FORM ══ -->
+    <div class="form-panel">
+      <div class="wordmark">
+        <div class="wordmark-icon">
           <i class="fas fa-spa"></i>
-          <div class="brand-info">
-            <div class="brand-name">Beauty Bliss</div>
-            <div class="brand-subtitle">Premier Salon & Spa</div>
-          </div>
         </div>
-
-        <h1 class="form-title">Welcome Back</h1>
-        <p class="form-subtitle">Sign in to access your personalized beauty dashboard and manage your appointments</p>
-
-        {% if messages %}
-        <div class="alert text-center">
-          {% for message in messages %}
-           {{ message }} 
-          {% endfor %}
+        <div class="wordmark-text">
+          <span class="wordmark-name">Beauty Bliss</span>
+          <span class="wordmark-sub">Premier Salon &amp; Spa</span>
         </div>
-        {% endif %}
-
-        <form method="POST">
-          {% csrf_token %}
-          <div class="form-group">
-            <label class="form-label">Username</label>
-            <div class="input-wrapper">
-              <i class="fas fa-user input-icon"></i>
-              <input
-                type="text"
-                name="username"
-                class="form-control"
-                placeholder="Enter your username"
-                required
-                autocomplete="username"
-              />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Password</label>
-            <div class="input-wrapper">
-              <i class="fas fa-lock input-icon"></i>
-              <input
-                type="password"
-                name="password"
-                class="form-control"
-                placeholder="Enter your password"
-                required
-                autocomplete="current-password"
-              />
-            </div>
-          </div>
-
-          <button type="submit" class="btn-login">
-            <i class="fas fa-sign-in-alt" style="margin-right: 10px;"></i>
-            Sign In
-          </button>
-        </form>
       </div>
 
-      <!-- RIGHT: Beauty Services Showcase -->
-      <div class="illustration-section">
-        <div class="bg-shape"></div>
-        <div class="bg-shape"></div>
-        <div class="bg-shape"></div>
+      <div class="form-headline">
+        <h1>Welcome <em>Back</em></h1>
+      </div>
+      <p class="form-tagline">Sign in to your dashboard and manage appointments, services &amp; more.</p>
 
-        <div class="services-showcase">
-          <div class="main-icon">
-            <i class="fas fa-spa"></i>
+      {% if messages %}
+      <div class="alert-bliss">
+        <i class="fas fa-exclamation-circle"></i>
+        {% for message in messages %}{{ message }}{% endfor %}
+      </div>
+      {% endif %}
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="field-group">
+          <label class="field-label" for="username">Username</label>
+          <div class="field-input-wrap">
+            <input
+              id="username"
+              type="text"
+              name="username"
+              class="field-control"
+              placeholder="Enter your username"
+              required
+              autocomplete="username"
+            />
+            <i class="fas fa-user field-icon"></i>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="password">Password</label>
+          <div class="field-input-wrap">
+            <input
+              id="password"
+              type="password"
+              name="password"
+              class="field-control"
+              placeholder="Enter your password"
+              required
+              autocomplete="current-password"
+            />
+            <i class="fas fa-lock field-icon"></i>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span class="shimmer"></span>
+          <i class="fas fa-sign-in-alt"></i>
+          <span class="btn-label">Sign In</span>
+        </button>
+      </form>
+
+      <div class="form-divider">
+        <span>Beauty Bliss &mdash; Est. 2020</span>
+      </div>
+    </div>
+
+    <!-- ══ RIGHT: VISUAL ══ -->
+    <div class="visual-panel">
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+
+      <div class="geo-lines">
+        <svg viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="300" cy="400" r="280" stroke="rgba(247,231,206,1)" stroke-width="0.8"/>
+          <circle cx="300" cy="400" r="200" stroke="rgba(247,231,206,1)" stroke-width="0.5"/>
+          <circle cx="300" cy="400" r="120" stroke="rgba(247,231,206,1)" stroke-width="0.5"/>
+          <line x1="0" y1="400" x2="600" y2="400" stroke="rgba(247,231,206,1)" stroke-width="0.5"/>
+          <line x1="300" y1="0" x2="300" y2="800" stroke="rgba(247,231,206,1)" stroke-width="0.5"/>
+          <line x1="0" y1="0" x2="600" y2="800" stroke="rgba(247,231,206,1)" stroke-width="0.4"/>
+          <line x1="600" y1="0" x2="0" y2="800" stroke="rgba(247,231,206,1)" stroke-width="0.4"/>
+        </svg>
+      </div>
+
+      <div class="visual-inner">
+        <div class="crest">
+          <i class="fas fa-crown"></i>
+        </div>
+
+        <div class="visual-headline">Bliss Awaits You</div>
+        <p class="visual-sub">"Where elegance meets artistry"</p>
+
+        <div class="ornament">
+          <div class="ornament-line"></div>
+          <div class="ornament-diamond"></div>
+          <div class="ornament-line"></div>
+        </div>
+
+        <div class="services-list">
+          <div class="service-row">
+            <div class="svc-icon-wrap"><i class="fas fa-cut"></i></div>
+            <div class="svc-text">
+              <div class="svc-name">Hair Styling</div>
+              <div class="svc-desc">Expert cuts & color</div>
+            </div>
+            <div class="svc-dot"></div>
           </div>
 
-          <div class="services-grid">
-            <div class="service-card">
-              <div class="service-icon-container">
-                <div class="service-icon">
-                  <i class="fas fa-cut"></i>
-                </div>
-                <div class="icon-glow"></div>
-              </div>
-              <div class="service-title">Hair Styling</div>
-              <div class="service-desc">Expert cuts, colors, and treatments for your perfect look</div>
-              <div class="service-badge">Premium</div>
+          <div class="service-row">
+            <div class="svc-icon-wrap"><i class="fas fa-paint-brush"></i></div>
+            <div class="svc-text">
+              <div class="svc-name">Makeup</div>
+              <div class="svc-desc">Bridal & everyday</div>
             </div>
+            <div class="svc-dot"></div>
+          </div>
 
-            <div class="service-card">
-              <div class="service-icon-container">
-                <div class="service-icon">
-                  <i class="fas fa-paint-brush"></i>
-                </div>
-                <div class="icon-glow"></div>
-              </div>
-              <div class="service-title">Makeup Artistry</div>
-              <div class="service-desc">Bridal, party, and everyday makeup by professionals</div>
-              <div class="service-badge">Expert</div>
+          <div class="service-row">
+            <div class="svc-icon-wrap"><i class="fas fa-leaf"></i></div>
+            <div class="svc-text">
+              <div class="svc-name">Spa & Wellness</div>
+              <div class="svc-desc">Luxury treatments</div>
             </div>
-
-            <div class="service-card">
-              <div class="service-icon-container">
-                <div class="service-icon">
-                  <i class="fas fa-leaf"></i>
-                </div>
-                <div class="icon-glow"></div>
-              </div>
-              <div class="service-title">Spa & Wellness</div>
-              <div class="service-desc">Relaxing treatments for your body and mind</div>
-              <div class="service-badge">Luxury</div>
-            </div>
+            <div class="svc-dot"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <script>
-      // Enhanced form interaction
-      const loginForm = document.querySelector('form[method="POST"]');
-      
-      if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
-          const button = this.querySelector('.btn-login');
-          const username = this.querySelector('input[name="username"]').value;
-          const password = this.querySelector('input[name="password"]').value;
-          
-          if (username && password) {
-            // Show loading state
-            button.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 10px;"></i>Signing In...';
-            button.disabled = true;
-            
-            // Let the form submit normally to Django backend
-          }
-        });
-      }
+  </div>
 
-      // Add focus animation to input fields
-      const inputs = document.querySelectorAll('.form-control');
-      inputs.forEach(input => {
-        input.addEventListener('focus', function() {
-          this.parentElement.querySelector('.input-icon').style.transform = 'translateY(-50%) scale(1.1)';
-        });
-        input.addEventListener('blur', function() {
-          this.parentElement.querySelector('.input-icon').style.transform = 'translateY(-50%) scale(1)';
-        });
+  <script>
+    // ── Form submit loading state ──
+    const form      = document.querySelector('form[method="POST"]');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnLabel  = submitBtn.querySelector('.btn-label');
+
+    if (form) {
+      form.addEventListener('submit', function () {
+        const u = this.querySelector('input[name="username"]').value;
+        const p = this.querySelector('input[name="password"]').value;
+        if (u && p) {
+          btnLabel.textContent = 'Signing in…';
+          submitBtn.querySelector('i').className = 'fas fa-spinner fa-spin';
+          submitBtn.disabled = true;
+        }
       });
-    </script>
-  </body>
+    }
+
+    // ── Input focus icon lift ──
+    document.querySelectorAll('.field-control').forEach(input => {
+      const icon = input.parentElement.querySelector('.field-icon');
+      input.addEventListener('focus', () => {
+        icon.style.color = 'var(--plum-light)';
+        icon.style.transform = 'translateY(-50%) scale(1.15)';
+      });
+      input.addEventListener('blur', () => {
+        icon.style.color = '';
+        icon.style.transform = 'translateY(-50%) scale(1)';
+      });
+    });
+  </script>
+</body>
 </html>

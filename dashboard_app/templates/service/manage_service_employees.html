@@ -185,17 +185,37 @@
 </div>
 
 <style>
+:root {
+  --plum:        #3b0f2b;
+  --plum-dark:   #260a1d;
+  --rose-gold:   #c48b9f;
+  --champagne:   #f7e7ce;
+  --blush:       #e8c3b9;
+  --bg-warm:     #faf6f2;
+  --white:       #ffffff;
+  --text-dark:   #2a1520;
+  --text-mid:    #6b4c5a;
+  --font-sans:   'Jost', sans-serif;
+  --font-deco:   'Cinzel', serif;
+  --transition:  all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-soft: 0 8px 40px rgba(59,15,43,0.10);
+  --shadow-card: 0 4px 24px rgba(59,15,43,0.12);
+}
+
 .modern-card {
   border-radius: 15px;
   border: none;
   overflow: hidden;
+  box-shadow: var(--shadow-card);
 }
 
 .card-header.table-title-bar {
-  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  background: linear-gradient(135deg, var(--plum) 0%, #6b2048 100%);
   padding: 20px;
   font-size: 18px;
-  border-bottom: 3px solid rgba(255,255,255,0.2);
+  border-bottom: 3px solid rgba(196, 139, 159, 0.3);
+  font-family: var(--font-deco);
+  letter-spacing: 0.04em;
 }
 
 .service-detail-image {
@@ -203,21 +223,21 @@
   height: 120px;
   border-radius: 15px;
   object-fit: cover;
-  border: 4px solid #ff4f6e;
-  box-shadow: 0 4px 15px rgba(255, 79, 110, 0.3);
+  border: 4px solid var(--rose-gold);
+  box-shadow: var(--shadow-card);
 }
 
 .service-detail-placeholder {
   width: 120px;
   height: 120px;
   border-radius: 15px;
-  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  background: linear-gradient(135deg, var(--plum) 0%, #6b2048 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--white);
   font-size: 40px;
-  box-shadow: 0 4px 15px rgba(255, 79, 110, 0.3);
+  box-shadow: var(--shadow-card);
 }
 
 .info-box-small {
@@ -226,7 +246,7 @@
 
 .info-value {
   font-size: 15px;
-  color: #333;
+  color: var(--text-dark);
 }
 
 .modern-table {
@@ -234,26 +254,28 @@
 }
 
 .modern-table thead.table-header {
-  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
-  color: #333;
+  background: linear-gradient(135deg, var(--champagne) 0%, var(--blush) 100%);
+  color: var(--text-dark);
   font-weight: 600;
 }
 
 .modern-table thead th {
-  border-bottom: 2px solid #ff4f6e;
+  border-bottom: 2px solid var(--plum);
   padding: 15px;
   vertical-align: middle;
+  font-family: var(--font-sans);
+  color: var(--text-dark);
 }
 
 .modern-table tbody td {
   padding: 15px;
   vertical-align: middle;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--blush);
 }
 
 .modern-table tbody tr:hover {
-  background-color: #fff5f7;
-  transition: all 0.3s ease;
+  background-color: var(--champagne);
+  transition: var(--transition);
 }
 
 .employee-avatar {
@@ -261,18 +283,18 @@
   height: 45px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #ff4f6e;
+  border: 3px solid var(--rose-gold);
 }
 
 .employee-avatar-placeholder {
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  background: linear-gradient(135deg, var(--plum) 0%, #6b2048 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--white);
   font-size: 18px;
 }
 
@@ -280,10 +302,11 @@
   display: inline-block;
   padding: 6px 12px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #69ffe4 0%, #5ce1e6 100%);
-  color: #000;
+  background: linear-gradient(135deg, var(--champagne) 0%, var(--blush) 100%);
+  color: var(--plum);
   font-weight: 600;
   font-size: 12px;
+  border: 1px solid var(--rose-gold);
 }
 
 .badge-expertise {
@@ -292,23 +315,23 @@
   border-radius: 8px;
   font-weight: 600;
   font-size: 12px;
-  color: white;
+  color: var(--white);
 }
 
 .badge-beginner {
-  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+  background: linear-gradient(135deg, var(--text-mid) 0%, #8a6475 100%);
 }
 
 .badge-intermediate {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, var(--rose-gold) 0%, #d4a0b0 100%);
 }
 
 .badge-expert {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  background: linear-gradient(135deg, #c49a2a 0%, #e0b84a 100%);
 }
 
 .badge-master {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: linear-gradient(135deg, var(--plum) 0%, #6b2048 100%);
 }
 
 .badge-status-active {
@@ -316,7 +339,7 @@
   padding: 6px 12px;
   border-radius: 8px;
   background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-  color: white;
+  color: var(--white);
   font-weight: 600;
   font-size: 12px;
 }
@@ -325,8 +348,8 @@
   display: inline-block;
   padding: 6px 12px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--text-mid) 0%, #8a6475 100%);
+  color: var(--white);
   font-weight: 600;
   font-size: 12px;
 }
@@ -344,78 +367,92 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   border: none;
-  color: white;
+  color: var(--white);
   font-size: 14px;
 }
 
 .btn-action-modern:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  color: white;
+  box-shadow: var(--shadow-card);
+  color: var(--white);
 }
 
 .btn-action-modern.btn-warning {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  background: linear-gradient(135deg, #c49a2a 0%, #e0b84a 100%);
 }
 
 .btn-action-modern.btn-danger {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: linear-gradient(135deg, #8b2a2a 0%, #b03a3a 100%);
 }
 
 .btn-action {
   padding: 10px 20px;
   border-radius: 10px;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: var(--transition);
+  font-family: var(--font-sans);
 }
 
 .btn-action:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-action-lg {
   padding: 12px 30px;
   border-radius: 10px;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: var(--transition);
+  font-family: var(--font-sans);
 }
 
 .btn-action-lg:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  background: linear-gradient(135deg, var(--plum) 0%, #6b2048 100%);
   border: none;
+  color: var(--white);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #e63956 0%, #ff6b9d 100%);
+  background: linear-gradient(135deg, var(--plum-dark) 0%, var(--plum) 100%);
 }
 
 .btn-success {
-  background: linear-gradient(135deg, #ff80ab 0%, #ffa4c4 100%);
+  background: linear-gradient(135deg, var(--plum) 0%, #6b2048 100%);
   border: none;
+  color: var(--white);
 }
 
 .btn-success:hover {
-  background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb5 100%);
+  background: linear-gradient(135deg, var(--plum-dark) 0%, var(--plum) 100%);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--text-mid) 0%, #8a6475 100%);
+  border: none;
+  color: var(--white);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, var(--text-dark) 0%, var(--text-mid) 100%);
 }
 
 .ribbon-header {
-  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  background: linear-gradient(135deg, var(--champagne) 0%, var(--blush) 100%);
   border-radius: 15px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+  box-shadow: var(--shadow-soft);
 }
 
 .text-primary {
-  color: #ff4f6e !important;
+  color: var(--plum) !important;
 }
 </style>
 

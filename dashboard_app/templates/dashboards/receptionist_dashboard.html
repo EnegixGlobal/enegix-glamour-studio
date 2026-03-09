@@ -3,322 +3,250 @@
 {% block title %}Receptionist Dashboard{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  .welcome-card {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    border-radius: 20px;
-    color: #fff;
-    box-shadow: 0 10px 30px rgba(250, 112, 154, 0.3);
-    position: relative;
-    overflow: hidden;
-  }
-  .welcome-card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    animation: sparkle 8s linear infinite;
-  }
-  @keyframes sparkle {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(180deg); }
-  }
-  .welcome-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(250, 112, 154, 0.4);
-  }
-  .welcome-icon {
-    font-size: 70px;
-    color: #fff;
-    margin-bottom: 20px;
-    animation: pulse 2s infinite;
-  }
-  .welcome-card h4 {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    color: #ffffff;
-    font-size: 2.2rem;
-    margin-bottom: 15px;
-  }
-  .welcome-card p {
-    color: rgba(255, 255, 255, 0.95);
-    font-size: 1.1rem;
-    line-height: 1.7;
-    font-weight: 500;
-  }
-  .welcome-card p strong {
-    color: #fff;
-    font-weight: 700;
-  }
-  .stat-card {
-    background: #ffffff;
-    border-radius: 18px;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    position: relative;
-    overflow: hidden;
-  }
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, #fa709a 0%, #fee140 100%);
-  }
-  .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(250, 112, 154, 0.2);
-  }
-  .stat-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    color: white;
-    font-size: 32px;
-  }
-  .stat-number {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: block;
-    margin-bottom: 8px;
-  }
-  .stat-label {
-    color: #666;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 0.85rem;
-  }
-  .service-card {
-    background: #ffffff;
-    border-radius: 18px;
-    transition: all 0.4s;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    position: relative;
-    overflow: hidden;
-  }
-  .service-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 5px;
-    background: linear-gradient(90deg, #fa709a 0%, #fee140 100%);
-  }
-  .service-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(250, 112, 154, 0.2);
-  }
-  .service-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    color: white;
-    font-size: 30px;
-  }
-  .service-card:hover .service-icon {
-    transform: scale(1.1) rotate(5deg);
-  }
-  .service-title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 10px;
-  }
-  .service-desc {
-    color: #666;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin-bottom: 15px;
-  }
-  .action-btn {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-  }
-  .action-btn:hover {
-    background: linear-gradient(135deg, #fee140 0%, #fa709a 100%);
-    transform: translateY(-2px);
-    color: white;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.9; transform: scale(1.05); }
-  }
-  .services-table .card-header {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-  }
+  :root{--plum:#3b0f2b;--plum-dark:#260a1d;--rose-gold:#c48b9f;--champagne:#f7e7ce;--blush:#e8c3b9;
+    --bg-warm:#faf6f2;--white:#ffffff;--text-dark:#2a1520;--text-mid:#6b4c5a;
+    --font-serif:'Cormorant Garamond',Georgia,serif;--font-sans:'Jost',sans-serif;--font-deco:'Cinzel',serif;
+    --transition:all 0.45s cubic-bezier(0.4,0,0.2,1);--shadow-card:0 4px 24px rgba(59,15,43,0.12);}
+  body{background:var(--bg-warm);font-family:var(--font-sans);}
+
+  .welcome-banner{background:linear-gradient(135deg,#1a4a2e 0%,#27ae60 70%,#2ecc71 100%);
+    border-radius:20px;padding:2.5rem 3rem;color:#fff;position:relative;overflow:hidden;
+    box-shadow:0 12px 50px rgba(26,74,46,0.35);}
+  .welcome-banner::before{content:'';position:absolute;top:-60px;right:-60px;width:250px;height:250px;border-radius:50%;
+    background:radial-gradient(circle,rgba(247,231,206,0.12) 0%,transparent 70%);}
+  .banner-icon{font-size:3.2rem;color:var(--champagne);animation:float 3s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+  .banner-title{font-family:var(--font-deco);font-size:1.8rem;color:var(--champagne);letter-spacing:0.04em;}
+  .banner-sub{font-size:0.9rem;color:rgba(247,231,206,0.7);font-weight:300;}
+
+  .stat-card{background:var(--white);border-radius:16px;padding:1.6rem 1.4rem;box-shadow:var(--shadow-card);
+    border:1px solid rgba(196,139,159,0.12);transition:var(--transition);position:relative;overflow:hidden;}
+  .stat-card::after{content:'';position:absolute;top:0;left:0;width:100%;height:3px;}
+  .stat-card.c1::after{background:linear-gradient(90deg,#1a4a2e,#27ae60);}
+  .stat-card.c2::after{background:linear-gradient(90deg,#2d7d9a,#56b4d3);}
+  .stat-card.c3::after{background:linear-gradient(90deg,var(--plum),#8b2252);}
+  .stat-card.c4::after{background:linear-gradient(90deg,#8e44ad,#9b59b6);}
+  .stat-card:hover{transform:translateY(-5px);box-shadow:0 16px 50px rgba(59,15,43,0.16);}
+  .stat-icon-wrap{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem;}
+  .c1 .stat-icon-wrap{background:linear-gradient(135deg,#1a4a2e,#27ae60);color:#fff;}
+  .c2 .stat-icon-wrap{background:linear-gradient(135deg,#2d7d9a,#56b4d3);color:#fff;}
+  .c3 .stat-icon-wrap{background:linear-gradient(135deg,var(--plum),#8b2252);color:var(--champagne);}
+  .c4 .stat-icon-wrap{background:linear-gradient(135deg,#8e44ad,#9b59b6);color:#fff;}
+  .stat-value{font-family:var(--font-serif);font-size:2.2rem;font-weight:700;color:var(--text-dark);line-height:1;margin-bottom:.3rem;}
+  .stat-label{font-size:.72rem;font-weight:500;color:var(--text-mid);text-transform:uppercase;letter-spacing:.08em;}
+
+  .section-title{font-family:var(--font-deco);font-size:.95rem;color:var(--plum);letter-spacing:.12em;text-transform:uppercase;
+    display:flex;align-items:center;gap:.75rem;margin-bottom:1.4rem;}
+  .section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(196,139,159,0.4),transparent);}
+
+  .qa-card{background:var(--white);border-radius:16px;padding:1.4rem;box-shadow:var(--shadow-card);
+    border:1px solid rgba(196,139,159,0.10);transition:var(--transition);text-decoration:none;display:block;position:relative;overflow:hidden;}
+  .qa-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#1a4a2e,#27ae60);opacity:0;transition:var(--transition);}
+  .qa-card:hover::before{opacity:1;}
+  .qa-card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(26,74,46,0.25);}
+  .qa-icon{width:50px;height:50px;border-radius:12px;background:rgba(39,174,96,0.1);display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;color:#27ae60;margin-bottom:.9rem;transition:var(--transition);position:relative;z-index:1;}
+  .qa-card:hover .qa-icon{background:rgba(255,255,255,0.15);color:var(--champagne);}
+  .qa-title{font-family:var(--font-serif);font-size:1.15rem;font-weight:600;color:var(--text-dark);margin-bottom:.25rem;transition:var(--transition);position:relative;z-index:1;}
+  .qa-card:hover .qa-title{color:var(--champagne);}
+  .qa-desc{font-size:.8rem;color:var(--text-mid);transition:var(--transition);position:relative;z-index:1;}
+  .qa-card:hover .qa-desc{color:rgba(247,231,206,0.7);}
+
+  .data-table-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow-card);border:1px solid rgba(196,139,159,0.10);overflow:hidden;}
+  .table-head{background:linear-gradient(135deg,#1a4a2e,#27ae60);padding:1rem 1.4rem;}
+  .table-head h6{color:var(--champagne);font-family:var(--font-deco);font-size:.82rem;letter-spacing:.1em;margin:0;text-transform:uppercase;}
+  .data-table thead tr th{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-mid);
+    border-bottom:1px solid rgba(196,139,159,0.2);padding:.8rem 1rem;background:rgba(250,246,242,0.5);}
+  .data-table tbody tr td{font-size:.875rem;color:var(--text-dark);padding:.8rem 1rem;border-bottom:1px solid rgba(196,139,159,0.08);vertical-align:middle;}
+  .data-table tbody tr:hover td{background:rgba(247,231,206,0.2);}
+
+  .badge-status{display:inline-flex;align-items:center;gap:.3rem;border-radius:20px;padding:.25rem .7rem;font-size:.72rem;font-weight:500;border:1px solid transparent;}
+  .bs-confirmed{background:rgba(45,125,154,0.10);color:#2d7d9a;border-color:rgba(45,125,154,0.2);}
+  .bs-inprogress{background:rgba(230,126,34,0.10);color:#e67e22;border-color:rgba(230,126,34,0.2);}
+  .bs-completed{background:rgba(26,107,60,0.10);color:#1a6b3c;border-color:rgba(26,107,60,0.2);}
+  .bs-cancelled{background:rgba(181,69,27,0.10);color:#b5451b;border-color:rgba(181,69,27,0.2);}
+  .bs-pending{background:rgba(107,76,90,0.10);color:var(--text-mid);border-color:rgba(107,76,90,0.15);}
+
+  .btn-view{background:transparent;border:1px solid rgba(59,15,43,0.2);color:var(--plum);border-radius:8px;
+    padding:.3rem .9rem;font-size:.78rem;font-weight:500;font-family:var(--font-sans);transition:var(--transition);text-decoration:none;}
+  .btn-view:hover{background:var(--plum);color:var(--champagne);}
+
+  .chart-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow-card);border:1px solid rgba(196,139,159,.1);overflow:hidden;}
+  .chart-header{padding:1.2rem 1.4rem 0;display:flex;align-items:center;justify-content:space-between;}
+  .chart-title{font-family:var(--font-deco);font-size:.85rem;color:var(--plum);letter-spacing:.08em;text-transform:uppercase;}
+  .chart-body{padding:.9rem 1.4rem 1.4rem; position:relative;}
+  canvas { display:block; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-4">
-  <div class="row mt-4">
-    <div class="col-md-12 mb-4">
-      <div class="card welcome-card text-center p-4">
-        <div class="card-body position-relative">
-          <div class="welcome-icon"><i class="fas fa-headset"></i></div>
-          <h4>Welcome, Receptionist {{ user.full_name }}</h4>
-          <p>The <strong>Face of Our Salon</strong>! Manage <strong>Appointments</strong>, welcome <strong>Clients</strong>, and ensure smooth operations.</p>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="container-fluid px-4 py-4">
 
   <div class="row mb-4">
-    <div class="col-md-3 col-6 mb-3">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-walking"></i></div>
-        <span class="stat-number">{{ walk_ins }}</span>
-        <span class="stat-label">Walk-ins Today</span>
-      </div>
-    </div>
-    <div class="col-md-3 col-6 mb-3">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-phone"></i></div>
-        <span class="stat-number">{{ phone_bookings }}</span>
-        <span class="stat-label">Phone Bookings</span>
-      </div>
-    </div>
-    <div class="col-md-3 col-6 mb-3">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-check-double"></i></div>
-        <span class="stat-number">{{ confirmed_appointments }}</span>
-        <span class="stat-label">Confirmed Appointments</span>
-      </div>
-    </div>
-    <div class="col-md-3 col-6 mb-3">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
-        <span class="stat-number">{{ waiting_customers }}</span>
-        <span class="stat-label">Waiting Now</span>
+    <div class="col-12">
+      <div class="welcome-banner">
+        <div class="d-flex align-items-center gap-4 position-relative" style="z-index:1;">
+          <div class="banner-icon"><i class="fas fa-headset"></i></div>
+          <div>
+            <div class="banner-title">Welcome, {{ user.full_name }}</div>
+            <div class="banner-sub">Front Desk &nbsp;·&nbsp; The Face of Our Salon</div>
+            <div class="mt-2" id="live-date" style="font-family:var(--font-serif);font-size:.95rem;color:rgba(247,231,206,.75);font-style:italic;"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-4 mb-4">
-      <a href="{% url 'create_appointment' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon"><i class="fas fa-calendar-plus"></i></div>
-            <h5 class="service-title">New Booking</h5>
-            <p class="service-desc">Schedule new appointments for clients.</p>
-            <button class="action-btn">Book Appointment</button>
-          </div>
-        </div>
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="stat-card c1">
+        <div class="stat-icon-wrap"><i class="fas fa-walking"></i></div>
+        <div class="stat-value">{{ walk_ins }}</div>
+        <div class="stat-label">Walk-ins Today</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card c2">
+        <div class="stat-icon-wrap"><i class="fas fa-phone"></i></div>
+        <div class="stat-value">{{ phone_bookings }}</div>
+        <div class="stat-label">Phone Bookings</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card c3">
+        <div class="stat-icon-wrap"><i class="fas fa-check-double"></i></div>
+        <div class="stat-value">{{ confirmed_appointments }}</div>
+        <div class="stat-label">Confirmed</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card c4">
+        <div class="stat-icon-wrap"><i class="fas fa-hourglass-half"></i></div>
+        <div class="stat-value">{{ waiting_customers }}</div>
+        <div class="stat-label">Waiting Now</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Quick Actions</div>
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-4">
+      <a href="{% url 'create_appointment' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-calendar-plus"></i></div>
+        <div class="qa-title">New Booking</div>
+        <div class="qa-desc">Schedule appointment for client</div>
       </a>
     </div>
-    <div class="col-md-4 mb-4">
-      <a href="{% url 'appointment_list' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon"><i class="fas fa-calendar-check"></i></div>
-            <h5 class="service-title">Today's Schedule</h5>
-            <p class="service-desc">View and manage today's appointments.</p>
-            <button class="action-btn">View Schedule</button>
-          </div>
-        </div>
+    <div class="col-6 col-md-4">
+      <a href="{% url 'appointment_list' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-calendar-check"></i></div>
+        <div class="qa-title">Today's Schedule</div>
+        <div class="qa-desc">View & manage all appointments</div>
       </a>
     </div>
-    <div class="col-md-4 mb-4">
-      <a href="{% url 'customer_list' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon"><i class="fas fa-users"></i></div>
-            <h5 class="service-title">Client Database</h5>
-            <p class="service-desc">Access client information and history.</p>
-            <button class="action-btn">View Clients</button>
-          </div>
-        </div>
+    <div class="col-6 col-md-4">
+      <a href="{% url 'customer_list' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-users"></i></div>
+        <div class="qa-title">Client Database</div>
+        <div class="qa-desc">Search & manage clients</div>
       </a>
+    </div>
+  </div>
+
+
+  <!-- ══ CHARTS ══ -->
+  <div class="section-title">Today's Overview</div>
+  <div class="row g-3 mb-4">
+    <div class="col-md-5">
+      <div class="chart-card h-100">
+        <div class="chart-header"><span class="chart-title">Booking Type — Today</span></div>
+        <div class="chart-body"><canvas id="bookingTypeChart" style="height:200px!important;"></canvas></div>
+      </div>
+    </div>
+    <div class="col-md-7">
+      <div class="chart-card h-100">
+        <div class="chart-header"><span class="chart-title">Appointment Status — Today</span></div>
+        <div class="chart-body"><canvas id="statusChart" style="height:200px!important;"></canvas></div>
+      </div>
+    </div>
+  </div>
+  <div class="row g-3 mb-4">
+    <div class="col-md-8">
+      <div class="chart-card h-100">
+        <div class="chart-header"><span class="chart-title">Weekly Footfall — Last 7 Days</span></div>
+        <div class="chart-body"><canvas id="weeklyChart" style="height:200px!important;"></canvas></div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="chart-card h-100">
+        <div class="chart-header"><span class="chart-title">Today's Hourly Appointments</span></div>
+        <div class="chart-body"><canvas id="hourlyChart" style="height:200px!important;"></canvas></div>
+      </div>
     </div>
   </div>
 
   {% if today_appointments %}
-  <div class="row mt-4">
-    <div class="col-md-12">
-      <div class="card services-table">
-        <div class="card-header text-white">
-          <h5 class="mb-0"><i class="fas fa-calendar-day"></i> Today's Appointments</h5>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Customer</th>
-                  <th>Mobile</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for appointment in today_appointments %}
-                <tr>
-                  <td><strong>{{ appointment.appointment_time|date:"h:i A" }}</strong></td>
-                  <td>{{ appointment.customer.full_name }}</td>
-                  <td>{{ appointment.customer.mobile }}</td>
-                  <td>
-                    <span class="badge 
-                      {% if appointment.status == 'completed' %}bg-success
-                      {% elif appointment.status == 'in_progress' %}bg-warning
-                      {% elif appointment.status == 'confirmed' %}bg-info
-                      {% else %}bg-secondary{% endif %}">
-                      {{ appointment.get_status_display }}
-                    </span>
-                  </td>
-                  <td>
-                    <a href="{% url 'view_appointment' appointment.id %}" 
-                       class="btn btn-sm btn-primary">View</a>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+  <div class="section-title">Today's Appointments</div>
+  <div class="data-table-card mb-4">
+    <div class="table-head">
+      <h6><i class="fas fa-calendar-day me-2"></i>Live Queue</h6>
+    </div>
+    <div class="table-responsive">
+      <table class="table data-table mb-0">
+        <thead><tr><th>Time</th><th>Customer</th><th>Mobile</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for appt in today_appointments %}
+          <tr>
+            <td><strong style="color:var(--plum);font-size:.85rem;">{{ appt.appointment_time|date:"h:i A" }}</strong></td>
+            <td><div style="font-weight:500;">{{ appt.customer.full_name }}</div></td>
+            <td style="color:var(--text-mid);font-size:.82rem;">{{ appt.customer.mobile }}</td>
+            <td>
+              {% if appt.status == 'completed' %}<span class="badge-status bs-completed"><i class="fas fa-circle" style="font-size:.45rem;"></i> Completed</span>
+              {% elif appt.status == 'in_progress' %}<span class="badge-status bs-inprogress"><i class="fas fa-circle" style="font-size:.45rem;"></i> In Progress</span>
+              {% elif appt.status == 'confirmed' %}<span class="badge-status bs-confirmed"><i class="fas fa-circle" style="font-size:.45rem;"></i> Confirmed</span>
+              {% elif appt.status == 'cancelled' %}<span class="badge-status bs-cancelled"><i class="fas fa-circle" style="font-size:.45rem;"></i> Cancelled</span>
+              {% else %}<span class="badge-status bs-pending"><i class="fas fa-circle" style="font-size:.45rem;"></i> Pending</span>
+              {% endif %}
+            </td>
+            <td><a href="{% url 'view_appointment' appt.id %}" class="btn-view">View</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
   {% else %}
-  <div class="row mt-4">
-    <div class="col-md-12">
-      <div class="alert alert-info text-center">
-        <i class="fas fa-info-circle"></i> No appointments scheduled for today.
-      </div>
-    </div>
+  <div class="text-center py-5" style="color:var(--text-mid);">
+    <i class="fas fa-calendar-times fa-2x mb-3 d-block" style="color:rgba(196,139,159,0.4);"></i>
+    <div style="font-family:var(--font-serif);font-size:1.1rem;">No appointments scheduled for today</div>
   </div>
   {% endif %}
+
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+document.getElementById('live-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  Chart.defaults.font.family = "'Jost', sans-serif";
+  Chart.defaults.color = '#6b4c5a';
+
+  // Booking Type Doughnut
+  new Chart(document.getElementById('bookingTypeChart'),{type:'doughnut',data:{labels:['Walk-ins','Phone / Online'],datasets:[{data:[{{ walk_ins }},{{ phone_bookings }}],backgroundColor:['#1a4a2e','#27ae60'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true, maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:10,font:{size:10}}}}}});
+
+  // Appointment Status Bar
+  new Chart(document.getElementById('statusChart'),{type:'bar',data:{labels:['Pending','Confirmed','In Progress','Completed','Cancelled'],datasets:[{label:'Count',data:[{{ appt_pending }},{{ confirmed_appointments }},{{ waiting_customers }},{{ appt_completed }},{{ appt_cancelled }}],backgroundColor:['#e8c3b9','#2d7d9a','#e67e22','#1a6b3c','#b5451b'],borderRadius:8,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(196,139,159,0.12)'},beginAtZero:true},x:{grid:{display:false}}}}});
+
+  // Weekly Footfall Line
+  const wg=document.getElementById('weeklyChart').getContext('2d');const wGrad=wg.createLinearGradient(0,0,0,150);wGrad.addColorStop(0,'rgba(26,74,46,0.18)');wGrad.addColorStop(1,'rgba(26,74,46,0.01)');
+  new Chart(wg,{type:'line',data:{labels:{{ weekly_labels|safe }},datasets:[{label:'Visits',data:{{ weekly_data|safe }},borderColor:'#1a4a2e',backgroundColor:wGrad,borderWidth:2.5,pointBackgroundColor:'#27ae60',pointBorderColor:'#fff',pointBorderWidth:2,pointRadius:4,tension:0.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(196,139,159,0.12)'},beginAtZero:true},x:{grid:{display:false}}}}});
+
+  // Hourly Appointments Bar
+  new Chart(document.getElementById('hourlyChart'),{type:'bar',data:{labels:{{ hourly_labels|safe }},datasets:[{label:'Appts',data:{{ hourly_data|safe }},backgroundColor:'rgba(39,174,96,0.7)',borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(196,139,159,0.12)'},beginAtZero:true,ticks:{stepSize:1}},x:{grid:{display:false}}}}});
+});
+</script>
 {% endblock %}

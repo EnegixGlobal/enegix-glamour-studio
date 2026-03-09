@@ -3,388 +3,195 @@
 {% block title %}Senior Stylist Dashboard{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  .welcome-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 20px;
-    color: #fff;
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-    position: relative;
-    overflow: hidden;
-  }
+  :root{--plum:#3b0f2b;--rose-gold:#c48b9f;--champagne:#f7e7ce;--bg-warm:#faf6f2;--white:#ffffff;
+    --text-dark:#2a1520;--text-mid:#6b4c5a;--font-serif:'Cormorant Garamond',Georgia,serif;
+    --font-sans:'Jost',sans-serif;--font-deco:'Cinzel',serif;
+    --transition:all 0.45s cubic-bezier(0.4,0,0.2,1);--shadow-card:0 4px 24px rgba(59,15,43,0.12);}
+  body{background:var(--bg-warm);font-family:var(--font-sans);}
 
-  .welcome-card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    animation: sparkle 8s linear infinite;
-  }
+  .welcome-banner{background:linear-gradient(135deg,var(--plum) 0%,#6b1a4a 60%,#8b2252 100%);
+    border-radius:20px;padding:2.5rem 3rem;color:#fff;position:relative;overflow:hidden;
+    box-shadow:0 12px 50px rgba(59,15,43,0.4);}
+  .welcome-banner::before{content:'';position:absolute;top:-70px;right:-70px;width:260px;height:260px;border-radius:50%;
+    background:radial-gradient(circle,rgba(247,231,206,.18) 0%,transparent 70%);}
+  .banner-icon{font-size:3.2rem;color:#ffd700;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 4px 12px rgba(255,215,0,.4));}
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+  .banner-title{font-family:var(--font-deco);font-size:1.8rem;color:var(--champagne);letter-spacing:.04em;}
+  .banner-sub{font-size:.9rem;color:rgba(247,231,206,.7);font-weight:300;}
 
-  @keyframes sparkle {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(180deg); }
-  }
+  .stat-card{background:var(--white);border-radius:16px;padding:1.6rem 1.4rem;box-shadow:var(--shadow-card);
+    border:1px solid rgba(196,139,159,.12);transition:var(--transition);position:relative;overflow:hidden;}
+  .stat-card::after{content:'';position:absolute;top:0;left:0;width:100%;height:3px;}
+  .stat-card.ca::after{background:linear-gradient(90deg,var(--plum),#8b2252);}
+  .stat-card.cb::after{background:linear-gradient(90deg,#2d7d9a,#56b4d3);}
+  .stat-card.cc::after{background:linear-gradient(90deg,#b8860b,#ffd700);}
+  .stat-card:hover{transform:translateY(-5px);box-shadow:0 16px 50px rgba(59,15,43,0.18);}
+  .stat-icon-wrap{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem;}
+  .ca .stat-icon-wrap{background:linear-gradient(135deg,var(--plum),#8b2252);color:var(--champagne);}
+  .cb .stat-icon-wrap{background:linear-gradient(135deg,#2d7d9a,#56b4d3);color:#fff;}
+  .cc .stat-icon-wrap{background:linear-gradient(135deg,#b8860b,#ffd700);color:#fff;}
+  .stat-value{font-family:var(--font-serif);font-size:2.2rem;font-weight:700;color:var(--text-dark);line-height:1;margin-bottom:.3rem;}
+  .stat-label{font-size:.72rem;font-weight:500;color:var(--text-mid);text-transform:uppercase;letter-spacing:.08em;}
 
-  .welcome-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-  }
+  .section-title{font-family:var(--font-deco);font-size:.95rem;color:var(--plum);letter-spacing:.12em;text-transform:uppercase;
+    display:flex;align-items:center;gap:.75rem;margin-bottom:1.4rem;}
+  .section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(196,139,159,.4),transparent);}
 
-  .welcome-icon {
-    font-size: 70px;
-    color: #ffd700;
-    margin-bottom: 20px;
-    animation: pulse 2s infinite;
-    filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.5));
-  }
+  .chart-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow-card);border:1px solid rgba(196,139,159,.1);overflow:hidden;}
+  .chart-header{padding:1.2rem 1.4rem 0;}
+  .chart-title{font-family:var(--font-deco);font-size:.85rem;color:var(--plum);letter-spacing:.08em;text-transform:uppercase;}
+  .chart-body{padding:.9rem 1.4rem 1.4rem; position:relative;}
+  canvas { display:block; }
 
-  .welcome-card h4 {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    color: #ffffff;
-    font-size: 2.2rem;
-    margin-bottom: 15px;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  }
+  .data-table-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow-card);border:1px solid rgba(196,139,159,.1);overflow:hidden;}
+  .table-head{background:linear-gradient(135deg,var(--plum),#8b2252);padding:1rem 1.4rem;}
+  .table-head h6{color:var(--champagne);font-family:var(--font-deco);font-size:.82rem;letter-spacing:.1em;margin:0;text-transform:uppercase;}
+  .data-table thead tr th{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-mid);
+    border-bottom:1px solid rgba(196,139,159,.2);padding:.8rem 1rem;background:rgba(250,246,242,.5);}
+  .data-table tbody tr td{font-size:.875rem;color:var(--text-dark);padding:.8rem 1rem;border-bottom:1px solid rgba(196,139,159,.08);vertical-align:middle;}
+  .data-table tbody tr:hover td{background:rgba(247,231,206,.2);}
 
-  .welcome-card p {
-    color: rgba(255, 255, 255, 0.95);
-    font-size: 1.1rem;
-    line-height: 1.7;
-    font-weight: 500;
-  }
+  .badge-status{display:inline-flex;align-items:center;gap:.3rem;border-radius:20px;padding:.25rem .7rem;font-size:.72rem;font-weight:500;border:1px solid transparent;}
+  .bs-pending{background:rgba(107,76,90,.1);color:var(--text-mid);border-color:rgba(107,76,90,.15);}
+  .bs-inprogress{background:rgba(230,126,34,.1);color:#e67e22;border-color:rgba(230,126,34,.2);}
+  .bs-completed{background:rgba(26,107,60,.1);color:#1a6b3c;border-color:rgba(26,107,60,.2);}
 
-  .welcome-card p strong {
-    color: #ffd700;
-    font-weight: 700;
-  }
-
-  .stat-card {
-    background: #ffffff;
-    border-radius: 18px;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    border: none;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-  }
-
-  .stat-card.purple::before {
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  }
-
-  .stat-card.blue::before {
-    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-  }
-
-  .stat-card.gold::before {
-    background: linear-gradient(90deg, #f7971e 0%, #ffd200 100%);
-  }
-
-  .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.2);
-  }
-
-  .stat-icon {
-    width: 70px;
-    height: 70px;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    color: white;
-    font-size: 32px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  }
-
-  .stat-card.purple .stat-icon {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  }
-
-  .stat-card.blue .stat-icon {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  }
-
-  .stat-card.gold .stat-icon {
-    background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
-  }
-
-  .stat-number {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    display: block;
-    margin-bottom: 8px;
-  }
-
-  .stat-label {
-    color: #666;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 0.85rem;
-  }
-
-  .service-card {
-    background: #ffffff;
-    border-radius: 18px;
-    border: none;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .service-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 5px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  }
-
-  .service-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.2);
-  }
-
-  .service-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    color: white;
-    font-size: 30px;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    transition: all 0.3s ease;
-  }
-
-  .service-card:hover .service-icon {
-    transform: scale(1.1) rotate(5deg);
-  }
-
-  .service-title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 10px;
-  }
-
-  .service-desc {
-    color: #666;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin-bottom: 15px;
-  }
-
-  .action-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-  }
-
-  .action-btn:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    transform: translateY(-2px);
-    color: white;
-    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.9; transform: scale(1.05); }
-  }
-
-  .services-table {
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  }
-
-  .services-table .card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  }
+  .btn-start{background:linear-gradient(135deg,var(--plum),#8b2252);border:none;color:var(--champagne);border-radius:8px;
+    padding:.3rem .9rem;font-size:.78rem;font-weight:500;font-family:var(--font-sans);transition:var(--transition);text-decoration:none;display:inline-block;}
+  .btn-start:hover{opacity:.85;color:var(--champagne);}
+  .btn-complete{background:linear-gradient(135deg,#1a6b3c,#27ae60);border:none;color:#fff;border-radius:8px;
+    padding:.3rem .9rem;font-size:.78rem;font-weight:500;font-family:var(--font-sans);transition:var(--transition);text-decoration:none;display:inline-block;}
+  .btn-complete:hover{opacity:.85;color:#fff;}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-4">
-  <div class="row mt-4">
-    <div class="col-md-12 mb-4">
-      <div class="card welcome-card text-center p-4">
-        <div class="card-body position-relative">
-          <div class="welcome-icon">
-            <i class="fas fa-star"></i>
-          </div>
-          <h4>Welcome, Senior Stylist {{ user.full_name }}</h4>
-          <p>Lead your team to excellence! Manage <strong>Advanced Services</strong>, mentor <strong>Junior Stylists</strong>, and drive salon success.</p>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="container-fluid px-4 py-4">
 
   <div class="row mb-4">
-    <div class="col-md-4 col-6 mb-3">
-      <div class="stat-card purple">
-        <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
-        <span class="stat-number">{{ today_appointments }}</span>
-        <span class="stat-label">Today's Appointments</span>
-      </div>
-    </div>
-    <div class="col-md-4 col-6 mb-3">
-      <div class="stat-card blue">
-        <div class="stat-icon"><i class="fas fa-users"></i></div>
-        <span class="stat-number">{{ team_members }}</span>
-        <span class="stat-label">Team Members</span>
-      </div>
-    </div>
-    <div class="col-md-4 col-6 mb-3">
-      <div class="stat-card gold">
-        <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
-        <span class="stat-number">₹{{ monthly_revenue|floatformat:0 }}</span>
-        <span class="stat-label">Monthly Revenue</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-4 mb-4">
-      <a href="{% url 'my_services' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon"><i class="fas fa-user-tie"></i></div>
-            <h5 class="service-title">My Services</h5>
-            <p class="service-desc">View your assigned services and appointments.</p>
-            <button class="action-btn">View Services</button>
+    <div class="col-12">
+      <div class="welcome-banner">
+        <div class="d-flex align-items-center gap-4 position-relative" style="z-index:1;">
+          <div class="banner-icon"><i class="fas fa-star"></i></div>
+          <div>
+            <div class="banner-title">Welcome, {{ user.full_name }}</div>
+            <div class="banner-sub">Senior Stylist &nbsp;·&nbsp; Creative Lead</div>
+            <div class="mt-2" id="live-date" style="font-family:var(--font-serif);font-size:.95rem;color:rgba(247,231,206,.75);font-style:italic;"></div>
           </div>
-        </div>
-      </a>
-    </div>
-    <div class="col-md-4 mb-4">
-      <a href="{% url 'employee_list' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon"><i class="fas fa-award"></i></div>
-            <h5 class="service-title">Team Members</h5>
-            <p class="service-desc">View team performance and schedules.</p>
-            <button class="action-btn">View Team</button>
-          </div>
-        </div>
-      </a>
-    </div>
-    <div class="col-md-4 mb-4">
-      <div class="card service-card h-100">
-        <div class="card-body text-center p-4">
-          <div class="service-icon"><i class="fas fa-chart-line"></i></div>
-          <h5 class="service-title">Team Performance</h5>
-          <p class="service-desc">Review team metrics and improvement areas.</p>
-          <button class="action-btn">View Analytics</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Today's Services List -->
+  <div class="row g-3 mb-4">
+    <div class="col-4">
+      <div class="stat-card ca">
+        <div class="stat-icon-wrap"><i class="fas fa-calendar-day"></i></div>
+        <div class="stat-value">{{ today_appointments }}</div>
+        <div class="stat-label">Today's Appointments</div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="stat-card cb">
+        <div class="stat-icon-wrap"><i class="fas fa-users"></i></div>
+        <div class="stat-value">{{ team_members }}</div>
+        <div class="stat-label">Team Members</div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="stat-card cc">
+        <div class="stat-icon-wrap"><i class="fas fa-rupee-sign"></i></div>
+        <div class="stat-value" style="font-size:1.6rem;">₹{{ monthly_revenue|floatformat:0 }}</div>
+        <div class="stat-label">Monthly Revenue</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly revenue chart -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-7">
+      <div class="chart-card h-100">
+        <div class="chart-header"><span class="chart-title">My Revenue — Last 6 Months</span></div>
+        <div class="chart-body"><canvas id="revChart" style="height:200px!important;"></canvas></div>
+      </div>
+    </div>
+    <div class="col-md-5">
+      <div class="chart-card h-100">
+        <div class="chart-header"><span class="chart-title">Services Completed</span></div>
+        <div class="chart-body"><canvas id="svcChart" style="height:200px!important;"></canvas></div>
+      </div>
+    </div>
+  </div>
+
   {% if my_services_today %}
-  <div class="row mt-4">
-    <div class="col-md-12">
-      <div class="card services-table">
-        <div class="card-header text-white">
-          <h5 class="mb-0"><i class="fas fa-list"></i> Today's Services</h5>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Customer</th>
-                  <th>Service</th>
-                  <th>Price</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for service in my_services_today %}
-                <tr>
-                  <td><strong>{{ service.appointment.appointment_time|date:"h:i A" }}</strong></td>
-                  <td>{{ service.appointment.customer.full_name }}</td>
-                  <td>{{ service.service.service_name }}</td>
-                  <td>₹{{ service.service_price }}</td>
-                  <td>
-                    <span class="badge 
-                      {% if service.service_status == 'completed' %}bg-success
-                      {% elif service.service_status == 'in_progress' %}bg-warning
-                      {% else %}bg-secondary{% endif %}">
-                      {{ service.get_service_status_display }}
-                    </span>
-                  </td>
-                  <td>
-                    {% if service.service_status == 'pending' %}
-                    <a href="{% url 'update_service_status' service.id %}?status=in_progress" 
-                       class="btn btn-sm btn-primary">Start</a>
-                    {% elif service.service_status == 'in_progress' %}
-                    <a href="{% url 'update_service_status' service.id %}?status=completed" 
-                       class="btn btn-sm btn-success">Complete</a>
-                    {% else %}
-                    <span class="text-success">✓ Done</span>
-                    {% endif %}
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+  <div class="section-title">Today's Services</div>
+  <div class="data-table-card mb-4">
+    <div class="table-head">
+      <h6><i class="fas fa-star me-2"></i>Service Queue</h6>
+    </div>
+    <div class="table-responsive">
+      <table class="table data-table mb-0">
+        <thead><tr><th>Time</th><th>Customer</th><th>Service</th><th>Price</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for service in my_services_today %}
+          <tr>
+            <td><strong style="color:var(--plum);font-size:.85rem;">{{ service.appointment.appointment_time|date:"h:i A" }}</strong></td>
+            <td style="font-weight:500;">{{ service.appointment.customer.full_name }}</td>
+            <td style="color:var(--text-mid);">{{ service.service.service_name }}</td>
+            <td style="font-weight:600;color:#1a6b3c;">₹{{ service.service_price }}</td>
+            <td>
+              {% if service.service_status == 'completed' %}<span class="badge-status bs-completed"><i class="fas fa-circle" style="font-size:.45rem;"></i> Done</span>
+              {% elif service.service_status == 'in_progress' %}<span class="badge-status bs-inprogress"><i class="fas fa-circle" style="font-size:.45rem;"></i> In Progress</span>
+              {% else %}<span class="badge-status bs-pending"><i class="fas fa-circle" style="font-size:.45rem;"></i> Pending</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if service.service_status == 'pending' %}
+              <a href="{% url 'update_service_status' service.id %}?status=in_progress" class="btn-start">Start</a>
+              {% elif service.service_status == 'in_progress' %}
+              <a href="{% url 'update_service_status' service.id %}?status=completed" class="btn-complete">Complete</a>
+              {% else %}<span style="color:#1a6b3c;font-size:.85rem;"><i class="fas fa-check-circle"></i></span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
   {% else %}
-  <div class="row mt-4">
-    <div class="col-md-12">
-      <div class="alert alert-info text-center">
-        <i class="fas fa-info-circle"></i> No services scheduled for today.
-      </div>
-    </div>
+  <div class="text-center py-5" style="color:var(--text-mid);">
+    <i class="fas fa-calendar-times fa-2x mb-3 d-block" style="color:rgba(196,139,159,0.4);"></i>
+    <div style="font-family:var(--font-serif);font-size:1.1rem;">No services scheduled for today</div>
   </div>
   {% endif %}
+
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+document.getElementById('live-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  Chart.defaults.font.family="'Jost',sans-serif";Chart.defaults.color='#6b4c5a';
+
+  const revElSS = document.getElementById('revChart');
+  if (revElSS) { const rg = revElSS.getContext('2d');
+  const rGrad=rg.createLinearGradient(0,0,0,180);
+  rGrad.addColorStop(0,'rgba(59,15,43,0.22)');rGrad.addColorStop(1,'rgba(59,15,43,0.02)');
+  new Chart(rg,{type:'line',data:{labels: {{ senior_rev_labels|safe }},
+    datasets:[{label:'Revenue ₹',data: {{ senior_rev_data|safe }},borderColor:'#3b0f2b',backgroundColor:rGrad,
+      borderWidth:2.5,pointBackgroundColor:'#c48b9f',pointBorderColor:'#fff',pointBorderWidth:2,pointRadius:4,tension:0.4,fill:true}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(196,139,159,0.12)'},
+      ticks:{callback:v=>'₹'+v.toLocaleString('en-IN')}},x:{grid:{display:false}}}}});
+
+  new Chart(document.getElementById('svcChart'),{type:'doughnut',data:{
+    labels:['Completed','Pending','In Progress'],
+    datasets:[{data:[ {{ svc_completed }}, {{ svc_pending }}, {{ svc_inprogress }} ],backgroundColor:['#1a6b3c','#e8c3b9','#e67e22'],borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true, maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:10,font:{size:10}}}}}});
+});
+</script>
 {% endblock %}

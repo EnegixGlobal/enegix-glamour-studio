@@ -22,7 +22,7 @@
     .action-bar {
       width: 100%;
       max-width: 780px;
-      background: #111;
+      background: #3b0f2b;
       color: white;
       display: flex;
       align-items: center;
@@ -56,7 +56,7 @@
       border: 1px solid #999;
     }
 
-    .top-bar { height: 6px; background: #111; }
+    .top-bar { height: 6px; background: #3b0f2b; }
 
     /* ── HEADER ── */
     .header {
@@ -64,7 +64,7 @@
       justify-content: space-between;
       align-items: flex-start;
       padding: 26px 32px 20px;
-      border-bottom: 2px solid #111;
+      border-bottom: 2px solid #3b0f2b;
     }
     .salon-name {
       font-size: 28px;
@@ -97,7 +97,7 @@
     }
     .inv-id {
       display: inline-block;
-      border: 2.5px solid #111;
+      border: 2.5px solid #3b0f2b;
       font-size: 20px;
       font-weight: 900;
       padding: 5px 20px;
@@ -115,7 +115,7 @@
     .info-grid {
       display: grid;
       grid-template-columns: 1.1fr 1fr 1fr;
-      border-bottom: 1.5px solid #111;
+      border-bottom: 1.5px solid #3b0f2b;
     }
     .ig-cell {
       padding: 14px 20px;
@@ -151,7 +151,7 @@
     .ig-line .v { font-weight: 700; color: #111; }
     .badge {
       display: inline-block;
-      background: #111;
+      background: #3b0f2b;
       color: #fff;
       font-size: 9px;
       font-weight: 800;
@@ -171,7 +171,7 @@
       padding: 14px 0 7px;
     }
     table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    thead tr { background: #111; color: #fff; }
+    thead tr { background: #3b0f2b; color: #fff; }
     thead th {
       padding: 9px 11px;
       text-align: left;
@@ -182,7 +182,7 @@
     }
     tbody tr { border-bottom: 1px solid #eee; }
     tbody tr:nth-child(even) { background: #f8f8f8; }
-    tbody tr:last-child { border-bottom: 2px solid #111; }
+    tbody tr:last-child { border-bottom: 2px solid #3b0f2b; }
     td { padding: 10px 11px; color: #333; }
     td.sn  { text-align: center; color: #bbb; font-size: 10px; }
     td.svc { font-weight: 700; color: #111; }
@@ -203,7 +203,7 @@
     .summary {
       display: flex;
       padding: 20px 32px 26px;
-      border-top: 1.5px solid #111;
+      border-top: 1.5px solid #3b0f2b;
       margin-top: 14px;
       gap: 28px;
     }
@@ -223,7 +223,7 @@
     .notes-box .nt { font-size: 8.5px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #999; margin-bottom: 4px; }
     .status-stamp {
       display: inline-block;
-      border: 2.5px solid #111;
+      border: 2.5px solid #3b0f2b;
       padding: 8px 18px;
       font-size: 12px;
       font-weight: 900;
@@ -236,7 +236,7 @@
     /* Amounts */
     .sum-right {
       width: 235px;
-      border: 1.5px solid #111;
+      border: 1.5px solid #3b0f2b;
       padding: 14px;
     }
     .sr-hd {
@@ -259,7 +259,7 @@
     }
     .arow:last-child { border-bottom: none; }
     .arow .av { font-weight: 700; color: #111; }
-    .adiv { border-top: 1.5px solid #111; margin: 7px 0; }
+    .adiv { border-top: 1.5px solid #3b0f2b; margin: 7px 0; }
     .arow.grand {
       background: #f0f0f0;
       padding: 7px 8px;
@@ -270,7 +270,7 @@
     }
     .arow.grand .av { font-size: 14px; }
     .arow.balance {
-      background: #111;
+      background: #3b0f2b;
       color: #fff;
       padding: 8px 8px;
       margin: 3px 0;
@@ -282,7 +282,7 @@
 
     /* ── FOOTER ── */
     .footer {
-      border-top: 2px solid #111;
+      border-top: 2px solid #3b0f2b;
       padding: 16px 32px 20px;
       display: flex;
       justify-content: space-between;
@@ -298,7 +298,7 @@
 
     /* ── BOTTOM STRIP ── */
     .strip {
-      background: #111;
+      background: #3b0f2b;
       color: rgba(255,255,255,0.5);
       text-align: center;
       font-size: 8px;
@@ -342,7 +342,7 @@
       <div class="salon-tagline">Beauty &amp; Wellness</div>
       <div class="salon-contact">
         📍 Your Salon Address, City – PIN Code<br>
-        📞 +91 XXXXXXXXXX &nbsp;·&nbsp; ✉ info@glamourstudio.com<br>
+        📞 +91 XXXXXXXXXX &nbsp;·&nbsp; ✉ <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a43444c456a4d464b47455f58595e5f4e434504494547">[email&#160;protected]</a><br>
         🌐 www.glamourstudio.com &nbsp;·&nbsp; GSTIN: 00AAAAA0000A1Z5
       </div>
     </div>
@@ -524,12 +524,4 @@
 </div>
 
 {% if auto_print %}
-<script>
-  window.addEventListener('load', function() {
-    setTimeout(function() { window.print(); }, 500);
-  });
-</script>
-{% endif %}
-
-</body>
-</html>
+<script data-cfasync="false" src="/c

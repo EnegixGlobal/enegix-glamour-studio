@@ -4,7 +4,7 @@
 
 <div class="ribbon-header d-flex justify-content-between align-items-center px-4 pb-5 mb-3" style="color: black">
   <div class="d-flex align-items-center">
-    <i class="fas fa-boxes me-3 fs-2" style="color: #ff4f6e;"></i>
+    <i class="fas fa-boxes me-3 fs-2" style="color: #3b0f2b;"></i>
     <div class="fw-bold fs-3">Product Usage — {{ appointment_service.service.service_name }}</div>
   </div>
   <div class="breadcrumb-text text-end">
@@ -185,7 +185,7 @@
 
     {% else %}
     <div class="card-body p-5 text-center">
-      <i class="fas fa-box-open fa-4x mb-3" style="color: #ff4f6e; opacity: 0.3;"></i>
+      <i class="fas fa-box-open fa-4x mb-3" style="color: #3b0f2b; opacity: 0.3;"></i>
       <h5 class="text-muted">No Products Recorded</h5>
       <p class="text-muted">Employee ne koi product record nahi kiya is service ke liye.</p>
     </div>
@@ -203,14 +203,14 @@
 <style>
 .modern-card { border-radius: 15px; border: none; overflow: hidden; }
 .card-header.table-title-bar {
-  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  background: linear-gradient(135deg, #3b0f2b 0%, #c48b9f 100%);
   padding: 18px 20px; font-size: 16px;
   border-bottom: 3px solid rgba(255,255,255,0.2);
 }
 .summary-box {
   padding: 15px;
-  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
-  border-radius: 10px; border-left: 4px solid #ff4f6e;
+  background: linear-gradient(135deg, #faf6f2 0%, #f7e7ce 100%);
+  border-radius: 10px; border-left: 4px solid #3b0f2b;
 }
 .notes-box {
   background: #fff8e1; border: 2px solid #ffc107;
@@ -218,16 +218,16 @@
 }
 .modern-table { font-size: 14px; }
 .modern-table thead.table-header {
-  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  background: linear-gradient(135deg, #faf6f2 0%, #f7e7ce 100%);
   color: #333; font-weight: 600;
 }
 .modern-table thead th {
-  border-bottom: 2px solid #ff4f6e; padding: 13px; vertical-align: middle;
+  border-bottom: 2px solid #3b0f2b; padding: 13px; vertical-align: middle;
 }
 .modern-table tbody td {
   padding: 13px; vertical-align: middle; border-bottom: 1px solid #f0f0f0;
 }
-.modern-table tbody tr:hover { background-color: #fff5f7; }
+.modern-table tbody tr:hover { background-color: #faf6f2; }
 .serial-number { font-weight: 600; color: #666; }
 .badge-category {
   display: inline-block; padding: 5px 10px; border-radius: 6px;
@@ -263,9 +263,9 @@
 }
 .btn-action-lg:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 .ribbon-header {
-  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  background: linear-gradient(135deg, #faf6f2 0%, #f7e7ce 100%);
   border-radius: 15px; padding: 20px; margin-bottom: 20px;
 }
-.text-primary { color: #ff4f6e !important; }
+.text-primary { color: #3b0f2b !important; }
 </style>
 {% endblock %}

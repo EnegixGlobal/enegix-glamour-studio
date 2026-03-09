@@ -239,25 +239,44 @@ document.getElementById('serviceForm').addEventListener('submit', function(e) {
 </script>
 
 <style>
+:root {
+  --plum:        #3b0f2b;
+  --plum-dark:   #260a1d;
+  --rose-gold:   #c48b9f;
+  --champagne:   #f7e7ce;
+  --blush:       #e8c3b9;
+  --bg-warm:     #faf6f2;
+  --white:       #ffffff;
+  --text-dark:   #2a1520;
+  --text-mid:    #6b4c5a;
+  --font-sans:   'Jost', sans-serif;
+  --font-deco:   'Cinzel', serif;
+  --transition:  all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-soft: 0 8px 40px rgba(59,15,43,0.10);
+  --shadow-card: 0 4px 24px rgba(59,15,43,0.12);
+}
+
 /* Card and Input Styles */
 .modern-card {
   border-radius: 15px;
   border: none;
   overflow: hidden;
+  box-shadow: var(--shadow-card);
 }
 
 .modern-input {
-  border: 2px solid #e0e0e0 !important;
+  border: 2px solid var(--blush) !important;
   border-radius: 10px;
   padding: 12px 15px;
-  transition: all 0.3s ease;
-  color: #000;
+  transition: var(--transition);
+  color: var(--text-dark);
+  background-color: var(--white);
 }
 
 .modern-input:focus {
-  border-color: #ff4f6e !important;
-  background-color: #fff5f7 !important;
-  box-shadow: 0 0 0 0.2rem rgba(255, 79, 110, 0.15);
+  border-color: var(--plum) !important;
+  background-color: var(--bg-warm) !important;
+  box-shadow: 0 0 0 0.2rem rgba(59, 15, 43, 0.12);
   transform: translateY(-2px);
 }
 
@@ -267,8 +286,9 @@ document.getElementById('serviceForm').addEventListener('submit', function(e) {
 
 .form-label {
   font-weight: 600;
-  color: #333;
+  color: var(--text-dark);
   margin-bottom: 8px;
+  font-family: var(--font-sans);
 }
 
 .step-header h5 {
@@ -280,7 +300,7 @@ document.getElementById('serviceForm').addEventListener('submit', function(e) {
 .title-underline {
   width: 100px;
   height: 3px;
-  background: linear-gradient(to right, #ff4f6e, #ff80ab);
+  background: linear-gradient(to right, var(--plum), var(--rose-gold));
   border: none;
   margin-top: 10px;
 }
@@ -302,8 +322,8 @@ document.getElementById('serviceForm').addEventListener('submit', function(e) {
 .step {
   width: 55px;
   height: 55px;
-  background: linear-gradient(135deg, #ffe1e8 0%, #ffd4dc 100%);
-  color: #333;
+  background: linear-gradient(135deg, var(--champagne) 0%, var(--blush) 100%);
+  color: var(--text-mid);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -311,22 +331,22 @@ document.getElementById('serviceForm').addEventListener('submit', function(e) {
   font-weight: bold;
   font-size: 20px;
   z-index: 2;
-  transition: all 0.4s ease;
-  border: 3px solid #fff;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: var(--transition);
+  border: 3px solid var(--white);
+  box-shadow: var(--shadow-card);
 }
 
 .step.active {
-  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--plum) 0%, #6b2048 100%);
+  color: var(--white);
   transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(255, 79, 110, 0.4);
+  box-shadow: 0 6px 20px rgba(59, 15, 43, 0.4);
 }
 
 .step.completed {
-  background: linear-gradient(135deg, #ff80ab 0%, #ffa4c4 100%);
-  color: white;
-  box-shadow: 0 4px 15px rgba(255, 128, 171, 0.3);
+  background: linear-gradient(135deg, var(--rose-gold) 0%, #d4a0b0 100%);
+  color: var(--white);
+  box-shadow: 0 4px 15px rgba(196, 139, 159, 0.4);
 }
 
 .step i {
@@ -336,24 +356,25 @@ document.getElementById('serviceForm').addEventListener('submit', function(e) {
 .progress-line {
   width: 80px;
   height: 5px;
-  background-color: #e0e0e0;
+  background-color: var(--blush);
   margin: 0 10px;
   z-index: 1;
-  transition: all 0.4s ease;
+  transition: var(--transition);
   border-radius: 10px;
 }
 
 .progress-line.active {
-  background: linear-gradient(to right, #ff80ab, #ffa4c4);
-  box-shadow: 0 2px 10px rgba(255, 128, 171, 0.3);
+  background: linear-gradient(to right, var(--rose-gold), #d4a0b0);
+  box-shadow: 0 2px 10px rgba(196, 139, 159, 0.4);
 }
 
 .step-label {
   font-size: 13px;
   font-weight: 600;
-  color: #555;
+  color: var(--text-mid);
   margin-top: 10px;
   text-align: center;
+  font-family: var(--font-sans);
 }
 
 /* Button Styles */
@@ -361,38 +382,53 @@ document.getElementById('serviceForm').addEventListener('submit', function(e) {
   padding: 12px 30px;
   border-radius: 10px;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   margin: 0 5px;
+  font-family: var(--font-sans);
 }
 
 .btn-nav:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  background: linear-gradient(135deg, var(--plum) 0%, #6b2048 100%);
   border: none;
+  color: var(--white);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #e63956 0%, #ff6b9d 100%);
+  background: linear-gradient(135deg, var(--plum-dark) 0%, var(--plum) 100%);
 }
 
 .btn-success {
-  background: linear-gradient(135deg, #ff80ab 0%, #ffa4c4 100%);
+  background: linear-gradient(135deg, var(--plum) 0%, #6b2048 100%);
   border: none;
+  color: var(--white);
 }
 
 .btn-success:hover {
-  background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb5 100%);
+  background: linear-gradient(135deg, var(--plum-dark) 0%, var(--plum) 100%);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--text-mid) 0%, #8a6475 100%);
+  border: none;
+  color: var(--white);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, var(--text-dark) 0%, var(--text-mid) 100%);
 }
 
 .card-header.table-title-bar {
-  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  background: linear-gradient(135deg, var(--plum) 0%, #6b2048 100%);
   padding: 20px;
   font-size: 18px;
-  border-bottom: 3px solid rgba(255,255,255,0.2);
+  border-bottom: 3px solid rgba(196, 139, 159, 0.3);
+  font-family: var(--font-deco);
+  letter-spacing: 0.04em;
 }
 
 label .text-danger {
@@ -400,20 +436,20 @@ label .text-danger {
 }
 
 .ribbon-header {
-  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  background: linear-gradient(135deg, var(--champagne) 0%, var(--blush) 100%);
   border-radius: 15px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+  box-shadow: var(--shadow-soft);
 }
 
 .text-primary {
-  color: #ff4f6e !important;
+  color: var(--plum) !important;
 }
 
 .form-check-input:checked {
-  background-color: #ff4f6e;
-  border-color: #ff4f6e;
+  background-color: var(--plum);
+  border-color: var(--plum);
 }
 </style>
 

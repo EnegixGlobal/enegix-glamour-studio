@@ -3,480 +3,706 @@
 {% block title %}Super Admin Dashboard{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --accent-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    --plum:       #3b0f2b;
+    --plum-dark:  #260a1d;
+    --rose-gold:  #c48b9f;
+    --champagne:  #f7e7ce;
+    --blush:      #e8c3b9;
+    --black:      #111111;
+    --bg-warm:    #faf6f2;
+    --white:      #ffffff;
+    --text-dark:  #2a1520;
+    --text-mid:   #6b4c5a;
+    --font-serif: 'Cormorant Garamond', Georgia, serif;
+    --font-sans:  'Jost', sans-serif;
+    --font-deco:  'Cinzel', serif;
+    --transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    --shadow-soft: 0 8px 40px rgba(59,15,43,0.10);
+    --shadow-card: 0 4px 24px rgba(59,15,43,0.12);
   }
 
-  .welcome-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  body { background: var(--bg-warm); font-family: var(--font-sans); }
+
+  /* ── Welcome Banner ── */
+  .welcome-banner {
+    background: linear-gradient(135deg, var(--plum-dark) 0%, var(--plum) 60%, #5c1a42 100%);
     border-radius: 20px;
-    color: #fff;
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    padding: 2.5rem 3rem;
+    color: var(--white);
     position: relative;
     overflow: hidden;
+    box-shadow: 0 12px 50px rgba(59,15,43,0.35);
   }
-
-  .welcome-card::before {
+  .welcome-banner::before {
     content: '';
     position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    animation: sparkle 8s linear infinite;
+    top: -80px; right: -80px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,139,159,0.25) 0%, transparent 70%);
+  }
+  .welcome-banner::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -40px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(247,231,206,0.10) 0%, transparent 70%);
+  }
+  .banner-crown {
+    font-size: 3.5rem;
+    color: var(--champagne);
+    filter: drop-shadow(0 4px 12px rgba(247,231,206,0.5));
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .banner-title {
+    font-family: var(--font-deco);
+    font-size: 1.9rem;
+    font-weight: 600;
+    color: var(--champagne);
+    letter-spacing: 0.04em;
+    margin-bottom: 0.4rem;
+  }
+  .banner-sub {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    color: rgba(247,231,206,0.75);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+  }
+  .banner-date {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    color: var(--rose-gold);
+    font-style: italic;
   }
 
-  @keyframes sparkle {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(180deg); }
-  }
-
-  .welcome-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-  }
-
-  .welcome-icon {
-    font-size: 70px;
-    color: #ffd700;
-    margin-bottom: 20px;
-    animation: pulse 2s infinite;
-    filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.5));
-  }
-
-  .welcome-card h4 {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    color: #ffffff;
-    font-size: 2.2rem;
-    margin-bottom: 15px;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  }
-
-  .welcome-card p {
-    color: rgba(255, 255, 255, 0.95);
-    font-size: 1.1rem;
-    line-height: 1.7;
-    font-weight: 500;
-  }
-
-  .welcome-card p strong {
-    color: #ffd700;
-    font-weight: 700;
-  }
-
+  /* ── Stat Cards ── */
   .stat-card {
-    background: #ffffff;
-    border-radius: 18px;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    border: none;
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.75rem 1.5rem;
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(196,139,159,0.12);
+    transition: var(--transition);
     position: relative;
     overflow: hidden;
   }
-
-  .stat-card::before {
+  .stat-card::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
   }
-
-  .stat-card.purple::before {
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  }
-
-  .stat-card.blue::before {
-    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-  }
-
-  .stat-card.pink::before {
-    background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
-  }
-
-  .stat-card.orange::before {
-    background: linear-gradient(90deg, #fa709a 0%, #fee140 100%);
-  }
-
+  .stat-card.c1::after { background: linear-gradient(90deg, var(--plum), #8b2252); }
+  .stat-card.c2::after { background: linear-gradient(90deg, #2d7d9a, #56b4d3); }
+  .stat-card.c3::after { background: linear-gradient(90deg, #b5451b, #e67e22); }
+  .stat-card.c4::after { background: linear-gradient(90deg, #1a6b3c, #27ae60); }
   .stat-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 16px 50px rgba(59,15,43,0.18);
+  }
+  .stat-icon-wrap {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .c1 .stat-icon-wrap { background: linear-gradient(135deg, var(--plum), #8b2252); color: var(--champagne); }
+  .c2 .stat-icon-wrap { background: linear-gradient(135deg, #2d7d9a, #56b4d3); color: #fff; }
+  .c3 .stat-icon-wrap { background: linear-gradient(135deg, #b5451b, #e67e22); color: #fff; }
+  .c4 .stat-icon-wrap { background: linear-gradient(135deg, #1a6b3c, #27ae60); color: #fff; }
+  .stat-value {
+    font-family: var(--font-serif);
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1;
+    margin-bottom: 0.35rem;
+  }
+  .stat-label {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
 
-  .stat-icon {
-    width: 70px;
-    height: 70px;
-    border-radius: 15px;
+  /* ── Section Title ── */
+  .section-title {
+    font-family: var(--font-deco);
+    font-size: 1rem;
+    color: var(--plum);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    color: white;
-    font-size: 32px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(196,139,159,0.4), transparent);
   }
 
-  .stat-card.purple .stat-icon {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  }
-
-  .stat-card.blue .stat-icon {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  }
-
-  .stat-card.pink .stat-icon {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  }
-
-  .stat-card.orange .stat-icon {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-  }
-
-  .stat-number {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  /* ── Quick Access Cards ── */
+  .qa-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(196,139,159,0.10);
+    transition: var(--transition);
+    text-decoration: none;
     display: block;
-    margin-bottom: 8px;
-  }
-
-  .stat-label {
-    color: #666;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 0.85rem;
-  }
-
-  .service-card {
-    background: #ffffff;
-    border-radius: 18px;
-    border: none;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
     position: relative;
     overflow: hidden;
   }
-
-  .service-card::before {
+  .qa-card::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 5px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    inset: 0;
+    background: linear-gradient(135deg, var(--plum) 0%, #8b2252 100%);
+    opacity: 0;
+    transition: var(--transition);
   }
-
-  .service-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.2);
+  .qa-card:hover::before { opacity: 1; }
+  .qa-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(59,15,43,0.22); }
+  .qa-icon {
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(59,15,43,0.08), rgba(196,139,159,0.15));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    color: var(--plum);
+    margin-bottom: 1rem;
+    transition: var(--transition);
+    position: relative; z-index: 1;
   }
+  .qa-card:hover .qa-icon {
+    background: rgba(255,255,255,0.15);
+    color: var(--champagne);
+  }
+  .qa-title {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.3rem;
+    transition: var(--transition);
+    position: relative; z-index: 1;
+  }
+  .qa-card:hover .qa-title { color: var(--champagne); }
+  .qa-desc {
+    font-size: 0.82rem;
+    color: var(--text-mid);
+    transition: var(--transition);
+    position: relative; z-index: 1;
+  }
+  .qa-card:hover .qa-desc { color: rgba(247,231,206,0.7); }
+  .qa-arrow {
+    position: absolute; bottom: 1.25rem; right: 1.25rem;
+    color: rgba(196,139,159,0.4);
+    font-size: 0.9rem;
+    transition: var(--transition);
+    z-index: 1;
+  }
+  .qa-card:hover .qa-arrow { color: var(--champagne); transform: translate(3px,-3px); }
 
-  .service-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 15px;
+  /* ── Charts ── */
+  .chart-card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(196,139,159,0.10);
+    overflow: hidden;
+  }
+  .chart-header {
+    padding: 1.25rem 1.5rem 0;
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    color: white;
-    font-size: 30px;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    transition: all 0.3s ease;
+    justify-content: space-between;
   }
-
-  .service-card:hover .service-icon {
-    transform: scale(1.1) rotate(5deg);
-  }
-
-  .service-title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 10px;
-  }
-
-  .service-desc {
-    color: #666;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin-bottom: 15px;
-  }
-
-  .action-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-weight: 600;
-    transition: all 0.3s ease;
+  .chart-title {
+    font-family: var(--font-deco);
     font-size: 0.9rem;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    color: var(--plum);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
+  .chart-body { padding: 1rem 1.5rem 1.5rem; position: relative; }
+  /* Explicit heights so Chart.js responsive mode works correctly */
+  #revenueChart  { height: 180px !important; }
+  #staffPieChart { height: 210px !important; }
+  #apptStatusChart { height: 200px !important; }
+  #topEmpChart   { height: 200px !important; }
 
-  .action-btn:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    transform: translateY(-2px);
-    color: white;
-    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.9; transform: scale(1.05); }
-  }
-
-  .recent-table {
-    border-radius: 15px;
+  /* ── Table ── */
+  .data-table-card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(196,139,159,0.10);
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   }
+  .table-head {
+    background: linear-gradient(135deg, var(--plum-dark), var(--plum));
+    padding: 1rem 1.5rem;
+  }
+  .table-head h6 {
+    color: var(--champagne);
+    font-family: var(--font-deco);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .data-table { margin: 0; }
+  .data-table thead tr th {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-mid);
+    border-bottom: 1px solid rgba(196,139,159,0.2);
+    padding: 0.85rem 1rem;
+    background: rgba(250,246,242,0.5);
+  }
+  .data-table tbody tr td {
+    font-size: 0.875rem;
+    color: var(--text-dark);
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid rgba(196,139,159,0.08);
+    vertical-align: middle;
+  }
+  .data-table tbody tr:hover td { background: rgba(247,231,206,0.2); }
+  .badge-role {
+    background: rgba(59,15,43,0.08);
+    color: var(--plum);
+    border: 1px solid rgba(196,139,159,0.25);
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+  }
+  .badge-active { background: rgba(26,107,60,0.10); color: #1a6b3c; border: 1px solid rgba(26,107,60,0.2); }
+  .badge-inactive { background: rgba(181,69,27,0.10); color: #b5451b; border: 1px solid rgba(181,69,27,0.2); }
 
-  .recent-table .card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  }
+  /* ── Top Performer Badge ── */
+  .top-performer-row td:first-child { border-left: 3px solid var(--rose-gold); }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-4">
-  <!-- Welcome Section -->
-  <div class="row mt-4">
-    <div class="col-md-12 mb-4">
-      <div class="card welcome-card text-center p-4">
-        <div class="card-body position-relative">
-          <div class="welcome-icon">
-            <i class="fas fa-crown"></i>
-          </div>
-          <h4>Welcome, Super Admin {{ user.full_name }}</h4>
-          <p>You have <strong>complete control</strong> over the system. Manage <strong>Employees</strong>, <strong>Monitor Performance</strong>, and <strong>Configure Settings</strong>.</p>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="container-fluid px-4 py-4">
 
-  <!-- Quick Stats -->
+  <!-- Welcome Banner -->
   <div class="row mb-4">
-    <div class="col-md-3 col-6 mb-3">
-      <div class="stat-card purple">
-        <div class="stat-icon">
-          <i class="fas fa-users"></i>
+    <div class="col-12">
+      <div class="welcome-banner">
+        <div class="d-flex align-items-center gap-4 position-relative" style="z-index:1;">
+          <div class="banner-crown"><i class="fas fa-crown"></i></div>
+          <div>
+            <div class="banner-title">Welcome back, {{ user.full_name }}</div>
+            <div class="banner-sub mb-1">Super Administrator &nbsp;·&nbsp; Full System Access</div>
+            <div class="banner-date" id="live-date"></div>
+          </div>
+          <div class="ms-auto text-end d-none d-md-block">
+            <div style="font-family:var(--font-serif);font-size:2.8rem;color:rgba(247,231,206,0.15);font-weight:700;line-height:1;">SALON<br>ADMIN</div>
+          </div>
         </div>
-        <span class="stat-number">{{ total_staff }}</span>
-        <span class="stat-label">Total Staff</span>
-      </div>
-    </div>
-    <div class="col-md-3 col-6 mb-3">
-      <div class="stat-card blue">
-        <div class="stat-icon">
-          <i class="fas fa-user-check"></i>
-        </div>
-        <span class="stat-number">{{ active_employees }}</span>
-        <span class="stat-label">Active Employees</span>
-      </div>
-    </div>
-    <div class="col-md-3 col-6 mb-3">
-      <div class="stat-card pink">
-        <div class="stat-icon">
-          <i class="fas fa-user-lock"></i>
-        </div>
-        <span class="stat-number">{{ blocked_employees }}</span>
-        <span class="stat-label">Blocked</span>
-      </div>
-    </div>
-    <div class="col-md-3 col-6 mb-3">
-      <div class="stat-card orange">
-        <div class="stat-icon">
-          <i class="fas fa-rupee-sign"></i>
-        </div>
-        <span class="stat-number">₹{{ total_monthly_salary|floatformat:0 }}</span>
-        <span class="stat-label">Monthly Payroll</span>
       </div>
     </div>
   </div>
 
-  <!-- Service Cards -->
-  <div class="row">
-    <div class="col-md-3 mb-4">
-      <a href="{% url 'employee_list' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon">
-              <i class="fas fa-user-plus"></i>
-            </div>
-            <h5 class="service-title">Employees</h5>
-            <p class="service-desc">Manage employee records and roles.</p>
-            <button class="action-btn">Manage</button>
-          </div>
+  <!-- Stats Row -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="stat-card c1">
+        <div class="stat-icon-wrap"><i class="fas fa-users"></i></div>
+        <div class="stat-value">{{ total_staff }}</div>
+        <div class="stat-label">Total Staff</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card c2">
+        <div class="stat-icon-wrap"><i class="fas fa-user-check"></i></div>
+        <div class="stat-value">{{ active_employees }}</div>
+        <div class="stat-label">Active Employees</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card c3">
+        <div class="stat-icon-wrap"><i class="fas fa-user-lock"></i></div>
+        <div class="stat-value">{{ blocked_employees }}</div>
+        <div class="stat-label">Blocked</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card c4">
+        <div class="stat-icon-wrap"><i class="fas fa-rupee-sign"></i></div>
+        <div class="stat-value" style="font-size:1.8rem;">₹{{ total_monthly_salary|floatformat:0 }}</div>
+        <div class="stat-label">Monthly Payroll</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="row g-3 mb-4">
+    <!-- Revenue Trend -->
+    <div class="col-md-8">
+      <div class="chart-card h-100">
+        <div class="chart-header">
+          <span class="chart-title">Revenue Trend — Last 7 Days</span>
+          <span style="font-size:0.78rem;color:var(--text-mid);font-family:var(--font-sans);">Daily Revenue (₹)</span>
         </div>
+        <div class="chart-body">
+          <canvas id="revenueChart" height="120"></canvas>
+        </div>
+      </div>
+    </div>
+    <!-- Staff Breakdown -->
+    <div class="col-md-4">
+      <div class="chart-card h-100">
+        <div class="chart-header">
+          <span class="chart-title">Staff by Role</span>
+        </div>
+        <div class="chart-body">
+          <canvas id="staffPieChart" height="190"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Second Charts Row -->
+  <div class="row g-3 mb-4">
+    <!-- Appointment Status -->
+    <div class="col-md-5">
+      <div class="chart-card h-100">
+        <div class="chart-header">
+          <span class="chart-title">Appointments by Status</span>
+        </div>
+        <div class="chart-body">
+          <canvas id="apptStatusChart" height="180"></canvas>
+        </div>
+      </div>
+    </div>
+    <!-- Top Employees by Bookings -->
+    <div class="col-md-7">
+      <div class="chart-card h-100">
+        <div class="chart-header">
+          <span class="chart-title">Top Employees — Bookings This Month</span>
+        </div>
+        <div class="chart-body">
+          <canvas id="topEmpChart" height="180"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Access -->
+  <div class="section-title">Quick Access</div>
+  <div class="row g-3 mb-4">
+    {% for item in quicklinks %}{% endfor %}
+    <div class="col-6 col-md-3">
+      <a href="{% url 'employee_list' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-user-plus"></i></div>
+        <div class="qa-title">Employees</div>
+        <div class="qa-desc">Manage staff records & roles</div>
+        <div class="qa-arrow"><i class="fas fa-arrow-up-right"></i></div>
       </a>
     </div>
-    <div class="col-md-3 mb-4">
-      <a href="{% url 'service_list' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon">
-              <i class="fas fa-concierge-bell"></i>
-            </div>
-            <h5 class="service-title">Services</h5>
-            <p class="service-desc">Manage salon services and pricing.</p>
-            <button class="action-btn">Manage</button>
-          </div>
-        </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'service_list' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-concierge-bell"></i></div>
+        <div class="qa-title">Services</div>
+        <div class="qa-desc">Pricing & availability</div>
+        <div class="qa-arrow"><i class="fas fa-arrow-up-right"></i></div>
       </a>
     </div>
-    <div class="col-md-3 mb-4">
-      <a href="{% url 'appointment_list' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon">
-              <i class="fas fa-calendar-alt"></i>
-            </div>
-            <h5 class="service-title">Appointments</h5>
-            <p class="service-desc">View all bookings and schedules.</p>
-            <button class="action-btn">View</button>
-          </div>
-        </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'appointment_list' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-calendar-alt"></i></div>
+        <div class="qa-title">Appointments</div>
+        <div class="qa-desc">All bookings & schedules</div>
+        <div class="qa-arrow"><i class="fas fa-arrow-up-right"></i></div>
       </a>
     </div>
-    <div class="col-md-3 mb-4">
-      <a href="{% url 'bill_list' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon">
-              <i class="fas fa-file-invoice-dollar"></i>
-            </div>
-            <h5 class="service-title">Billing</h5>
-            <p class="service-desc">Track revenue and payments.</p>
-            <button class="action-btn">View</button>
-          </div>
-        </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'bill_list' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+        <div class="qa-title">Billing</div>
+        <div class="qa-desc">Revenue & payment tracking</div>
+        <div class="qa-arrow"><i class="fas fa-arrow-up-right"></i></div>
       </a>
     </div>
-    <div class="col-md-3 mb-4">
-      <a href="{% url 'customer_list' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon">
-              <i class="fas fa-users"></i>
-            </div>
-            <h5 class="service-title">Customers</h5>
-            <p class="service-desc">Manage customer database.</p>
-            <button class="action-btn">View</button>
-          </div>
-        </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'customer_list' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-users"></i></div>
+        <div class="qa-title">Customers</div>
+        <div class="qa-desc">Client database</div>
+        <div class="qa-arrow"><i class="fas fa-arrow-up-right"></i></div>
       </a>
     </div>
-    <div class="col-md-3 mb-4">
-      <a href="{% url 'product_list' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon">
-              <i class="fas fa-box"></i>
-            </div>
-            <h5 class="service-title">Products</h5>
-            <p class="service-desc">Manage product inventory.</p>
-            <button class="action-btn">View</button>
-          </div>
-        </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'product_list' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-box"></i></div>
+        <div class="qa-title">Products</div>
+        <div class="qa-desc">Inventory management</div>
+        <div class="qa-arrow"><i class="fas fa-arrow-up-right"></i></div>
       </a>
     </div>
-    <div class="col-md-3 mb-4">
-      <a href="{% url 'vendor_list' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon">
-              <i class="fas fa-truck"></i>
-            </div>
-            <h5 class="service-title">Vendors</h5>
-            <p class="service-desc">Manage supplier records.</p>
-            <button class="action-btn">View</button>
-          </div>
-        </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'vendor_list' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-truck"></i></div>
+        <div class="qa-title">Vendors</div>
+        <div class="qa-desc">Supplier records</div>
+        <div class="qa-arrow"><i class="fas fa-arrow-up-right"></i></div>
       </a>
     </div>
-    <div class="col-md-3 mb-4">
-      <a href="{% url 'stock_dashboard' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon">
-              <i class="fas fa-warehouse"></i>
-            </div>
-            <h5 class="service-title">Stock</h5>
-            <p class="service-desc">Monitor inventory levels.</p>
-            <button class="action-btn">View</button>
-          </div>
-        </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'stock_dashboard' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-warehouse"></i></div>
+        <div class="qa-title">Stock</div>
+        <div class="qa-desc">Monitor inventory levels</div>
+        <div class="qa-arrow"><i class="fas fa-arrow-up-right"></i></div>
       </a>
     </div>
   </div>
 
   <!-- Recent Employees Table -->
   {% if recent_employees %}
-  <div class="row mt-4">
-    <div class="col-md-12">
-      <div class="card recent-table">
-        <div class="card-header text-white">
-          <h5 class="mb-0"><i class="fas fa-user-plus"></i> Recently Added Employees</h5>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>Employee ID</th>
-                  <th>Name</th>
-                  <th>Role</th>
-                  <th>Email</th>
-                  <th>Status</th>
-                  <th>Added On</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for emp in recent_employees %}
-                <tr>
-                  <td><strong>{{ emp.employee_id }}</strong></td>
-                  <td>{{ emp.full_name }}</td>
-                  <td><span class="badge bg-info">{{ emp.get_role_display }}</span></td>
-                  <td>{{ emp.email }}</td>
-                  <td>
-                    {% if emp.is_active %}
-                    <span class="badge bg-success">Active</span>
-                    {% else %}
-                    <span class="badge bg-danger">Inactive</span>
-                    {% endif %}
-                  </td>
-                  <td>{{ emp.created_at|date:"d M, Y" }}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+  <div class="section-title">Recently Added Employees</div>
+  <div class="data-table-card mb-4">
+    <div class="table-head">
+      <h6><i class="fas fa-user-plus me-2"></i>New Team Members</h6>
+    </div>
+    <div class="table-responsive">
+      <table class="table data-table">
+        <thead>
+          <tr>
+            <th>ID</th><th>Name</th><th>Role</th><th>Email</th><th>Status</th><th>Added On</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for emp in recent_employees %}
+          <tr>
+            <td><strong style="color:var(--plum);font-family:var(--font-sans);font-size:0.8rem;">{{ emp.employee_id }}</strong></td>
+            <td>
+              <div style="font-weight:500;color:var(--text-dark);">{{ emp.full_name }}</div>
+            </td>
+            <td><span class="badge-role">{{ emp.get_role_display }}</span></td>
+            <td style="color:var(--text-mid);font-size:0.82rem;">{{ emp.email }}</td>
+            <td>
+              {% if emp.is_active %}
+              <span class="badge-role badge-active"><i class="fas fa-circle me-1" style="font-size:0.5rem;"></i>Active</span>
+              {% else %}
+              <span class="badge-role badge-inactive"><i class="fas fa-circle me-1" style="font-size:0.5rem;"></i>Inactive</span>
+              {% endif %}
+            </td>
+            <td style="color:var(--text-mid);font-size:0.82rem;">{{ emp.created_at|date:"d M, Y" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
   {% endif %}
+
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  // ── Live date ──
+  const liveDateEl = document.getElementById('live-date');
+  if (liveDateEl) {
+    liveDateEl.textContent = new Date().toLocaleDateString('en-IN', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  }
+
+  Chart.defaults.font.family = "'Jost', sans-serif";
+  Chart.defaults.color = '#6b4c5a';
+
+  // ── Helper: safe chart init (won't crash if canvas missing or data empty) ──
+  function safeChart(id, config) {
+    const el = document.getElementById(id);
+    if (!el) { console.warn('Canvas not found:', id); return; }
+    // If all data is 0/empty, still render with zeros (shows "no data" gracefully)
+    try {
+      return new Chart(el, config);
+    } catch(e) {
+      console.error('Chart error [' + id + ']:', e);
+    }
+  }
+
+  // ── Chart data from Django (injected as JSON) ──
+  const revenueLabels    = {{ revenue_labels|safe }};
+  const revenueData      = {{ revenue_data|safe }};
+  const staffLabels      = {{ staff_labels|safe }};
+  const staffData        = {{ staff_data|safe }};
+  const apptStatusLabels = {{ appt_status_labels|safe }};
+  const apptStatusData   = {{ appt_status_data|safe }};
+  const topEmpNames      = {{ top_emp_names|safe }};
+  const topEmpCounts     = {{ top_emp_counts|safe }};
+
+  // ── 1. Revenue Line Chart ──
+  const revEl = document.getElementById('revenueChart');
+  if (revEl) {
+    const revCtx = revEl.getContext('2d');
+    const revGrad = revCtx.createLinearGradient(0, 0, 0, 180);
+    revGrad.addColorStop(0, 'rgba(59,15,43,0.20)');
+    revGrad.addColorStop(1, 'rgba(59,15,43,0.01)');
+    safeChart('revenueChart', {
+      type: 'line',
+      data: {
+        labels: revenueLabels,
+        datasets: [{
+          label: 'Revenue ₹',
+          data: revenueData,
+          borderColor: '#3b0f2b',
+          backgroundColor: revGrad,
+          borderWidth: 2.5,
+          pointBackgroundColor: '#c48b9f',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            grid: { color: 'rgba(196,139,159,0.12)' },
+            beginAtZero: true,
+            ticks: { callback: v => '₹' + v.toLocaleString('en-IN') }
+          },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // ── 2. Staff by Role Doughnut ──
+  // Fallback: if no staff data, show placeholder
+  const pieLabels = staffLabels.length ? staffLabels : ['No Staff Data'];
+  const pieData   = staffData.length   ? staffData   : [1];
+  const pieColors = staffData.length
+    ? ['#3b0f2b','#c48b9f','#2d7d9a','#e67e22','#8e44ad','#27ae60','#b5451b','#e8c3b9']
+    : ['rgba(196,139,159,0.2)'];
+
+  safeChart('staffPieChart', {
+    type: 'doughnut',
+    data: {
+      labels: pieLabels,
+      datasets: [{
+        data: pieData,
+        backgroundColor: pieColors,
+        borderWidth: staffData.length ? 2 : 0,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { boxWidth: 11, padding: 12, font: { size: 10.5 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => staffData.length
+              ? ` ${ctx.label}: ${ctx.parsed} employee${ctx.parsed !== 1 ? 's' : ''}`
+              : ' No employees yet'
+          }
+        }
+      }
+    }
+  });
+
+  // ── 3. Appointment Status Bar ──
+  safeChart('apptStatusChart', {
+    type: 'bar',
+    data: {
+      labels: apptStatusLabels,
+      datasets: [{
+        label: 'Count',
+        data: apptStatusData,
+        backgroundColor: ['#e8c3b9','#2d7d9a','#e67e22','#1a6b3c','#b5451b'],
+        borderRadius: 8,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          grid: { color: 'rgba(196,139,159,0.12)' },
+          beginAtZero: true,
+          ticks: { precision: 0 }
+        },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  // ── 4. Top Employees Horizontal Bar ──
+  // Fallback if no data this month
+  const empLabels = topEmpNames.length  ? topEmpNames  : ['No Data This Month'];
+  const empCounts = topEmpCounts.length ? topEmpCounts : [0];
+
+  safeChart('topEmpChart', {
+    type: 'bar',
+    data: {
+      labels: empLabels,
+      datasets: [{
+        label: 'Services',
+        data: empCounts,
+        backgroundColor: ['#3b0f2b','#8b2252','#c48b9f','#2d7d9a','#e67e22'],
+        borderRadius: 8,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { color: 'rgba(196,139,159,0.12)' },
+          beginAtZero: true,
+          ticks: { precision: 0 }
+        },
+        y: { grid: { display: false } }
+      }
+    }
+  });
+
+});
+</script>
 {% endblock %}

@@ -162,24 +162,45 @@ document.addEventListener('input', function(e) {
 </script>
 
 <style>
+:root {
+  --plum:       #3b0f2b;
+  --plum-dark:  #260a1d;
+  --rose-gold:  #c48b9f;
+  --champagne:  #f7e7ce;
+  --blush:      #e8c3b9;
+  --black:      #111111;
+  --bg-warm:    #faf6f2;
+  --white:      #ffffff;
+  --text-dark:  #2a1520;
+  --text-mid:   #6b4c5a;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans:  'Jost', sans-serif;
+  --font-deco:  'Cinzel', serif;
+  --transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-soft: 0 8px 40px rgba(59,15,43,0.10);
+  --shadow-card: 0 4px 24px rgba(59,15,43,0.12);
+}
+
 .modern-card {
   border-radius: 15px;
   border: none;
   overflow: hidden;
+  box-shadow: var(--shadow-card);
 }
 
 .modern-input {
-  border: 2px solid #e0e0e0 !important;
+  border: 2px solid var(--blush) !important;
   border-radius: 10px;
   padding: 12px 15px;
-  transition: all 0.3s ease;
-  color: #000;
+  transition: var(--transition);
+  color: var(--text-dark);
+  background-color: var(--white);
 }
 
 .modern-input:focus {
-  border-color: #ff4f6e !important;
-  background-color: #fff5f7 !important;
-  box-shadow: 0 0 0 0.2rem rgba(255, 79, 110, 0.15);
+  border-color: var(--plum) !important;
+  background-color: var(--bg-warm) !important;
+  box-shadow: 0 0 0 0.2rem rgba(59, 15, 43, 0.12);
   transform: translateY(-2px);
 }
 
@@ -189,48 +210,73 @@ document.addEventListener('input', function(e) {
 
 .form-label {
   font-weight: 600;
-  color: #333;
+  color: var(--text-dark);
   margin-bottom: 8px;
+  font-family: var(--font-sans);
 }
 
 .card-header.table-title-bar {
-  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  background: linear-gradient(135deg, var(--plum) 0%, #6b2048 100%);
   padding: 20px;
   font-size: 18px;
-  border-bottom: 3px solid rgba(255,255,255,0.2);
+  border-bottom: 3px solid rgba(196, 139, 159, 0.3);
+  font-family: var(--font-deco);
+  letter-spacing: 0.04em;
 }
 
 .btn-action-lg {
   padding: 12px 30px;
   border-radius: 10px;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: var(--transition);
+  font-family: var(--font-sans);
 }
 
 .btn-action-lg:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-success {
   background: linear-gradient(135deg, #28a745 0%, #48c774 100%);
   border: none;
+  color: var(--white);
 }
 
 .btn-success:hover {
-  background: linear-gradient(135deg, #218838 0%, #3bb862 100%);
+  background: linear-gradient(135deg, #218838 0%, #28a745 100%);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--plum) 0%, #6b2048 100%);
+  border: none;
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--plum-dark) 0%, var(--plum) 100%);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--text-mid) 0%, #8a6475 100%);
+  border: none;
+  color: var(--white);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, var(--text-dark) 0%, var(--text-mid) 100%);
 }
 
 .ribbon-header {
-  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  background: linear-gradient(135deg, var(--champagne) 0%, var(--blush) 100%);
   border-radius: 15px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+  box-shadow: var(--shadow-soft);
 }
 
 .text-primary {
-  color: #ff4f6e !important;
+  color: var(--plum) !important;
 }
 
 label .text-danger {
@@ -245,24 +291,24 @@ label .text-danger {
 }
 
 .toggle-switch:checked {
-  background-color: #ff4f6e;
-  border-color: #ff4f6e;
+  background-color: var(--plum);
+  border-color: var(--plum);
 }
 
 .toggle-switch:focus {
-  box-shadow: 0 0 0 0.2rem rgba(255, 79, 110, 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(59, 15, 43, 0.25);
 }
 
 .form-check {
   padding: 15px;
-  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  background: linear-gradient(135deg, var(--champagne) 0%, var(--blush) 100%);
   border-radius: 10px;
-  border: 2px solid #ffd4dc;
-  transition: all 0.3s ease;
+  border: 2px solid var(--rose-gold);
+  transition: var(--transition);
 }
 
 .form-check:hover {
-  background: linear-gradient(135deg, #ffe9ed 0%, #ffd4dc 100%);
+  background: linear-gradient(135deg, var(--blush) 0%, #dbaaa0 100%);
   transform: translateX(5px);
 }
 
@@ -271,6 +317,14 @@ label .text-danger {
   border-radius: 12px;
   padding: 15px;
   margin-top: 10px;
+  background: linear-gradient(135deg, var(--champagne) 0%, var(--blush) 100%) !important;
+  border-left: 4px solid var(--rose-gold) !important;
+}
+
+/* Action card bottom background */
+.card.shadow-lg:last-of-type .card-body {
+  background: linear-gradient(135deg, var(--champagne) 0%, var(--blush) 100%);
+  border-radius: 0 0 15px 15px;
 }
 </style>
 

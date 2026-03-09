@@ -3,349 +3,221 @@
 {% block title %}Beauty Therapist Dashboard{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  .welcome-card {
-    background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
-    border-radius: 20px;
-    color: #fff;
-    box-shadow: 0 10px 30px rgba(255, 107, 157, 0.3);
-    position: relative;
-    overflow: hidden;
-  }
+  :root{--plum:#3b0f2b;--rose-gold:#c48b9f;--champagne:#f7e7ce;--bg-warm:#faf6f2;--white:#ffffff;
+    --text-dark:#2a1520;--text-mid:#6b4c5a;--font-serif:'Cormorant Garamond',Georgia,serif;
+    --font-sans:'Jost',sans-serif;--font-deco:'Cinzel',serif;
+    --transition:all 0.45s cubic-bezier(0.4,0,0.2,1);--shadow-card:0 4px 24px rgba(59,15,43,0.12);}
+  body{background:var(--bg-warm);font-family:var(--font-sans);}
 
-  .welcome-card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    animation: sparkle 8s linear infinite;
-  }
+  .welcome-banner{background:linear-gradient(135deg,#1a3a3a 0%,#2e7d6e 60%,#1abc9c 100%);
+    border-radius:20px;padding:2.5rem 3rem;color:#fff;position:relative;overflow:hidden;
+    box-shadow:0 12px 50px rgba(26,58,58,0.4);}
+  .welcome-banner::before{content:'';position:absolute;top:-70px;right:-70px;width:260px;height:260px;border-radius:50%;
+    background:radial-gradient(circle,rgba(247,231,206,.15) 0%,transparent 70%);}
+  .banner-icon{font-size:3.2rem;color:var(--champagne);animation:float 3s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+  .banner-title{font-family:var(--font-deco);font-size:1.8rem;color:var(--champagne);letter-spacing:.04em;}
+  .banner-sub{font-size:.9rem;color:rgba(247,231,206,.7);font-weight:300;}
 
-  @keyframes sparkle {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(180deg); }
-  }
+  .stat-card{background:var(--white);border-radius:16px;padding:1.6rem 1.4rem;box-shadow:var(--shadow-card);
+    border:1px solid rgba(196,139,159,.12);transition:var(--transition);position:relative;overflow:hidden;}
+  .stat-card::after{content:'';position:absolute;top:0;left:0;width:100%;height:3px;}
+  .stat-card.ca::after{background:linear-gradient(90deg,#1a3a3a,#1abc9c);}
+  .stat-card.cb::after{background:linear-gradient(90deg,#2d7d9a,#56b4d3);}
+  .stat-card.cc::after{background:linear-gradient(90deg,var(--plum),var(--rose-gold));}
+  .stat-card:hover{transform:translateY(-5px);box-shadow:0 16px 50px rgba(59,15,43,0.18);}
+  .stat-icon-wrap{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem;}
+  .ca .stat-icon-wrap{background:linear-gradient(135deg,#1a3a3a,#1abc9c);color:var(--champagne);}
+  .cb .stat-icon-wrap{background:linear-gradient(135deg,#2d7d9a,#56b4d3);color:#fff;}
+  .cc .stat-icon-wrap{background:linear-gradient(135deg,var(--plum),var(--rose-gold));color:var(--champagne);}
+  .stat-value{font-family:var(--font-serif);font-size:2.2rem;font-weight:700;color:var(--text-dark);line-height:1;margin-bottom:.3rem;}
+  .stat-label{font-size:.72rem;font-weight:500;color:var(--text-mid);text-transform:uppercase;letter-spacing:.08em;}
 
-  .welcome-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(255, 107, 157, 0.4);
-  }
+  .section-title{font-family:var(--font-deco);font-size:.95rem;color:var(--plum);letter-spacing:.12em;text-transform:uppercase;
+    display:flex;align-items:center;gap:.75rem;margin-bottom:1.4rem;}
+  .section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(196,139,159,.4),transparent);}
 
-  .welcome-icon {
-    font-size: 70px;
-    color: #fff;
-    margin-bottom: 20px;
-    animation: pulse 2s infinite;
-  }
+  .data-table-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow-card);border:1px solid rgba(196,139,159,.1);overflow:hidden;}
+  .table-head{background:linear-gradient(135deg,#1a3a3a,#1abc9c);padding:1rem 1.4rem;}
+  .table-head h6{color:var(--champagne);font-family:var(--font-deco);font-size:.82rem;letter-spacing:.1em;margin:0;text-transform:uppercase;}
+  .data-table thead tr th{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-mid);
+    border-bottom:1px solid rgba(196,139,159,.2);padding:.8rem 1rem;background:rgba(250,246,242,.5);}
+  .data-table tbody tr td{font-size:.875rem;color:var(--text-dark);padding:.8rem 1rem;border-bottom:1px solid rgba(196,139,159,.08);vertical-align:middle;}
+  .data-table tbody tr:hover td{background:rgba(247,231,206,.2);}
+  .badge-status{display:inline-flex;align-items:center;gap:.3rem;border-radius:20px;padding:.25rem .7rem;font-size:.72rem;font-weight:500;border:1px solid transparent;}
+  .bs-pending{background:rgba(107,76,90,.1);color:var(--text-mid);border-color:rgba(107,76,90,.15);}
+  .bs-inprogress{background:rgba(26,188,156,.1);color:#1abc9c;border-color:rgba(26,188,156,.2);}
+  .bs-completed{background:rgba(26,107,60,.1);color:#1a6b3c;border-color:rgba(26,107,60,.2);}
+  .btn-start{background:linear-gradient(135deg,#1a3a3a,#1abc9c);border:none;color:var(--champagne);border-radius:8px;
+    padding:.3rem .9rem;font-size:.78rem;font-weight:500;font-family:var(--font-sans);transition:var(--transition);text-decoration:none;display:inline-block;}
+  .btn-start:hover{opacity:.85;color:var(--champagne);}
+  .btn-complete{background:linear-gradient(135deg,#1a6b3c,#27ae60);border:none;color:#fff;border-radius:8px;
+    padding:.3rem .9rem;font-size:.78rem;font-weight:500;font-family:var(--font-sans);transition:var(--transition);text-decoration:none;display:inline-block;}
+  .btn-complete:hover{opacity:.85;color:#fff;}
 
-  .welcome-card h4 {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    color: #ffffff;
-    font-size: 2.2rem;
-    margin-bottom: 15px;
-  }
-
-  .welcome-card p {
-    color: rgba(255, 255, 255, 0.95);
-    font-size: 1.1rem;
-    line-height: 1.7;
-    font-weight: 500;
-  }
-
-  .welcome-card p strong {
-    color: #fff;
-    font-weight: 700;
-  }
-
-  .stat-card {
-    background: #ffffff;
-    border-radius: 18px;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, #ff6b9d 0%, #c06c84 100%);
-  }
-
-  .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(255, 107, 157, 0.2);
-  }
-
-  .stat-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    color: white;
-    font-size: 32px;
-  }
-
-  .stat-number {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: block;
-    margin-bottom: 8px;
-  }
-
-  .stat-label {
-    color: #666;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 0.85rem;
-  }
-
-  .service-card {
-    background: #ffffff;
-    border-radius: 18px;
-    transition: all 0.4s;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .service-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 5px;
-    background: linear-gradient(90deg, #ff6b9d 0%, #c06c84 100%);
-  }
-
-  .service-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(255, 107, 157, 0.2);
-  }
-
-  .service-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    color: white;
-    font-size: 30px;
-  }
-
-  .service-card:hover .service-icon {
-    transform: scale(1.1) rotate(5deg);
-  }
-
-  .service-title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 10px;
-  }
-
-  .service-desc {
-    color: #666;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin-bottom: 15px;
-  }
-
-  .action-btn {
-    background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-  }
-
-  .action-btn:hover {
-    background: linear-gradient(135deg, #c06c84 0%, #ff6b9d 100%);
-    transform: translateY(-2px);
-    color: white;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.9; transform: scale(1.05); }
-  }
-
-  .services-table .card-header {
-    background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
-  }
+  .chart-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow-card);border:1px solid rgba(196,139,159,.1);overflow:hidden;}
+  .chart-header{padding:1.2rem 1.4rem 0;display:flex;align-items:center;justify-content:space-between;}
+  .chart-title{font-family:var(--font-deco);font-size:.85rem;color:var(--plum);letter-spacing:.08em;text-transform:uppercase;}
+  .chart-body{padding:.9rem 1.4rem 1.4rem; position:relative;}
+  canvas { display:block; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-4">
-  <div class="row mt-4">
-    <div class="col-md-12 mb-4">
-      <div class="card welcome-card text-center p-4">
-        <div class="card-body position-relative">
-          <div class="welcome-icon">
-            <i class="fas fa-spa"></i>
-          </div>
-          <h4>Welcome, Beauty Therapist {{ user.full_name }}</h4>
-          <p>Create <strong>Wellness Experiences</strong>! Deliver relaxing <strong>Spa Treatments</strong> and rejuvenating beauty services.</p>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="container-fluid px-4 py-4">
 
-  <div class="row mb-4">
-    <div class="col-md-4 col-6 mb-3">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-leaf"></i></div>
-        <span class="stat-number">{{ treatments_today }}</span>
-        <span class="stat-label">Treatments Today</span>
+  <div class="row mb-4"><div class="col-12">
+    <div class="welcome-banner">
+      <div class="d-flex align-items-center gap-4 position-relative" style="z-index:1;">
+        <div class="banner-icon"><i class="fas fa-spa"></i></div>
+        <div>
+          <div class="banner-title">Welcome, {{ user.full_name }}</div>
+          <div class="banner-sub">Beauty Therapist &nbsp;·&nbsp; Wellness & Skin Care</div>
+          <div class="mt-2" id="live-date" style="font-family:var(--font-serif);font-size:.95rem;color:rgba(247,231,206,.75);font-style:italic;"></div>
+        </div>
+        <div class="ms-auto text-end d-none d-md-block">
+          <div style="font-family:var(--font-serif);font-size:1rem;color:rgba(247,231,206,.55);font-style:italic;">"Beauty is wellness<br>made visible."</div>
+        </div>
       </div>
     </div>
-    <div class="col-md-4 col-6 mb-3">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-hot-tub"></i></div>
-        <span class="stat-number">{{ spa_bookings }}</span>
-        <span class="stat-label">Spa Bookings</span>
-      </div>
-    </div>
-    <div class="col-md-4 col-6 mb-3">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-smile"></i></div>
-        <span class="stat-number">{{ facial_treatments }}</span>
-        <span class="stat-label">Facial Treatments</span>
-      </div>
-    </div>
-  </div>
+  </div></div>
 
-  <div class="row">
-    <div class="col-md-4 mb-4">
-      <a href="{% url 'my_services' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon"><i class="fas fa-calendar-alt"></i></div>
-            <h5 class="service-title">Treatment Schedule</h5>
-            <p class="service-desc">View today's spa and beauty treatments.</p>
-            <button class="action-btn">View Schedule</button>
-          </div>
-        </div>
-      </a>
-    </div>
-    <div class="col-md-4 mb-4">
-      <a href="{% url 'customer_list' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon"><i class="fas fa-heartbeat"></i></div>
-            <h5 class="service-title">Client Wellness</h5>
-            <p class="service-desc">Track client treatment history and preferences.</p>
-            <button class="action-btn">View Clients</button>
-          </div>
-        </div>
-      </a>
-    </div>
-    <div class="col-md-4 mb-4">
-      <a href="{% url 'product_list' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon"><i class="fas fa-boxes"></i></div>
-            <h5 class="service-title">Spa Products</h5>
-            <p class="service-desc">Manage spa product inventory and supplies.</p>
-            <button class="action-btn">View Inventory</button>
-          </div>
-        </div>
-      </a>
-    </div>
+  <div class="row g-3 mb-4">
+    <div class="col-4"><div class="stat-card ca">
+      <div class="stat-icon-wrap"><i class="fas fa-leaf"></i></div>
+      <div class="stat-value">{{ treatments_today }}</div>
+      <div class="stat-label">Treatments Today</div>
+    </div></div>
+    <div class="col-4"><div class="stat-card cb">
+      <div class="stat-icon-wrap"><i class="fas fa-hot-tub"></i></div>
+      <div class="stat-value">{{ spa_bookings }}</div>
+      <div class="stat-label">Spa Bookings</div>
+    </div></div>
+    <div class="col-4"><div class="stat-card cc">
+      <div class="stat-icon-wrap"><i class="fas fa-smile"></i></div>
+      <div class="stat-value">{{ facial_treatments }}</div>
+      <div class="stat-label">Facial Treatments</div>
+    </div></div>
   </div>
 
   {% if my_services_today %}
-  <div class="row mt-4">
-    <div class="col-md-12">
-      <div class="card services-table">
-        <div class="card-header text-white">
-          <h5 class="mb-0"><i class="fas fa-list"></i> Today's Treatments</h5>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Customer</th>
-                  <th>Service</th>
-                  <th>Price</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for service in my_services_today %}
-                <tr>
-                  <td><strong>{{ service.appointment.appointment_time|date:"h:i A" }}</strong></td>
-                  <td>{{ service.appointment.customer.full_name }}</td>
-                  <td>{{ service.service.service_name }}</td>
-                  <td>₹{{ service.service_price }}</td>
-                  <td>
-                    <span class="badge 
-                      {% if service.service_status == 'completed' %}bg-success
-                      {% elif service.service_status == 'in_progress' %}bg-warning
-                      {% else %}bg-secondary{% endif %}">
-                      {{ service.get_service_status_display }}
-                    </span>
-                  </td>
-                  <td>
-                    {% if service.service_status == 'pending' %}
-                    <a href="{% url 'update_service_status' service.id %}?status=in_progress" 
-                       class="btn btn-sm btn-primary">Start</a>
-                    {% elif service.service_status == 'in_progress' %}
-                    <a href="{% url 'update_service_status' service.id %}?status=completed" 
-                       class="btn btn-sm btn-success">Complete</a>
-                    {% else %}
-                    <span class="text-success">✓ Done</span>
-                    {% endif %}
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+  <div class="section-title">Today's Treatments</div>
+  <div class="data-table-card mb-4">
+    <div class="table-head"><h6><i class="fas fa-spa me-2"></i>Treatment Queue</h6></div>
+    <div class="table-responsive">
+      <table class="table data-table mb-0">
+        <thead><tr><th>Time</th><th>Customer</th><th>Service</th><th>Price</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for service in my_services_today %}
+          <tr>
+            <td><strong style="color:var(--plum);font-size:.85rem;">{{ service.appointment.appointment_time|date:"h:i A" }}</strong></td>
+            <td style="font-weight:500;">{{ service.appointment.customer.full_name }}</td>
+            <td style="color:var(--text-mid);">{{ service.service.service_name }}</td>
+            <td style="font-weight:600;color:#1a6b3c;">₹{{ service.service_price }}</td>
+            <td>
+              {% if service.service_status == 'completed' %}<span class="badge-status bs-completed"><i class="fas fa-circle" style="font-size:.45rem;"></i> Done</span>
+              {% elif service.service_status == 'in_progress' %}<span class="badge-status bs-inprogress"><i class="fas fa-circle" style="font-size:.45rem;"></i> In Progress</span>
+              {% else %}<span class="badge-status bs-pending"><i class="fas fa-circle" style="font-size:.45rem;"></i> Pending</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if service.service_status == 'pending' %}
+              <a href="{% url 'update_service_status' service.id %}?status=in_progress" class="btn-start">Start</a>
+              {% elif service.service_status == 'in_progress' %}
+              <a href="{% url 'update_service_status' service.id %}?status=completed" class="btn-complete">Complete</a>
+              {% else %}<span style="color:#1a6b3c;"><i class="fas fa-check-circle"></i></span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
   {% else %}
-  <div class="row mt-4">
-    <div class="col-md-12">
-      <div class="alert alert-info text-center">
-        <i class="fas fa-info-circle"></i> No treatments scheduled for today.
+  <div class="text-center py-5" style="color:var(--text-mid);">
+    <i class="fas fa-spa fa-2x mb-3 d-block" style="color:rgba(196,139,159,0.4);"></i>
+    <div style="font-family:var(--font-serif);font-size:1.1rem;">No treatments scheduled for today</div>
+  </div>
+  {% endif %}
+
+  
+  <!-- ══ CHARTS ══ -->
+  <div class="section-title">My Performance</div>
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <div class="chart-card h-100">
+        <div class="chart-header"><span class="chart-title">Weekly Services Completed</span></div>
+        <div class="chart-body"><canvas id="weeklyChart" style="height:200px!important;"></canvas></div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="chart-card h-100">
+        <div class="chart-header"><span class="chart-title">Today's Status Breakdown</span></div>
+        <div class="chart-body"><canvas id="statusChart" style="height:200px!important;"></canvas></div>
       </div>
     </div>
   </div>
-  {% endif %}
+  <div class="row g-3 mb-4">
+    <div class="col-md-7">
+      <div class="chart-card h-100">
+        <div class="chart-header"><span class="chart-title">Monthly Earnings — Last 6 Months</span></div>
+        <div class="chart-body"><canvas id="earningsChart" style="height:200px!important;"></canvas></div>
+      </div>
+    </div>
+    <div class="col-md-5">
+      <div class="chart-card h-100">
+        <div class="chart-header"><span class="chart-title">Top Treatment Products</span></div>
+        <div class="chart-body"><canvas id="productChart" style="height:200px!important;"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Quick Access</div>
+  <div class="row g-3">
+    <div class="col-6">
+      <a href="{% url 'my_services' %}" style="text-decoration:none;">
+        <div style="background:var(--white);border-radius:16px;padding:1.2rem;box-shadow:var(--shadow-card);border:1px solid rgba(196,139,159,.1);transition:var(--transition);display:flex;align-items:center;gap:1rem;"
+          onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+          <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#1a3a3a,#1abc9c);display:flex;align-items:center;justify-content:center;color:var(--champagne);font-size:1.2rem;flex-shrink:0;"><i class="fas fa-list"></i></div>
+          <div><div style="font-family:var(--font-serif);font-size:1.05rem;font-weight:600;color:var(--text-dark);">All Treatments</div>
+          <div style="font-size:.78rem;color:var(--text-mid);">Full schedule</div></div>
+        </div>
+      </a>
+    </div>
+    <div class="col-6">
+      <a href="{% url 'customer_list' %}" style="text-decoration:none;">
+        <div style="background:var(--white);border-radius:16px;padding:1.2rem;box-shadow:var(--shadow-card);border:1px solid rgba(196,139,159,.1);transition:var(--transition);display:flex;align-items:center;gap:1rem;"
+          onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+          <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--plum),var(--rose-gold));display:flex;align-items:center;justify-content:center;color:var(--champagne);font-size:1.2rem;flex-shrink:0;"><i class="fas fa-heartbeat"></i></div>
+          <div><div style="font-family:var(--font-serif);font-size:1.05rem;font-weight:600;color:var(--text-dark);">Client Wellness</div>
+          <div style="font-size:.78rem;color:var(--text-mid);">Treatment history</div></div>
+        </div>
+      </a>
+    </div>
+  </div>
+
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+document.getElementById('live-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  Chart.defaults.font.family = "'Jost', sans-serif";
+  Chart.defaults.color = '#6b4c5a';
+
+  new Chart(document.getElementById('weeklyChart'),{type:'bar',data:{labels:{{ weekly_labels|safe }},datasets:[{label:'Services',data:{{ weekly_data|safe }},backgroundColor:'#1a3a3a',borderRadius:8,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(196,139,159,0.12)'},beginAtZero:true},x:{grid:{display:false}}}}});
+
+  new Chart(document.getElementById('statusChart'),{type:'doughnut',data:{labels:['Completed','In Progress','Pending'],datasets:[{data:[{{ completed_today }},{{ inprogress_today }},{{ pending_treatments }}],backgroundColor:['#1a6b3c','#e67e22','#e8c3b9'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true, maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:10,font:{size:10}}}}}});
+
+  const eg=document.getElementById('earningsChart').getContext('2d');const eG=eg.createLinearGradient(0,0,0,160);eG.addColorStop(0,'rgba(59,15,43,0.18)');eG.addColorStop(1,'rgba(59,15,43,0.01)');
+  new Chart(eg,{type:'line',data:{labels:{{ earnings_labels|safe }},datasets:[{label:'₹',data:{{ earnings_data|safe }},borderColor:'#1a3a3a',backgroundColor:eG,borderWidth:2.5,pointBackgroundColor:'#1abc9c',pointBorderColor:'#fff',pointBorderWidth:2,pointRadius:4,tension:0.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(196,139,159,0.12)'},ticks:{callback:v=>'₹'+v.toLocaleString('en-IN')}},x:{grid:{display:false}}}}});
+
+  new Chart(document.getElementById('productChart'),{type:'bar',data:{labels:{{ product_names|safe }},datasets:[{label:'Uses',data:{{ product_counts|safe }},backgroundColor:['#1a3a3a','#1abc9c','#1abc9c','#c48b9f','#3b0f2b'],borderRadius:8,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(196,139,159,0.12)'},beginAtZero:true},y:{grid:{display:false}}}}});
+});
+</script>
 {% endblock %}

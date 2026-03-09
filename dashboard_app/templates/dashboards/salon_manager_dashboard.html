@@ -3,262 +3,248 @@
 {% block title %}Salon Manager Dashboard{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  .welcome-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 20px;
-    color: #fff;
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-    position: relative;
-    overflow: hidden;
+  :root {
+    --plum:#3b0f2b;--plum-dark:#260a1d;--rose-gold:#c48b9f;--champagne:#f7e7ce;
+    --blush:#e8c3b9;--bg-warm:#faf6f2;--white:#ffffff;--text-dark:#2a1520;--text-mid:#6b4c5a;
+    --font-serif:'Cormorant Garamond',Georgia,serif;--font-sans:'Jost',sans-serif;--font-deco:'Cinzel',serif;
+    --transition:all 0.45s cubic-bezier(0.4,0,0.2,1);--shadow-card:0 4px 24px rgba(59,15,43,0.12);
   }
-  .welcome-card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    animation: sparkle 8s linear infinite;
+  body{background:var(--bg-warm);font-family:var(--font-sans);}
+
+  .welcome-banner{
+    background:linear-gradient(135deg,#1a3a4a 0%,#2d7d9a 60%,#3a9abf 100%);
+    border-radius:20px;padding:2.5rem 3rem;color:#fff;position:relative;overflow:hidden;
+    box-shadow:0 12px 50px rgba(29,93,115,0.35);
   }
-  @keyframes sparkle {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(180deg); }
-  }
-  .welcome-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-  }
-  .welcome-icon {
-    font-size: 70px;
-    color: #ffd700;
-    margin-bottom: 20px;
-    animation: pulse 2s infinite;
-  }
-  .welcome-card h4 {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    color: #ffffff;
-    font-size: 2.2rem;
-    margin-bottom: 15px;
-  }
-  .welcome-card p {
-    color: rgba(255, 255, 255, 0.95);
-    font-size: 1.1rem;
-    line-height: 1.7;
-    font-weight: 500;
-  }
-  .welcome-card p strong {
-    color: #ffd700;
-    font-weight: 700;
-  }
-  .stat-card {
-    background: #ffffff;
-    border-radius: 18px;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    position: relative;
-    overflow: hidden;
-  }
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  }
-  .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.2);
-  }
-  .stat-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    color: white;
-    font-size: 32px;
-  }
-  .stat-number {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: block;
-    margin-bottom: 8px;
-  }
-  .stat-label {
-    color: #666;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 0.85rem;
-  }
-  .service-card {
-    background: #ffffff;
-    border-radius: 18px;
-    transition: all 0.4s;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    position: relative;
-    overflow: hidden;
-  }
-  .service-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 5px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  }
-  .service-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.2);
-  }
-  .service-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    color: white;
-    font-size: 30px;
-  }
-  .service-card:hover .service-icon {
-    transform: scale(1.1) rotate(5deg);
-  }
-  .service-title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 10px;
-  }
-  .service-desc {
-    color: #666;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin-bottom: 15px;
-  }
-  .action-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-  }
-  .action-btn:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    transform: translateY(-2px);
-    color: white;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.9; transform: scale(1.05); }
-  }
+  .welcome-banner::before{content:'';position:absolute;top:-80px;right:-80px;width:280px;height:280px;border-radius:50%;
+    background:radial-gradient(circle,rgba(247,231,206,0.15) 0%,transparent 70%);}
+  .banner-icon{font-size:3.2rem;color:var(--champagne);animation:float 3s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+  .banner-title{font-family:var(--font-deco);font-size:1.8rem;color:var(--champagne);letter-spacing:0.04em;}
+  .banner-sub{font-size:0.9rem;color:rgba(247,231,206,0.7);font-weight:300;letter-spacing:0.05em;}
+
+  .stat-card{background:var(--white);border-radius:16px;padding:1.6rem 1.4rem;box-shadow:var(--shadow-card);
+    border:1px solid rgba(196,139,159,0.12);transition:var(--transition);position:relative;overflow:hidden;}
+  .stat-card::after{content:'';position:absolute;top:0;left:0;width:100%;height:3px;}
+  .stat-card.c1::after{background:linear-gradient(90deg,#1a3a4a,#2d7d9a);}
+  .stat-card.c2::after{background:linear-gradient(90deg,var(--plum),#8b2252);}
+  .stat-card.c3::after{background:linear-gradient(90deg,#1a6b3c,#27ae60);}
+  .stat-card.c4::after{background:linear-gradient(90deg,#b5451b,#e67e22);}
+  .stat-card:hover{transform:translateY(-5px);box-shadow:0 16px 50px rgba(59,15,43,0.16);}
+  .stat-icon-wrap{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem;}
+  .c1 .stat-icon-wrap{background:linear-gradient(135deg,#1a3a4a,#2d7d9a);color:var(--champagne);}
+  .c2 .stat-icon-wrap{background:linear-gradient(135deg,var(--plum),#8b2252);color:var(--champagne);}
+  .c3 .stat-icon-wrap{background:linear-gradient(135deg,#1a6b3c,#27ae60);color:#fff;}
+  .c4 .stat-icon-wrap{background:linear-gradient(135deg,#b5451b,#e67e22);color:#fff;}
+  .stat-value{font-family:var(--font-serif);font-size:2.2rem;font-weight:700;color:var(--text-dark);line-height:1;margin-bottom:.3rem;}
+  .stat-label{font-size:0.72rem;font-weight:500;color:var(--text-mid);text-transform:uppercase;letter-spacing:.08em;}
+
+  .section-title{font-family:var(--font-deco);font-size:.95rem;color:var(--plum);letter-spacing:.12em;text-transform:uppercase;
+    display:flex;align-items:center;gap:.75rem;margin-bottom:1.4rem;}
+  .section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(196,139,159,0.4),transparent);}
+
+  .qa-card{background:var(--white);border-radius:16px;padding:1.4rem;box-shadow:var(--shadow-card);
+    border:1px solid rgba(196,139,159,0.10);transition:var(--transition);text-decoration:none;display:block;position:relative;overflow:hidden;}
+  .qa-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#1a3a4a,#2d7d9a);opacity:0;transition:var(--transition);}
+  .qa-card:hover::before{opacity:1;}
+  .qa-card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(29,93,115,0.25);}
+  .qa-icon{width:50px;height:50px;border-radius:12px;background:rgba(45,125,154,0.1);display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;color:#2d7d9a;margin-bottom:.9rem;transition:var(--transition);position:relative;z-index:1;}
+  .qa-card:hover .qa-icon{background:rgba(255,255,255,0.15);color:var(--champagne);}
+  .qa-title{font-family:var(--font-serif);font-size:1.15rem;font-weight:600;color:var(--text-dark);margin-bottom:.25rem;transition:var(--transition);position:relative;z-index:1;}
+  .qa-card:hover .qa-title{color:var(--champagne);}
+  .qa-desc{font-size:.8rem;color:var(--text-mid);transition:var(--transition);position:relative;z-index:1;}
+  .qa-card:hover .qa-desc{color:rgba(247,231,206,0.7);}
+
+  .chart-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow-card);border:1px solid rgba(196,139,159,0.10);overflow:hidden;}
+  .chart-header{padding:1.2rem 1.4rem 0;display:flex;align-items:center;justify-content:space-between;}
+  .chart-title{font-family:var(--font-deco);font-size:.85rem;color:var(--plum);letter-spacing:.08em;text-transform:uppercase;}
+  .chart-body{padding:.9rem 1.4rem 1.4rem; position: relative;}
+  #revenueChart { height: 175px !important; }
+  #visitsChart  { height: 175px !important; }
+
+  /* Alert badge */
+  .alert-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(181,69,27,0.1);color:#b5451b;
+    border:1px solid rgba(181,69,27,0.2);border-radius:20px;padding:.3rem .8rem;font-size:.75rem;font-weight:500;}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-4">
-  <div class="row mt-4">
-    <div class="col-md-12 mb-4">
-      <div class="card welcome-card text-center p-4">
-        <div class="card-body position-relative">
-          <div class="welcome-icon"><i class="fas fa-user-tie"></i></div>
-          <h4>Welcome, Salon Manager {{ user.full_name }}</h4>
-          <p>Lead with <strong>Excellence</strong>! Oversee <strong>Operations</strong>, manage <strong>Staff Performance</strong>, and drive business growth.</p>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="container-fluid px-4 py-4">
 
+  <!-- Banner -->
   <div class="row mb-4">
-    <div class="col-md-3 col-6 mb-3">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
-        <span class="stat-number">₹{{ daily_revenue|floatformat:0 }}</span>
-        <span class="stat-label">Daily Revenue</span>
-      </div>
-    </div>
-    <div class="col-md-3 col-6 mb-3">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-users"></i></div>
-        <span class="stat-number">{{ staff_present }}</span>
-        <span class="stat-label">Staff Present</span>
-      </div>
-    </div>
-    <div class="col-md-3 col-6 mb-3">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-user-friends"></i></div>
-        <span class="stat-number">{{ customer_visits }}</span>
-        <span class="stat-label">Customer Visits</span>
-      </div>
-    </div>
-    <div class="col-md-3 col-6 mb-3">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
-        <span class="stat-number">{{ inventory_alerts }}</span>
-        <span class="stat-label">Inventory Alerts</span>
+    <div class="col-12">
+      <div class="welcome-banner">
+        <div class="d-flex align-items-center gap-4 position-relative" style="z-index:1;">
+          <div class="banner-icon"><i class="fas fa-user-tie"></i></div>
+          <div>
+            <div class="banner-title">Welcome, {{ user.full_name }}</div>
+            <div class="banner-sub">Salon Manager &nbsp;·&nbsp; Operations Overview</div>
+            <div class="mt-2" id="live-date" style="font-family:var(--font-serif);font-size:.95rem;color:rgba(247,231,206,.8);font-style:italic;"></div>
+          </div>
+          {% if inventory_alerts > 0 %}
+          <div class="ms-auto">
+            <span class="alert-badge" style="background:rgba(181,69,27,0.25);border-color:rgba(247,231,206,0.3);color:var(--champagne);">
+              <i class="fas fa-exclamation-triangle"></i> {{ inventory_alerts }} Low Stock Alert{{ inventory_alerts|pluralize }}
+            </span>
+          </div>
+          {% endif %}
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-4 mb-4">
-      <a href="{% url 'bill_list' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon"><i class="fas fa-chart-line"></i></div>
-            <h5 class="service-title">Revenue Reports</h5>
-            <p class="service-desc">View daily, weekly, and monthly revenue.</p>
-            <button class="action-btn">View Reports</button>
-          </div>
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="stat-card c1">
+        <div class="stat-icon-wrap"><i class="fas fa-rupee-sign"></i></div>
+        <div class="stat-value" style="font-size:1.7rem;">₹{{ daily_revenue|floatformat:0 }}</div>
+        <div class="stat-label">Today's Revenue</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card c2">
+        <div class="stat-icon-wrap"><i class="fas fa-users"></i></div>
+        <div class="stat-value">{{ staff_present }}</div>
+        <div class="stat-label">Staff Present</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card c3">
+        <div class="stat-icon-wrap"><i class="fas fa-user-friends"></i></div>
+        <div class="stat-value">{{ customer_visits }}</div>
+        <div class="stat-label">Customer Visits</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card c4">
+        <div class="stat-icon-wrap"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="stat-value">{{ inventory_alerts }}</div>
+        <div class="stat-label">Inventory Alerts</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-7">
+      <div class="chart-card h-100">
+        <div class="chart-header">
+          <span class="chart-title">Revenue — This Week</span>
         </div>
+        <div class="chart-body">
+          <canvas id="revenueChart" height="130"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-5">
+      <div class="chart-card h-100">
+        <div class="chart-header">
+          <span class="chart-title">Customer Visits — 7 Days</span>
+        </div>
+        <div class="chart-body">
+          <canvas id="visitsChart" height="130"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Access -->
+  <div class="section-title">Quick Access</div>
+  <div class="row g-3 mb-2">
+    <div class="col-6 col-md-3">
+      <a href="{% url 'bill_list' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-chart-line"></i></div>
+        <div class="qa-title">Revenue Reports</div>
+        <div class="qa-desc">View financial summaries</div>
       </a>
     </div>
-    <div class="col-md-4 mb-4">
-      <a href="{% url 'employee_list' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon"><i class="fas fa-user-clock"></i></div>
-            <h5 class="service-title">Staff Management</h5>
-            <p class="service-desc">Manage attendance and schedules.</p>
-            <button class="action-btn">Manage Staff</button>
-          </div>
-        </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'appointment_list' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-calendar-alt"></i></div>
+        <div class="qa-title">Appointments</div>
+        <div class="qa-desc">Today's schedule & bookings</div>
       </a>
     </div>
-    <div class="col-md-4 mb-4">
-      <a href="{% url 'stock_dashboard' %}" class="text-decoration-none">
-        <div class="card service-card h-100">
-          <div class="card-body text-center p-4">
-            <div class="service-icon"><i class="fas fa-boxes"></i></div>
-            <h5 class="service-title">Inventory</h5>
-            <p class="service-desc">Monitor stock and supplies.</p>
-            <button class="action-btn">View Inventory</button>
-          </div>
-        </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'customer_list' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-users"></i></div>
+        <div class="qa-title">Customers</div>
+        <div class="qa-desc">Client database</div>
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'stock_dashboard' %}" class="qa-card">
+        <div class="qa-icon"><i class="fas fa-boxes"></i></div>
+        <div class="qa-title">Stock Dashboard</div>
+        <div class="qa-desc">Monitor inventory levels</div>
       </a>
     </div>
   </div>
+
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const liveDateEl = document.getElementById('live-date');
+  if (liveDateEl) liveDateEl.textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  Chart.defaults.font.family = "'Jost', sans-serif";
+  Chart.defaults.color = '#6b4c5a';
+
+  const revenueLabels = {{ revenue_labels|safe }};
+  const revenueData   = {{ revenue_data|safe }};
+  const visitsLabels  = {{ visits_labels|safe }};
+  const visitsData    = {{ visits_data|safe }};
+
+  // Revenue Bar Chart
+  const revEl = document.getElementById('revenueChart');
+  if (revEl) {
+    const rg = revEl.getContext('2d');
+    const grad = rg.createLinearGradient(0,0,0,175);
+    grad.addColorStop(0,'rgba(45,125,154,0.85)');
+    grad.addColorStop(1,'rgba(45,125,154,0.25)');
+    new Chart(rg, {
+      type: 'bar',
+      data: { labels: revenueLabels, datasets: [{ label:'Revenue ₹', data: revenueData, backgroundColor: grad, borderRadius: 8, borderSkipped: false }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { grid: { color:'rgba(196,139,159,0.12)' }, beginAtZero: true, ticks: { callback: v => '₹'+v.toLocaleString('en-IN') } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // Visits Line Chart
+  const visEl = document.getElementById('visitsChart');
+  if (visEl) {
+    const vg = visEl.getContext('2d');
+    const vGrad = vg.createLinearGradient(0,0,0,150);
+    vGrad.addColorStop(0,'rgba(59,15,43,0.15)');
+    vGrad.addColorStop(1,'rgba(59,15,43,0.01)');
+    new Chart(vg, {
+      type: 'line',
+      data: { labels: visitsLabels, datasets: [{ label:'Visits', data: visitsData, borderColor:'#3b0f2b', backgroundColor: vGrad, borderWidth:2.5, pointBackgroundColor:'#c48b9f', pointBorderColor:'#fff', pointBorderWidth:2, pointRadius:4, tension:0.4, fill:true }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { grid: { color:'rgba(196,139,159,0.12)' }, beginAtZero: true, ticks: { precision: 0 } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+});
+</script>
 {% endblock %}

@@ -4,7 +4,7 @@
 
 <div class="ribbon-header d-flex justify-content-between align-items-center px-4 pb-5 mb-3" style="color: black">
   <div class="d-flex align-items-center">
-    <i class="fas fa-warehouse me-3 fs-2" style="color: #ff4f6e;"></i>
+    <i class="fas fa-warehouse me-3 fs-2" style="color: #3b0f2b;"></i>
     <div class="fw-bold fs-3">Stock Dashboard</div>
   </div>
   <div class="breadcrumb-text text-end">
@@ -19,7 +19,7 @@
   <!-- Stats Cards -->
   <div class="row mb-4">
     <div class="col-md-3">
-      <div class="stats-card" style="background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);">
+      <div class="stats-card" style="background: linear-gradient(135deg, #3b0f2b 0%, #c48b9f 100%);">
         <div class="stats-icon">
           <i class="fas fa-boxes"></i>
         </div>
@@ -80,7 +80,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <h6 class="mb-1 text-muted">{{ category }}</h6>
-                <h4 class="mb-0 fw-bold" style="color: #ff4f6e;">{{ data.product_count }}</h4>
+                <h4 class="mb-0 fw-bold" style="color: #3b0f2b;">{{ data.product_count }}</h4>
                 <small class="text-muted">Products</small>
               </div>
               <div class="text-end">
@@ -192,7 +192,7 @@
                 {% endif %}
               </td>
               <td>
-                <span class="badge" style="background-color: #ff80ab;">
+                <span class="badge" style="background-color: #c48b9f;">
                   {{ product.get_category_display }}
                 </span>
               </td>
@@ -214,7 +214,7 @@
               </td>
               
               <td class="text-end">
-                <strong style="color: #ff4f6e;">₹{{ product.price }}</strong>
+                <strong style="color: #3b0f2b;">₹{{ product.price }}</strong>
               </td>
               
               <!-- ✅ STOCK VALUE (from property) -->
@@ -271,7 +271,7 @@
             {% endif %}
             
             <li class="page-item active">
-              <span class="page-link" style="background-color: #ff4f6e; border-color: #ff4f6e;">
+              <span class="page-link" style="background-color: #3b0f2b; border-color: #3b0f2b;">
                 Page {{ products.number }} of {{ products.paginator.num_pages }}
               </span>
             </li>
@@ -313,9 +313,9 @@
 }
 
 .modern-input:focus {
-  border-color: #ff4f6e !important;
-  background-color: #fff5f7 !important;
-  box-shadow: 0 0 0 0.2rem rgba(255, 79, 110, 0.15);
+  border-color: #3b0f2b !important;
+  background-color: #faf6f2 !important;
+  box-shadow: 0 0 0 0.2rem rgba(59, 15, 43, 0.15);
 }
 
 .form-label {
@@ -326,22 +326,22 @@
 }
 
 .card-header.table-title-bar {
-  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  background: linear-gradient(135deg, #3b0f2b 0%, #c48b9f 100%);
   padding: 20px;
   font-size: 18px;
   border-bottom: 3px solid rgba(255,255,255,0.2);
 }
 
 .ribbon-header {
-  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  background: linear-gradient(135deg, #faf6f2 0%, #f7e7ce 100%);
   border-radius: 15px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 10px rgba(255, 79, 110, 0.05);
+  box-shadow: 0 2px 10px rgba(59, 15, 43, 0.05);
 }
 
 .text-primary {
-  color: #ff4f6e !important;
+  color: #3b0f2b !important;
 }
 
 /* Stats Cards */
@@ -382,7 +382,7 @@
 /* Category Cards */
 .category-card {
   padding: 20px;
-  background: linear-gradient(135deg, #fff5f7 0%, #ffe9ed 100%);
+  background: linear-gradient(135deg, #faf6f2 0%, #f7e7ce 100%);
   border-radius: 12px;
   border: 2px solid #ffd4dc;
   transition: all 0.3s ease;
@@ -390,12 +390,12 @@
 
 .category-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(255, 79, 110, 0.15);
+  box-shadow: 0 4px 15px rgba(59, 15, 43, 0.15);
 }
 
 /* Modern Table */
 .modern-table thead tr {
-  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  background: linear-gradient(135deg, #3b0f2b 0%, #c48b9f 100%);
   color: white;
 }
 
@@ -414,7 +414,7 @@
 }
 
 .modern-table tbody tr:hover {
-  background-color: #fff5f7;
+  background-color: #faf6f2;
 }
 
 /* Product Thumbnail */
@@ -444,30 +444,30 @@
 
 /* Badges */
 .badge.bg-pink {
-  background-color: #ff4f6e !important;
+  background-color: #3b0f2b !important;
   padding: 6px 12px;
   font-weight: 600;
 }
 
 /* Pagination */
 .pink-pagination {
-  color: #ff4f6e;
-  border-color: #ff4f6e;
+  color: #3b0f2b;
+  border-color: #3b0f2b;
 }
 
 .pink-pagination:hover {
-  background-color: #ff4f6e;
+  background-color: #3b0f2b;
   color: white;
 }
 
 /* Button Styles */
 .btn-primary {
-  background: linear-gradient(135deg, #ff4f6e 0%, #ff80ab 100%);
+  background: linear-gradient(135deg, #3b0f2b 0%, #c48b9f 100%);
   border: none;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #e63956 0%, #ff6b9d 100%);
+  background: linear-gradient(135deg, #260a1d 0%, #b07a8e 100%);
 }
 </style>
 

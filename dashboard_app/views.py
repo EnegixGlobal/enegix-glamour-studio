@@ -9,24 +9,10 @@ from decimal import Decimal
 
 from .models import *
 from .decorators import check_blocked_user, login_required, role_required
+import json
 
-# ================================================================
-# ROLE SUMMARY:
-#
-# super_admin      → sab kuch
-# salon_manager    → customers, appointments, billing, stock_dashboard
-# receptionist     → customers, appointments, billing
-# hair_stylist     → my_services, update_service_status, record_product_usage
-# senior_stylist   → my_services, update_service_status, record_product_usage
-# hair_colorist    → my_services, update_service_status, record_product_usage
-# beauty_therapist → my_services, update_service_status, record_product_usage
-# makeup_artist    → my_services, update_service_status, record_product_usage
-# assistant        → my_services only (no status update, no product usage)
-# ================================================================
 
-# ================================================================
-# AUTH
-# ================================================================
+
 
 def login_view(request):
     if 'user_id' in request.session:
@@ -84,9 +70,84 @@ def logout_view(request):
 
 
 # ================================================================
-# DASHBOARD
+# HELPER: Check Blocked User Decorator
 # ================================================================
+def check_blocked_user(view_func):
+    def wrapper(request, *args, **kwargs):
+        user_id   = request.session.get('user_id')
+        user_type = request.session.get('user_type')
+        if user_type == 'employee' and user_id:
+            try:
+                emp = Employee.objects.get(id=user_id)
+                if emp.is_blocked:
+                    messages.error(request, 'Your account has been blocked. Contact admin.')
+                    return redirect('login')
+            except Employee.DoesNotExist:
+                pass
+        return view_func(request, *args, **kwargs)
+    return wrapper
 
+
+# ================================================================
+# SHARED HELPER — Service Staff Chart Data
+# ================================================================
+def _service_staff_charts(user, today):
+    """Returns chart context dict for any service-staff employee."""
+
+    # Weekly completed services: last 7 days
+    weekly_labels, weekly_data = [], []
+    for i in range(6, -1, -1):
+        day = today - timedelta(days=i)
+        weekly_labels.append(day.strftime('%a'))
+        weekly_data.append(
+            AppointmentService.objects.filter(
+                employee=user,
+                appointment__appointment_date=day,
+                service_status='completed'
+            ).count()
+        )
+
+    # Monthly earnings: last 6 months
+    earnings_labels, earnings_data = [], []
+    for i in range(5, -1, -1):
+        mo = today.month - i
+        yr = today.year
+        while mo <= 0:
+            mo += 12
+            yr -= 1
+        m_start = date(yr, mo, 1)
+        m_end   = date(yr, mo + 1, 1) if mo < 12 else date(yr + 1, 1, 1)
+        rev = AppointmentService.objects.filter(
+            employee=user,
+            appointment__appointment_date__gte=m_start,
+            appointment__appointment_date__lt=m_end,
+            service_status='completed'
+        ).aggregate(t=Sum('service_price'))['t'] or 0
+        earnings_labels.append(m_start.strftime('%b %Y'))
+        earnings_data.append(float(rev))
+
+    # Top 5 products used by this employee
+    top_products = (
+        ServiceProductUsage.objects
+        .filter(appointment_service__employee=user)
+        .values('product__product_name')
+        .annotate(c=Count('id'))
+        .order_by('-c')[:5]
+    )
+
+    return {
+        'weekly_labels':   json.dumps(weekly_labels),
+        'weekly_data':     json.dumps(weekly_data),
+        'earnings_labels': json.dumps(earnings_labels),
+        'earnings_data':   json.dumps(earnings_data),
+        'product_names':   json.dumps([p['product__product_name'] for p in top_products]),
+        'product_counts':  json.dumps([p['c'] for p in top_products]),
+    }
+
+
+# ================================================================
+# MAIN DASHBOARD VIEW
+# ================================================================
 @check_blocked_user
 def dashboard(request):
     if 'user_id' not in request.session:
@@ -97,7 +158,11 @@ def dashboard(request):
     user_type = request.session.get('user_type')
     user_id   = request.session.get('user_id')
 
-    user = AdminUser.objects.get(id=user_id) if user_type == 'super_admin' else Employee.objects.get(id=user_id)
+    user = (
+        AdminUser.objects.get(id=user_id)
+        if user_type == 'super_admin'
+        else Employee.objects.get(id=user_id)
+    )
 
     context = {
         'user':              user,
@@ -109,97 +174,365 @@ def dashboard(request):
         'active_employees':  Employee.objects.filter(is_active=True, is_blocked=False).count(),
     }
 
+    # ================================================================
+    # SUPER ADMIN
+    # ================================================================
     if role == 'super_admin':
+        today = date.today()
+
         context['total_admins']         = AdminUser.objects.filter(is_active=True).count()
         context['recent_employees']     = Employee.objects.all().order_by('-created_at')[:5]
-        context['total_monthly_salary'] = Employee.objects.filter(is_active=True).aggregate(total=Sum('base_salary'))['total'] or 0
+        context['total_monthly_salary'] = (
+            Employee.objects.filter(is_active=True)
+            .aggregate(total=Sum('base_salary'))['total'] or 0
+        )
+
+        # ── Revenue Trend: Last 7 Days ──
+        # Handles BOTH DateField and DateTimeField on Bill.bill_date
+        revenue_labels, revenue_data = [], []
+        for i in range(6, -1, -1):
+            day = today - timedelta(days=i)
+            # Try DateTimeField lookup first (__date), fallback to direct DateField
+            try:
+                total = Bill.objects.filter(
+                    bill_date__date=day,
+                    payment_status__in=['paid', 'partial']
+                ).aggregate(t=Sum('total_amount'))['t'] or 0
+            except Exception:
+                total = Bill.objects.filter(
+                    bill_date=day,
+                    payment_status__in=['paid', 'partial']
+                ).aggregate(t=Sum('total_amount'))['t'] or 0
+            revenue_labels.append(day.strftime('%a, %d %b'))
+            revenue_data.append(float(total))
+        context['revenue_labels'] = json.dumps(revenue_labels)
+        context['revenue_data']   = json.dumps(revenue_data)
+
+        # ── Staff by Role ──
+        # Uses ALL employees (not just is_active=True) so chart is never empty
+        role_counts    = (
+            Employee.objects
+            .values('role')
+            .annotate(count=Count('id'))
+            .order_by('-count')          # most common roles first
+        )
+        role_label_map = dict(Employee.ROLE_CHOICES)
+        s_labels = [role_label_map.get(r['role'], r['role'].replace('_', ' ').title()) for r in role_counts]
+        s_data   = [r['count'] for r in role_counts]
+
+        # Absolute safety: if truly no employees at all, send dummy data
+        if not s_data:
+            s_labels = ['No Staff Yet']
+            s_data   = [0]
+
+        context['staff_labels'] = json.dumps(s_labels)
+        context['staff_data']   = json.dumps(s_data)
+
+        # ── Appointments by Status ──
+        statuses    = ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled']
+        appt_counts = [Appointment.objects.filter(status=s).count() for s in statuses]
+        context['appt_status_labels'] = json.dumps(['Pending', 'Confirmed', 'In Progress', 'Completed', 'Cancelled'])
+        context['appt_status_data']   = json.dumps(appt_counts)
+
+        # ── Top Employees by Services This Month ──
+        month_start = datetime(today.year, today.month, 1).date()
+        top_emp = (
+            AppointmentService.objects
+            .filter(appointment__appointment_date__gte=month_start)
+            .values('employee__full_name')
+            .annotate(c=Count('id'))
+            .order_by('-c')[:5]
+        )
+        # Fallback: if no appointments this month, show top employees by all-time count
+        if not top_emp:
+            top_emp = (
+                AppointmentService.objects
+                .values('employee__full_name')
+                .annotate(c=Count('id'))
+                .order_by('-c')[:5]
+            )
+        context['top_emp_names']  = json.dumps([e['employee__full_name'] for e in top_emp])
+        context['top_emp_counts'] = json.dumps([e['c'] for e in top_emp])
+
         return render(request, 'dashboards/super_admin_dashboard.html', context)
 
-    elif role == 'hair_stylist':
-        today = date.today()
-        my_services_today = AppointmentService.objects.filter(
-            employee=user, appointment__appointment_date=today,
-            appointment__status__in=['confirmed', 'in_progress']
-        ).select_related('appointment__customer', 'service')
-        context['today_appointments']   = my_services_today.count()
-        context['completed_today']      = my_services_today.filter(service_status='completed').count()
-        context['pending_appointments'] = my_services_today.filter(service_status='pending').count()
-        context['my_services_today']    = my_services_today.order_by('appointment__appointment_time')
-        return render(request, 'dashboards/hair_stylist_dashboard.html', context)
-
-    elif role == 'senior_stylist':
-        today = date.today()
-        my_services_today = AppointmentService.objects.filter(
-            employee=user, appointment__appointment_date=today,
-            appointment__status__in=['confirmed', 'in_progress']
-        )
-        context['today_appointments'] = my_services_today.count()
-        context['team_members']       = Employee.objects.filter(role__in=['hair_stylist', 'assistant'], is_active=True, is_blocked=False).count()
-        current_month_start           = datetime(today.year, today.month, 1).date()
-        monthly_services              = AppointmentService.objects.filter(employee=user, appointment__appointment_date__gte=current_month_start, service_status='completed')
-        context['monthly_revenue']    = sum(s.service_price for s in monthly_services)
-        context['my_services_today']  = my_services_today.order_by('appointment__appointment_time')
-        return render(request, 'dashboards/senior_stylist_dashboard.html', context)
-
-    elif role == 'hair_colorist':
-        today = date.today()
-        my_services_today = AppointmentService.objects.filter(
-            employee=user, appointment__appointment_date=today,
-            appointment__status__in=['confirmed', 'in_progress']
-        ).select_related('appointment__customer', 'service')
-        context['color_services_today'] = my_services_today.count()
-        context['completed_today']      = my_services_today.filter(service_status='completed').count()
-        context['pending_services']     = my_services_today.filter(service_status='pending').count()
-        context['my_services_today']    = my_services_today.order_by('appointment__appointment_time')
-        return render(request, 'dashboards/hair_colorist_dashboard.html', context)
-
-    elif role == 'beauty_therapist':
-        today = date.today()
-        my_services_today = AppointmentService.objects.filter(
-            employee=user, appointment__appointment_date=today,
-            appointment__status__in=['confirmed', 'in_progress']
-        ).select_related('appointment__customer', 'service')
-        context['treatments_today']  = my_services_today.count()
-        context['spa_bookings']      = my_services_today.filter(service__category='spa_service').count()
-        context['facial_treatments'] = my_services_today.filter(service__category='beauty_service').count()
-        context['my_services_today'] = my_services_today.order_by('appointment__appointment_time')
-        return render(request, 'dashboards/beauty_therapist_dashboard.html', context)
-
-    elif role == 'makeup_artist':
-        today = date.today()
-        my_services_today = AppointmentService.objects.filter(
-            employee=user, appointment__appointment_date=today,
-            appointment__status__in=['confirmed', 'in_progress']
-        ).select_related('appointment__customer', 'service')
-        context['makeup_sessions_today'] = my_services_today.count()
-        context['bridal_bookings']       = my_services_today.filter(service__category='bridal_service').count()
-        context['completed_sessions']    = my_services_today.filter(service_status='completed').count()
-        context['my_services_today']     = my_services_today.order_by('appointment__appointment_time')
-        return render(request, 'dashboards/makeup_artist_dashboard.html', context)
-
+    # ================================================================
+    # SALON MANAGER
+    # ================================================================
     elif role == 'salon_manager':
         today        = date.today()
-        today_bills  = Bill.objects.filter(bill_date__date=today, payment_status__in=['paid', 'partial'])
         all_products = Product.objects.filter(is_active=True)
-        context['daily_revenue']    = today_bills.aggregate(total=Sum('total_amount'))['total'] or 0
+
+        # Bill date-safe helper (handles DateField or DateTimeField)
+        def bills_for_day(d):
+            try:
+                return Bill.objects.filter(bill_date__date=d, payment_status__in=['paid', 'partial'])
+            except Exception:
+                return Bill.objects.filter(bill_date=d, payment_status__in=['paid', 'partial'])
+
+        context['daily_revenue']    = bills_for_day(today).aggregate(total=Sum('total_amount'))['total'] or 0
         context['staff_present']    = Employee.objects.filter(is_active=True, is_blocked=False).count()
-        context['customer_visits']  = Appointment.objects.filter(appointment_date=today, status__in=['confirmed', 'in_progress', 'completed']).count()
+        context['customer_visits']  = Appointment.objects.filter(
+            appointment_date=today, status__in=['confirmed', 'in_progress', 'completed']
+        ).count()
         context['inventory_alerts'] = sum(1 for p in all_products if p.is_low_stock)
+
+        # Revenue & Visits: Last 7 Days
+        revenue_labels, revenue_data, visits_data = [], [], []
+        for i in range(6, -1, -1):
+            day = today - timedelta(days=i)
+            revenue_labels.append(day.strftime('%a, %d %b'))
+            revenue_data.append(float(bills_for_day(day).aggregate(t=Sum('total_amount'))['t'] or 0))
+            visits_data.append(
+                Appointment.objects.filter(
+                    appointment_date=day,
+                    status__in=['confirmed', 'in_progress', 'completed']
+                ).count()
+            )
+        context['revenue_labels'] = json.dumps(revenue_labels)
+        context['revenue_data']   = json.dumps(revenue_data)
+        context['visits_labels']  = json.dumps(revenue_labels)
+        context['visits_data']    = json.dumps(visits_data)
+
         return render(request, 'dashboards/salon_manager_dashboard.html', context)
 
+    # ================================================================
+    # RECEPTIONIST
+    # ================================================================
     elif role == 'receptionist':
-        today = date.today()
-        context['walk_ins']               = Appointment.objects.filter(appointment_date=today, booking_type='offline').count()
-        context['phone_bookings']         = Appointment.objects.filter(appointment_date=today, booking_type='online').count()
-        context['confirmed_appointments'] = Appointment.objects.filter(appointment_date=today, status='confirmed').count()
-        context['waiting_customers']      = Appointment.objects.filter(appointment_date=today, status='in_progress').count()
-        context['today_appointments']     = Appointment.objects.filter(appointment_date=today).select_related('customer').order_by('appointment_time')[:10]
+        today       = date.today()
+        today_appts = Appointment.objects.filter(appointment_date=today)
+
+        context['walk_ins']               = today_appts.filter(booking_type='offline').count()
+        context['phone_bookings']         = today_appts.filter(booking_type='online').count()
+        context['confirmed_appointments'] = today_appts.filter(status='confirmed').count()
+        context['waiting_customers']      = today_appts.filter(status='in_progress').count()
+        context['appt_pending']           = today_appts.filter(status='pending').count()
+        context['appt_completed']         = today_appts.filter(status='completed').count()
+        context['appt_cancelled']         = today_appts.filter(status='cancelled').count()
+        context['today_appointments']     = (
+            today_appts.select_related('customer').order_by('appointment_time')[:10]
+        )
+
+        # Weekly Footfall: Last 7 Days (real-time)
+        weekly_labels, weekly_data = [], []
+        for i in range(6, -1, -1):
+            day = today - timedelta(days=i)
+            weekly_labels.append(day.strftime('%a %d'))
+            weekly_data.append(
+                Appointment.objects.filter(
+                    appointment_date=day,
+                    status__in=['confirmed', 'in_progress', 'completed']
+                ).count()
+            )
+        context['weekly_labels'] = json.dumps(weekly_labels)
+        context['weekly_data']   = json.dumps(weekly_data)
+
+        # Hourly breakdown today (9am–8pm) (real-time)
+        hourly_labels, hourly_data = [], []
+        for hour in range(9, 21):
+            label = f"{hour if hour <= 12 else hour - 12}{'am' if hour < 12 else 'pm'}"
+            hourly_labels.append(label)
+            hourly_data.append(today_appts.filter(appointment_time__hour=hour).count())
+        context['hourly_labels'] = json.dumps(hourly_labels)
+        context['hourly_data']   = json.dumps(hourly_data)
+
         return render(request, 'dashboards/receptionist_dashboard.html', context)
 
+    # ================================================================
+    # HAIR STYLIST
+    # ================================================================
+    elif role == 'hair_stylist':
+        today       = date.today()
+        my_services = AppointmentService.objects.filter(
+            employee=user,
+            appointment__appointment_date=today,
+            appointment__status__in=['confirmed', 'in_progress']
+        ).select_related('appointment__customer', 'service')
+
+        context['today_appointments']   = my_services.count()
+        context['completed_today']      = my_services.filter(service_status='completed').count()
+        context['inprogress_today']     = my_services.filter(service_status='in_progress').count()
+        context['pending_appointments'] = my_services.filter(service_status='pending').count()
+        context['my_services_today']    = my_services.order_by('appointment__appointment_time')
+        context.update(_service_staff_charts(user, today))
+        return render(request, 'dashboards/hair_stylist_dashboard.html', context)
+
+    # ================================================================
+    # SENIOR STYLIST
+    # ================================================================
+    elif role == 'senior_stylist':
+        today       = date.today()
+        my_services = AppointmentService.objects.filter(
+            employee=user,
+            appointment__appointment_date=today,
+            appointment__status__in=['confirmed', 'in_progress']
+        ).select_related('appointment__customer', 'service')
+
+        context['today_appointments'] = my_services.count()
+        context['team_members'] = Employee.objects.filter(
+            role__in=['hair_stylist', 'assistant'], is_active=True, is_blocked=False
+        ).count()
+
+        # Monthly revenue (real-time)
+        month_start      = datetime(today.year, today.month, 1).date()
+        monthly_services = AppointmentService.objects.filter(
+            employee=user,
+            appointment__appointment_date__gte=month_start,
+            service_status='completed'
+        )
+        context['monthly_revenue']   = sum(s.service_price for s in monthly_services)
+        context['my_services_today'] = my_services.order_by('appointment__appointment_time')
+
+        # Senior Revenue: last 6 months (real-time)
+        rev_labels, rev_data = [], []
+        for i in range(5, -1, -1):
+            mo = today.month - i
+            yr = today.year
+            while mo <= 0:
+                mo += 12
+                yr -= 1
+            ms  = date(yr, mo, 1)
+            me  = date(yr, mo + 1, 1) if mo < 12 else date(yr + 1, 1, 1)
+            rev = AppointmentService.objects.filter(
+                employee=user,
+                appointment__appointment_date__gte=ms,
+                appointment__appointment_date__lt=me,
+                service_status='completed'
+            ).aggregate(t=Sum('service_price'))['t'] or 0
+            rev_labels.append(ms.strftime('%b %Y'))
+            rev_data.append(float(rev))
+        context['senior_rev_labels'] = json.dumps(rev_labels)
+        context['senior_rev_data']   = json.dumps(rev_data)
+
+        # All-time service breakdown (real-time)
+        all_my = AppointmentService.objects.filter(employee=user)
+        context['svc_completed']  = all_my.filter(service_status='completed').count()
+        context['svc_pending']    = all_my.filter(service_status='pending').count()
+        context['svc_inprogress'] = all_my.filter(service_status='in_progress').count()
+
+        return render(request, 'dashboards/senior_stylist_dashboard.html', context)
+
+    # ================================================================
+    # HAIR COLORIST
+    # ================================================================
+    elif role == 'hair_colorist':
+        today       = date.today()
+        my_services = AppointmentService.objects.filter(
+            employee=user,
+            appointment__appointment_date=today,
+            appointment__status__in=['confirmed', 'in_progress']
+        ).select_related('appointment__customer', 'service')
+
+        context['color_services_today'] = my_services.count()
+        context['completed_today']      = my_services.filter(service_status='completed').count()
+        context['inprogress_today']     = my_services.filter(service_status='in_progress').count()
+        context['pending_services']     = my_services.filter(service_status='pending').count()
+        context['my_services_today']    = my_services.order_by('appointment__appointment_time')
+        context.update(_service_staff_charts(user, today))
+        return render(request, 'dashboards/hair_colorist_dashboard.html', context)
+
+    # ================================================================
+    # BEAUTY THERAPIST
+    # ================================================================
+    elif role == 'beauty_therapist':
+        today       = date.today()
+        my_services = AppointmentService.objects.filter(
+            employee=user,
+            appointment__appointment_date=today,
+            appointment__status__in=['confirmed', 'in_progress']
+        ).select_related('appointment__customer', 'service')
+
+        context['treatments_today']   = my_services.count()
+        context['spa_bookings']       = my_services.filter(service__category='spa_service').count()
+        context['facial_treatments']  = my_services.filter(service__category='beauty_service').count()
+        context['completed_today']    = my_services.filter(service_status='completed').count()
+        context['inprogress_today']   = my_services.filter(service_status='in_progress').count()
+        context['pending_treatments'] = my_services.filter(service_status='pending').count()
+        context['my_services_today']  = my_services.order_by('appointment__appointment_time')
+        context.update(_service_staff_charts(user, today))
+        return render(request, 'dashboards/beauty_therapist_dashboard.html', context)
+
+    # ================================================================
+    # MAKEUP ARTIST
+    # ================================================================
+    elif role == 'makeup_artist':
+        today       = date.today()
+        my_services = AppointmentService.objects.filter(
+            employee=user,
+            appointment__appointment_date=today,
+            appointment__status__in=['confirmed', 'in_progress']
+        ).select_related('appointment__customer', 'service')
+
+        context['makeup_sessions_today'] = my_services.count()
+        context['bridal_bookings']       = my_services.filter(service__category='bridal_service').count()
+        context['completed_sessions']    = my_services.filter(service_status='completed').count()
+        context['inprogress_today']      = my_services.filter(service_status='in_progress').count()
+        context['pending_sessions']      = my_services.filter(service_status='pending').count()
+        context['my_services_today']     = my_services.order_by('appointment__appointment_time')
+        context.update(_service_staff_charts(user, today))
+        return render(request, 'dashboards/makeup_artist_dashboard.html', context)
+
+    # ================================================================
+    # ASSISTANT
+    # ================================================================
     elif role == 'assistant':
-        context['tasks_assigned']  = 12
-        context['tasks_completed'] = 8
-        context['cleaning_tasks']  = 4
+        today       = date.today()
+        my_services = AppointmentService.objects.filter(
+            employee=user,
+            appointment__appointment_date=today
+        )
+
+        context['tasks_assigned']  = my_services.count()
+        context['tasks_completed'] = my_services.filter(service_status='completed').count()
+        context['cleaning_tasks']  = my_services.filter(service_status='pending').count()
+
+        # Weekly tasks: last 7 days (real-time)
+        weekly_labels, weekly_data = [], []
+        for i in range(6, -1, -1):
+            day = today - timedelta(days=i)
+            weekly_labels.append(day.strftime('%a %d'))
+            weekly_data.append(
+                AppointmentService.objects.filter(
+                    employee=user,
+                    appointment__appointment_date=day
+                ).count()
+            )
+        context['weekly_labels'] = json.dumps(weekly_labels)
+        context['weekly_data']   = json.dumps(weekly_data)
+
+        # Monthly tasks completed: last 6 months (real-time)
+        monthly_labels, monthly_data = [], []
+        for i in range(5, -1, -1):
+            mo = today.month - i
+            yr = today.year
+            while mo <= 0:
+                mo += 12
+                yr -= 1
+            ms  = date(yr, mo, 1)
+            me  = date(yr, mo + 1, 1) if mo < 12 else date(yr + 1, 1, 1)
+            cnt = AppointmentService.objects.filter(
+                employee=user,
+                appointment__appointment_date__gte=ms,
+                appointment__appointment_date__lt=me,
+                service_status='completed'
+            ).count()
+            monthly_labels.append(ms.strftime('%b %Y'))
+            monthly_data.append(cnt)
+        context['monthly_labels'] = json.dumps(monthly_labels)
+        context['monthly_data']   = json.dumps(monthly_data)
+
+        # Top products restocked by assistant (real-time)
+        top_products = (
+            ServiceProductUsage.objects
+            .filter(appointment_service__employee=user)
+            .values('product__product_name')
+            .annotate(c=Count('id'))
+            .order_by('-c')[:5]
+        )
+        context['product_names']  = json.dumps([p['product__product_name'] for p in top_products])
+        context['product_counts'] = json.dumps([p['c'] for p in top_products])
+
         return render(request, 'dashboards/assistant_dashboard.html', context)
 
     else:
@@ -207,12 +540,6 @@ def dashboard(request):
         return render(request, 'dashboard.html', context)
 
 
-# ================================================================
-# EMPLOYEE MANAGEMENT
-# Sirf super_admin
-# ================================================================
-
-@check_blocked_user
 @login_required
 @role_required(['super_admin'])
 def add_employee(request):
