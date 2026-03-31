@@ -952,6 +952,7 @@ def toggle_product_active(request, id):
     return redirect("product_list")
 
 
+
 @check_blocked_user
 @login_required
 @role_required(['super_admin'])
